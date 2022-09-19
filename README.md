@@ -1,4 +1,4 @@
-# Microsoft Flight Arduino-driven Cockpit
+# Microsoft Flight Simulator Arduino-driven Cockpit
 
 ## Introduction
 
