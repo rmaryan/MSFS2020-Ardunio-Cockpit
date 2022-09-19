@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32811.315
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSFS2020-Ardunio-Cockpit", "src\MSFS2020-Ardunio-Cockpit.csproj", "{2067CE37-8BCC-4487-B730-068A5E0F2114}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common Files", "Common Files", "{61A6DE7B-E818-400D-A3FB-163E81C50DD2}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArduinoController", "ArduinoController", "{555368B7-06B2-481D-B1DF-A885FCC03F6B}"
+	ProjectSection(SolutionItems) = preProject
+		arduinocontroller\arduinocontroller.ino = arduinocontroller\arduinocontroller.ino
+		arduinocontroller\buttons.h = arduinocontroller\buttons.h
+		arduinocontroller\display.h = arduinocontroller\display.h
+		arduinocontroller\messaging.h = arduinocontroller\messaging.h
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2067CE37-8BCC-4487-B730-068A5E0F2114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2067CE37-8BCC-4487-B730-068A5E0F2114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2067CE37-8BCC-4487-B730-068A5E0F2114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2067CE37-8BCC-4487-B730-068A5E0F2114}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {34577419-7F8D-4BA7-8FE8-780D5553CEB3}
+	EndGlobalSection
+EndGlobal
