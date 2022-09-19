@@ -18,6 +18,10 @@ Start the Cockpit Connector application. Once Arduino is connected to USB and th
 
 As long as Connector box is checked, the application will try reconnecting to the simulator and Arduino.
 
+Once the connections are established, Sim Connector checks the aircraft model which is currently loaded in MSFS and tries to find the most appropriate dashboard layout for it.
+
+Dashboard layouts are currently hard-coded in the C# code. Later we plan to implement a dynamic layouts loading from the plain text files.
+
 ## Dashboard Layout
 
 ![Dashboard layout](extra/dashboard.png)
