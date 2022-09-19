@@ -14,11 +14,19 @@ Arduino is connected through the native Serial over USB interface.
 
 MSFS connection is done through the SimConnect API.
 
-Start the Cockpit Connector application and once Arduino is connected to USB and the MSFS is started, click on the "Connect" box - the indicators to the right will show if the connection to the Arduino and to MSFS were successful.
+Start the Cockpit Connector application. Once Arduino is connected to USB and the MSFS is started, click on the "Connect" box - the indicators to the right will show if the connection to the Arduino and to MSFS were successful.
 
 As long as Connector box is checked, the application will try reconnecting to the simulator and Arduino.
 
-## Arduino 
+## Dashboard Layout
+
+![Dashboard layout](extra/dashboard.png)
+
+We use 6 three-position switches (SW1-SW12), 4 rotary encoders (ENC1 - ENC4) with a built-in buttons (SW13-SW16) and 4 push buttons (SW17-SW20).
+
+2.8 TFT screen at the right side is used to show the instruments indications.
+
+## Arduino Firmware
 
 ### Serial Connection Protocol
 
@@ -48,6 +56,7 @@ In all messages, the first letter defines the message type. The ending character
 
 #### Messages from Arduino to PC
 | Type | Format | Function |
+| :--- | :---: | :--- |
 | M | MSFSCPx | A magic response to the ping message. x - is a protocol version. Currently 0. |
 | E | Exxxx... | Error message. xxxx... - error text. |
 | K | KNvvvvv  | Knob position change notification. N - knob ID (0-3), vvvvv - value (can be negative). |
@@ -56,4 +65,14 @@ In all messages, the first letter defines the message type. The ending character
 ### Hardware
 
  * [Arduino Mega 2560](http://www.banggood.com/Mega2560-R3-ATmega2560-16AU-Control-Board-With-USB-Cable-For-Arduino-p-73020.html?p=M908156347868201609Y)
- * 2.8 TFT screen shield (320x240)
+ * [2.8 TFT screen shield (320x240)](https://www.banggood.com/2_8-Inch-TFT-LCD-Shield-Touch-Display-Screen-Module-Geekcreit-for-Arduino-products-that-work-with-official-Arduino-boards-p-989697.html?p=M908156347868201609Y)
+ * 6x three-position switches
+ * 4x rotary encoders with a push button
+ * 4x pushbuttons
+ * 3x 74HC165 shift registers. We need them to avoid wasting too many Arduino pins for switches connections. Check for more details on [Gammon Forum](http://www.gammon.com.au/forum/?id=11979). 
+ * 3x 0.1 uF condensers to stabilize power for the register chips
+ * 28x 10-15 kOhm resistors to pull-up the switches
+
+### Schematics
+
+![Electric circuit schematics](extra/schematics/schematics.png )
