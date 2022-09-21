@@ -19,6 +19,7 @@
  */
 
 using ArduinoConnector;
+using Microsoft.FlightSimulator.SimConnect;
 using MSFSConnector;
 using System;
 using System.Diagnostics;
@@ -32,12 +33,16 @@ namespace MSFS2020_Ardunio_Cockpit
         // handles msfs connection
         private SimControl simControl;
 
+        // provides the presets per selected aircraft model
         private PresetsManager presetsManager;
 
         // handles connection to arduino device
         private ArduinoControl arduinoControl;
         private bool firmwareIsValid = false;
         private readonly string FIRMWARE_RESPONSE = "SFSCP0";
+
+        // this array stores the Sim Variable names associated with the corresponding knobs
+        private int[] knobToVarMapping = { -1, -1, -1, -1 };
 
         private readonly MainWindow mainWindow_ref;
 
@@ -143,22 +148,38 @@ namespace MSFS2020_Ardunio_Cockpit
                         }
                         finally
                         {
-                            if (item.simvarType == SIMVAR_TYPE.TYPE_NUMBER)
-                            {
-                                arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth, ' '));
-                            }
-                            else
+                            if (item.knobSpec != "")
                             {
                                 if (dValue < 0)
                                 {
-                                    // move the negative sign to the first place before padding with zeroes
-                                    arduinoControl.SendMessage('T', itemIDStr +
+                                    arduinoControl.SendMessage('D', item.knobSpec[0] +
                                         '-' +
-                                        simActivity.Value.Substring(1).PadLeft(item.textWidth - 1, '0'));
+                                        simActivity.Value.Substring(1).PadLeft(4, '0'));
                                 }
                                 else
                                 {
-                                    arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth, '0'));
+                                    arduinoControl.SendMessage('D', item.knobSpec[0] + simActivity.Value.PadLeft(5, '0'));
+                                }
+                            }
+                            else
+                            {
+                                if (item.simvarType == SIMVAR_TYPE.TYPE_NUMBER)
+                                {
+                                    arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth, ' '));
+                                }
+                                else
+                                {
+                                    if (dValue < 0)
+                                    {
+                                        // move the negative sign to the first place before padding with zeroes
+                                        arduinoControl.SendMessage('T', itemIDStr +
+                                            '-' +
+                                            simActivity.Value.Substring(1).PadLeft(item.textWidth - 1, '0'));
+                                    }
+                                    else
+                                    {
+                                        arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth, '0'));
+                                    }
                                 }
                             }
                         }
@@ -182,7 +203,7 @@ namespace MSFS2020_Ardunio_Cockpit
                             else
                             {
                                 // replace the color in the item definition
-                                string alt_screenItemDefinition = item.screenItemDefinition.Substring(0, 6) + item.altColor + item.screenItemDefinition.Substring(10, 3);
+                                string alt_screenItemDefinition = item.screenItemDefinition.Substring(0, 6) + item.altColor + item.screenItemDefinition.Substring(10, 3) + '*';
                                 arduinoControl.SendMessage('I', itemIDStr + alt_screenItemDefinition);
                                 arduinoControl.SendMessage('T', itemIDStr + item.altText);
                             }
@@ -195,6 +216,8 @@ namespace MSFS2020_Ardunio_Cockpit
         private void ArduinoMessageReceived(object sender, EventArgs e)
         {
             var message = (ArduinoControl.MessageEventArgs)e;
+            //!!!
+            Debug.WriteLine("R: " + message.MessageType + message.Data);
             if (!firmwareIsValid)
             {
                 // expecting proper version response before starting communications
@@ -231,9 +254,29 @@ namespace MSFS2020_Ardunio_Cockpit
                     mainWindow_ref.AppendLogMessage(message.Data);
                     break;
                 case 'K':
-                    //TODO: Complete messages from Arduino handling
-                    mainWindow_ref.AppendLogMessage(message.Data);
-                    simControl.SetDataValue("AUTOPILOT HEADING LOCK DIR", message.Data);
+                    // KNvvvvv
+                    if (message.Data.Length > 1)
+                    {
+                        int knobID = message.Data[0] - '0';
+
+                        if ((knobID >= 0) && (knobID <= 3))
+                        {
+                            if (knobToVarMapping[knobID] != -1)
+                            {
+                                PresetItem item = presetsManager.GetPresetItem(knobToVarMapping[knobID]);
+                                if (item.simEventID == -1)
+                                {
+                                    simControl.SetDataValue(item.simVariable, message.Data.Substring(1));
+                                } else {
+                                    simControl.TransmitEvent((uint)item.simEventID, (uint)Int16.Parse(message.Data.Substring(1)));
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 'S':
+                    //TODO: Complete switches Arduino handling
+                    //mainWindow_ref.AppendLogMessage(message.Data);
                     break;
                 default:
                     break;
@@ -364,10 +407,16 @@ namespace MSFS2020_Ardunio_Cockpit
             // Unsubscribe from the previous sim variables (if any)
             simControl.RemoveAllRequests();
 
+            // clear old knob mappings
+            for(int i = 0; i<4; i++)
+            {
+                knobToVarMapping[i] = -1;
+            }            
+
             // C - start configuration
             arduinoControl.SendMessage('C', presetsManager.GetPresetItemsCount().ToString("D2"));
             // B - background color
-            //arduinoControl.SendMessage('B', presetsManager.getBGColor());
+            arduinoControl.SendMessage('B', presetsManager.getBGColor());
 
             for (int i = 0; i < presetsManager.GetPresetItemsCount(); i++)
             {
@@ -375,8 +424,29 @@ namespace MSFS2020_Ardunio_Cockpit
                 string itemID = (i + 1).ToString("D2");
                 // I - definition of the items (one line per item)
                 arduinoControl.SendMessage('I', itemID + item.screenItemDefinition);
-                // T - sending the initial text value
-                arduinoControl.SendMessage('T', itemID + item.text);
+
+                if (item.knobSpec != "")
+                {
+                    // knob-bound items are initialized a bit differently
+                    int knobID = item.knobSpec[0] - '0';
+                    if ((knobID >= 0) && (knobID <= 3))
+                    {
+                        //HACK: Getting knob step from the simvar id is not implemented yet
+
+                        // record the knob to SimVar name mapping
+                        knobToVarMapping[knobID] = i;
+
+                        // KNFFmmmmmmMMMMMMCSSSS
+                        arduinoControl.SendMessage('K', item.knobSpec[0] + itemID + item.knobSpec.Substring(1) + item.knobStep);
+                        // DNVVVVV
+                        arduinoControl.SendMessage('D', item.knobSpec[0] + item.text.PadLeft(5, '0'));
+                    }
+                }
+                else
+                {
+                    // T - sending the initial text value
+                    arduinoControl.SendMessage('T', itemID + item.text);
+                }
             }
 
             // S - submit all layout changes
@@ -390,6 +460,10 @@ namespace MSFS2020_Ardunio_Cockpit
                 if (!item.simVariable.Equals(""))
                 {
                     simControl.AddRequest(item.simVariable, item.unitOfMeasure);
+                    if(!item.simEvent.Equals(""))
+                    {
+                        item.simEventID = simControl.RegisterEvent(item.simEvent);
+                    }
                 }
 
             }

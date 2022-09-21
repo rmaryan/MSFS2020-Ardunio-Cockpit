@@ -47,7 +47,9 @@ uint16_t bgColor = 0x0000;
 // Populates the screen item with properly formatted text (aligned and padded if needed)
 // Field ID starts from 1
 void FormatScreenField(uint8_t itemID, String srcString) {
+
   unsigned int len = srcString.length();
+
   // is padding needed?
   if (len < screenItems[itemID - 1].textWidth) {
     String buffer;
@@ -74,7 +76,11 @@ void FormatScreenField(uint8_t itemID, String srcString) {
       srcString.concat(buffer);
     }
   }
-
+  // is trimming needed?
+  else if(len > screenItems[itemID - 1].textWidth) {
+    // drop the leftmost characters which do not fit
+    srcString = srcString.substring(len - screenItems[itemID - 1].textWidth);
+  }
   strncpy(screenItems[itemID - 1].text, srcString.c_str(), MAX_TEXT_SIZE - 1);
 }
 

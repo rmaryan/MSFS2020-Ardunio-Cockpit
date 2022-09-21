@@ -23,7 +23,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Xml.Linq;
 
 namespace MSFSConnector
 {
@@ -35,6 +37,7 @@ namespace MSFSConnector
         private SimConnect _simConnect = null;
 
         private List<SimVar> monitoredVars;
+        private List<String> usedEvents;
 
         public const string ATC_MODEL_VAR = "ATC MODEL";
 
@@ -47,6 +50,7 @@ namespace MSFSConnector
         public SimControl()
         {
             monitoredVars = new List<SimVar>();
+            usedEvents = new List<String>();
         }
 
         public void ReceiveSimConnectMessage()
@@ -89,6 +93,7 @@ namespace MSFSConnector
                 _simConnect.Dispose();
                 _simConnect = null;
                 monitoredVars.Clear();
+                usedEvents.Clear();
             }
 
             Connected = false;
@@ -101,12 +106,14 @@ namespace MSFSConnector
 
             // Register to receive aircraft type - this is a key to choose the cockpit layout
             AddRequest(ATC_MODEL_VAR, "");
+
         }
 
         private void SimConnect_OnDisconnected(SimConnect sender, SIMCONNECT_RECV data)
         {
             Debug.WriteLine("SimConnect Disconnected");
             monitoredVars.Clear();
+            usedEvents.Clear();
             Disconnect();
         }
 
@@ -121,7 +128,7 @@ namespace MSFSConnector
             if (data.dwRequestID < monitoredVars.Count)
             {
 
-                string value = "";
+                string value;
                 if (monitoredVars[(int)data.dwRequestID].unit.Equals(""))
                 {
                     // this is a string
@@ -172,6 +179,48 @@ namespace MSFSConnector
                 SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
         }
 
+        public void SetDataValue(string simConnectVariable, string value)
+        {
+            int simvarID = monitoredVars.FindIndex(p => p.name.Equals(simConnectVariable));
+            Debug.WriteLine($"Setting Value: {simConnectVariable}({simvarID}) = '{value}'");
+            if(simvarID >= 0)
+            {
+                if(monitoredVars[simvarID].unit == "")
+                {
+                    // Send a String value
+                    Struct1 sValueStruct = new Struct1()
+                    {
+                        sValue = value
+                    };
+                    _simConnect.SetDataOnSimObject((DEFINITION)simvarID, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, sValueStruct);
+                }
+                else
+                {
+                    // Send a double value
+                    if (double.TryParse(value, NumberStyles.Any, null, out double dValue))
+                    {
+                        _simConnect.SetDataOnSimObject((DEFINITION)simvarID, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dValue);
+                    }
+                }
+            }
+        }
+
+        public int RegisterEvent(string eventName)
+        {
+            int nextEventID = usedEvents.Count;
+            Debug.WriteLine($"Registering Event: {nextEventID}:{eventName}");
+            _simConnect.MapClientEventToSimEvent((DEFINITION)nextEventID, eventName);
+            return nextEventID;
+        }
+
+        public void TransmitEvent(uint eventID, uint data)
+        {
+
+            _simConnect.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                (DEFINITION)eventID, (uint)data,
+                (DEFINITION)1, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+        }
+
         public void RemoveAllRequests()
         {
             // keep the ATC MODEL listener active
@@ -183,34 +232,8 @@ namespace MSFSConnector
                 }
                 monitoredVars.RemoveRange(1, monitoredVars.Count - 1);
             }
+            usedEvents.Clear();
         }
-
-        public void SetDataValue(string simConnectVariable, string value)
-        {
-            if (double.TryParse(value, NumberStyles.Any, null, out double dValue))
-            {
-                _simConnect.SetDataOnSimObject((DEFINITION)1, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dValue);
-            }
-
-            //if (!m_oSelectedSimvarRequest.bIsString)
-            //{
-            //    double dValue = 0.0;
-            //    if (double.TryParse(m_sSetValue, NumberStyles.Any, null, out dValue))
-            //    {
-            //        m_oSimConnect.SetDataOnSimObject(m_oSelectedSimvarRequest.eDef, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dValue);
-            //    }
-            //}
-            //else
-            //{
-            //    Struct1 sValueStruct = new Struct1()
-            //    {
-            //        sValue = m_sSetValue
-            //    };
-            //    m_oSimConnect.SetDataOnSimObject(m_oSelectedSimvarRequest.eDef, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, sValueStruct);
-            //}
-
-        }
-
 
         /**
          * Helper classes and other definitions

@@ -39,8 +39,6 @@ void setup() {
 
   // initialize the switches and knobs
   SPI.begin ();
-  Serial.begin (9600);
-  Serial.println ("Begin switch test.");
   pinMode (REG_LATCH, OUTPUT);
   digitalWrite (REG_LATCH, HIGH);
 }
@@ -55,7 +53,7 @@ void loop() {
     // encoders
     for(uint8_t i = 0; i<4; i++) {
       if(refreshKnob(i)) {
-        SendMsg("K" + i + getKnobString(i));
+        SendMsg("K" + String(i) + getKnobString(i));
       }
     }
 

@@ -94,8 +94,8 @@ void processMessage(String rawMessage)
       screenItems[itemID - 1].y = rawMessage.substring(6, 9).toInt();
       screenItems[itemID - 1].color = strtol(rawMessage.substring(9, 13).c_str(), NULL, 16);
       screenItems[itemID - 1].fontSize = rawMessage.substring(13, 14).toInt();
-      screenItems[itemID - 1].textWidth = rawMessage.substring(14, 15).toInt();
-      screenItems[itemID - 1].paddingChar = rawMessage.substring(15, 16).toInt();
+      screenItems[itemID - 1].textWidth = rawMessage.substring(14, 16).toInt();
+      screenItems[itemID - 1].paddingChar = rawMessage[16];
       if (!configurationMode) {
         DrawItem(itemID - 1);
       }
@@ -122,13 +122,13 @@ void processMessage(String rawMessage)
       break;
 
     case 'K':
-      // KNFFmmmmmmMMMMMMSSSC
-      if (rawMessage.length() != 20) {
+      // KNFFmmmmmmMMMMMMCSSSS
+      if (rawMessage.length() != 21) {
         SendMsg("EKnob definition length is incorrect. Got: " + rawMessage);
         break;
       }
 
-      knobID = rawMessage[1] - 48; // code of '0'
+      knobID = rawMessage[1] - '0';
       if (knobID > 3) {
         SendMsg("EKnob ID is incorrect. Got: " + rawMessage);
         break;
@@ -141,8 +141,9 @@ void processMessage(String rawMessage)
       }
       knobStates[knobID].min = rawMessage.substring(4, 10).toInt();
       knobStates[knobID].max = rawMessage.substring(10, 16).toInt();
-      knobStates[knobID].step = rawMessage.substring(16, 19).toInt();
-      knobStates[knobID].cycle = (rawMessage[19] == 'Y');
+      knobStates[knobID].cycle = (rawMessage[16] == 'Y');
+      knobStates[knobID].step = rawMessage.substring(17).toInt();
+
       break;
 
     case 'D':
@@ -151,7 +152,7 @@ void processMessage(String rawMessage)
         SendMsg("EKnob value length is incorrect. Got: " + rawMessage);
         break;
       }
-      knobID = rawMessage[1] - 48;
+      knobID = rawMessage[1] - '0';
       if (knobID > 3) {
         SendMsg("EKnob ID is incorrect. Got: " + rawMessage);
         break;
@@ -164,13 +165,16 @@ void processMessage(String rawMessage)
         knobStates[knobID].lastKnobPosition = 0;
         knobs[knobID].write(0);
         if (knobStates[knobID].fieldID != -1) {
-          strncpy(screenItems[knobStates[knobID].fieldID - 1].text, kValueString.c_str(), MAX_TEXT_SIZE - 1);
+
+          FormatScreenField(knobStates[knobID].fieldID, kValueString);
+          
           // in regular mode - text changes should be drawn immediatelly
           if (!configurationMode) {
             DrawItem(knobStates[knobID].fieldID - 1);
           }
         }
       }
+
       break;
 
     case 'R':

@@ -4,7 +4,7 @@
 
 This project a yet another Arduino-driven cockpit that uses inexpensive hardware components and simple configurable software components.
 
-The code is heavily based on the original SimConnect sample (SimvarWatcher).
+The code is heavily based on the original SimConnect sample [SimvarWatcher](https://docs.flightsimulator.com/html/Samples_And_Tutorials/Samples/SimvarWatcher.htm).
 
 ## Windows Sim Connector
 
@@ -54,7 +54,7 @@ In all messages, the first letter defines the message type. The ending character
 | B | Bcccc | Background color. cccc - color code string in hex. |
 | I | INNxxxyyyCCCCFWWP | Definition of the screen item. <br/>NN - item ID, starts from 1<br/> xxx,yyy - coordinates; <br/> CCCC - color code string in hex <br/> F - font size (normally 1-4)<br/>WW - field width (characters). P - padding character (if ' ' or '0' the field is right-aligned and padded with the character specified. If other value - the field is left-aligned and not padded). <br/>Example: "I01010010F81F230" |
 | T | TNNxxx... | Change field text. Can be sent outside of the configuration mode. <br/> NN - item ID, starts from 1<br/>xxx... Text to be placed in the field (all text till the command end is loaded). In configuration mode, text changes will be shown on the screen after the "S" message, together with all other layout changes. |
-| K | KNFFmmmmmmMMMMMMSSSC | Knob behavior definition. N - knob ID (0 - 3),  FF - associated screen item ID (starts from 1, the knob rotation will instantly update the associated field on the screen, if no field associated - put two spaces here '  '), mmmmmm - minimum value (can have a leading minus sign), MMMMMM - maximum value (can have a leading minus sign), SSS - step, C - if 'Y' change the value in circle (when the knob rolls bellow the minimum, the value changes to max and vise versa). Example: K102000000000359001Y  |
+| K | KNFFmmmmmmMMMMMMCSSSS | Knob behavior definition. N - knob ID (0 - 3),  FF - associated screen item ID (starts from 1, the knob rotation will instantly update the associated field on the screen, if no field associated - put two spaces here '  '), mmmmmm - minimum value (can have a leading minus sign), MMMMMM - maximum value (can have a leading minus sign), C - if 'Y' change the value in circle (when the knob rolls bellow the minimum, the value changes to max and vise versa), SSSS - change step (integer). Example: K102000000000359Y0001  |
 | D | DNVVVVV | Set the knob current value. N - knob ID (0 - 3), VVVVV - value (can have a leading minus sign. Please note - if some screen was associated with that knob - the value on the screen is also updated. No need to send a T-command. |
 | R | R | Reset the screen. Arduino will go to the initial "Waiting..." state. |
 
@@ -63,7 +63,7 @@ In all messages, the first letter defines the message type. The ending character
 | :--- | :---: | :--- |
 | M | MSFSCPx | A magic response to the ping message. x - is a protocol version. Currently 0. |
 | E | Exxxx... | Error message. xxxx... - error text. |
-| K | KNvvvvv  | Knob position change notification. N - knob ID (0-3), vvvvv - value (can be negative). |
+| K | KNv...  | Knob position change notification. N - knob ID (0-3), v... - value, up to 5 symbols (can be negative). |
 | S | SABCDEFGHIJKLMNOPQRST | Knob position change notification. A-T - switch position '1' - ON, other value - OFF. |
 
 ### Hardware

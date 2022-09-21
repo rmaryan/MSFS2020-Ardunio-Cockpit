@@ -116,7 +116,7 @@ bool refreshKnob(uint8_t knobID) {
       // cycle the value
       if (newValue < knobStates[knobID].min) {
         newValue = knobStates[knobID].max + 1 + (newValue - knobStates[knobID].min);
-      } else if (newPosition > knobStates[knobID].max) {
+      } else if (newValue > knobStates[knobID].max) {
         newValue = knobStates[knobID].min + (newValue - knobStates[knobID].max - 1);
       }
     } else {

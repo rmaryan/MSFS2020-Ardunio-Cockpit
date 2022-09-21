@@ -55,18 +55,22 @@ namespace MSFS2020_Ardunio_Cockpit
         public string screenItemDefinition = "";
         public ushort textWidth = 0;      // max width of the field
         public string simVariable; // the variable at the sim side to bind to
+        public string simEvent;    // the sim event name to use to send the item data to sim
+        public int    simEventID;     // the ID which was used to register the sim event
         public string unitOfMeasure; // foot, meter per second squared, etc
         public SIMVAR_TYPE simvarType;  // simple values are just shown on the screen, booleans have two text/color variants
         public int decimalPlaces;   // the number of decimals after the point
         public string altText;       // for boolean - text to show if value=false
         public string altColor;      // for boolean - color to use if value=false
         public string knobSpec;      // If set - associates the item with the dashboard encoder.
-                                     // Format: NmmmmmmMMMMMMSSSC
+                                     // Format: NmmmmmmMMMMMMC
                                      // N - knob ID ('0' - '3'),
                                      // mmmmmm - minimum value (can have a leading minus sign)
                                      // MMMMMM - maximum value (can have a leading minus sign)
-                                     // SSS - step, C - if 'Y' change the value in circle (when the knob rolls bellow the minumum, the value changes to max and vise versa).
-                                     // Example: 1000000000359001Y
+                                     // C - if 'Y' change the value in circle (when the knob rolls bellow the minumum, the value changes to max and vise versa).
+                                     // Example: 1000000000359Y
+        public string knobStep;      // Knob step specification. If it is parsable to integer (i.e. "0100") - this hard-coded value is taken.
+                                     // Otherwise - we'll try to get the increment from the SimVar with such name (i.e. "XMLVAR_AUTOPILOT_ALTITUDE_INCREMENT")
 
         public PresetItem(string _text,
             ushort _x,
@@ -74,13 +78,16 @@ namespace MSFS2020_Ardunio_Cockpit
             ushort _fontSize,
             ushort _textWidth = 0, // if zero - the _text length will be used
             string _color = "FFFF",
-            string _sim_variable = "", // if empty - the item is a constant text, which is never changed
+            string _sim_variable = "", // If empty - the item is a constant text, which is never changed
+                                       // Some variables are randomly unwritable. For such cases an event name should be specified after the '!'
+                                       // I.e. "NAV OBS:1!VOR1 SET" - value is taken from the "NAV OBS:1" variable and sent to sim using "VOR1 SET" event.
             string _unitOfMeasure = "", // if empty - a plain text will be assumed
             SIMVAR_TYPE _simvarType = SIMVAR_TYPE.TYPE_STRING,
             int _decimalPlaces = 0,
             string _altText = "",
             string _altColor = "",
-            string _knobSpec = ""
+            string _knobSpec = "",
+            string _knobStep = "0001"
             )
         {
             text = _text;
@@ -103,13 +110,23 @@ namespace MSFS2020_Ardunio_Cockpit
                 ((_textWidth == 0) ? (ushort)_text.Length : _textWidth).ToString("D2") +
                 padCharacter;
             textWidth = _textWidth;
-            simVariable = _sim_variable;
+            string[] simVarEvent = _sim_variable.Split('!');
+            simVariable = simVarEvent[0];
+            if(simVarEvent.Length>1)
+            {
+                simEvent = simVarEvent[1];
+            } else
+            {
+                simEvent = "";
+            }
+            simEventID = -1;
             unitOfMeasure = _unitOfMeasure;
             simvarType = _simvarType;
             decimalPlaces = _decimalPlaces;
             altText = _altText;
             altColor = _altColor;
             knobSpec = _knobSpec;
+            knobStep = _knobStep;
         }
     }
 
@@ -195,6 +212,7 @@ namespace MSFS2020_Ardunio_Cockpit
                       "22000", 20, 120, 4, 5, "FFE0",
                       "!!!"
                     ));
+                //XMLVAR_AUTOPILOT_ALTITUDE_INCREMENT - returns 100 or 1000
                 preset.presetItems.Add(new PresetItem(
                       "\x4", 160, 132, 4, 0, "FFE0",
                       "!!!"
@@ -236,7 +254,11 @@ namespace MSFS2020_Ardunio_Cockpit
                       "220", 20, 30, 4, 3, "FFE0",
                       "AUTOPILOT HEADING LOCK DIR",
                       "degrees",
-                      SIMVAR_TYPE.TYPE_P0_NUMBER
+                      SIMVAR_TYPE.TYPE_P0_NUMBER,
+                      0,
+                      "",
+                      "",
+                      "0000000000359Y" // knob specification
                     ));
                 preset.presetItems.Add(new PresetItem(
                       "\x4", 110, 42, 4, 1, "FFE0",
@@ -251,9 +273,13 @@ namespace MSFS2020_Ardunio_Cockpit
                       "CRS", 10, 100, 2, 0, "FFE0"));
                 preset.presetItems.Add(new PresetItem(
                       "120", 20, 120, 4, 3, "FFE0",
-                      "NAV OBS:1",
+                      "NAV OBS:1!VOR1_SET",
                       "degrees",
-                      SIMVAR_TYPE.TYPE_P0_NUMBER
+                      SIMVAR_TYPE.TYPE_P0_NUMBER,
+                      0,
+                      "",
+                      "",
+                      "1000000000359Y" // knob specification
                     ));
                 preset.presetItems.Add(new PresetItem(
                       "\x4", 110, 132, 4, 0, "FFE0",
@@ -279,7 +305,7 @@ namespace MSFS2020_Ardunio_Cockpit
                       "01100", 170, 30, 4, 5, "FFE0",
                       "INDICATED ALTITUDE",
                       "feet",
-                      SIMVAR_TYPE.TYPE_P0_NUMBER
+                      SIMVAR_TYPE.TYPE_NUMBER
                     ));
                 preset.presetItems.Add(new PresetItem(
                       "\x4", 310, 42, 4, 0, "FFE0",
@@ -358,7 +384,7 @@ namespace MSFS2020_Ardunio_Cockpit
                       "HEADING INDICATOR",
                       "degrees",
                       SIMVAR_TYPE.TYPE_P0_NUMBER
-                    ));
+                      ));
                 preset.presetItems.Add(new PresetItem(
                       "ALT", 10, 100, 2, 0, "FFE0"));
                 preset.presetItems.Add(new PresetItem(
