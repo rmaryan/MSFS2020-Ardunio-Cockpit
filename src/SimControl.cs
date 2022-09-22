@@ -23,9 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Xml.Linq;
 
 namespace MSFSConnector
 {
@@ -182,10 +180,9 @@ namespace MSFSConnector
         public void SetDataValue(string simConnectVariable, string value)
         {
             int simvarID = monitoredVars.FindIndex(p => p.name.Equals(simConnectVariable));
-            Debug.WriteLine($"SET: {simConnectVariable}({simvarID}) = '{value}'");
-            if(simvarID >= 0)
+            if (simvarID >= 0)
             {
-                if(monitoredVars[simvarID].unit == "")
+                if (monitoredVars[simvarID].unit == "")
                 {
                     // Send a String value
                     Struct1 sValueStruct = new Struct1()
@@ -208,8 +205,8 @@ namespace MSFSConnector
         public int RegisterEvent(string eventName)
         {
             int nextEventID = usedEvents.Count;
-            Debug.WriteLine($"RegEv: {nextEventID}:{eventName}");
             _simConnect.MapClientEventToSimEvent((DEFINITION)nextEventID, eventName);
+            usedEvents.Add(eventName);
             return nextEventID;
         }
 

@@ -87,7 +87,7 @@ namespace ArduinoConnector
         public void SendMessage(char type, string data)
         {
             //!!!
-            Debug.WriteLine("S: "+ type + data);
+            Debug.WriteLine("S: " + type + data);
             _serialPort.Write(type + data + CMD_DELIMITER);
         }
 

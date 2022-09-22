@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Collections.Generic;
 
 namespace MSFS2020_Ardunio_Cockpit
@@ -30,7 +31,7 @@ namespace MSFS2020_Ardunio_Cockpit
         TYPE_BOOLEAN  // a special processing is performed if value is 1.0 or 0.0
     };
 
-    internal class PresetItem
+    internal class ScreenFieldItem
     {
         public string text;
 
@@ -56,7 +57,7 @@ namespace MSFS2020_Ardunio_Cockpit
         public ushort textWidth = 0;      // max width of the field
         public string simVariable; // the variable at the sim side to bind to
         public string simEvent;    // the sim event name to use to send the item data to sim
-        public int    simEventID;     // the ID which was used to register the sim event
+        public int simEventID;     // the ID which was used to register the sim event
         public string unitOfMeasure; // foot, meter per second squared, etc
         public SIMVAR_TYPE simvarType;  // simple values are just shown on the screen, booleans have two text/color variants
         public int decimalPlaces;   // the number of decimals after the point
@@ -72,7 +73,7 @@ namespace MSFS2020_Ardunio_Cockpit
         public string knobStep;      // Knob step specification. If it is parsable to integer (i.e. "0100") - this hard-coded value is taken.
                                      // Otherwise - we'll try to get the increment from the SimVar with such name (i.e. "XMLVAR_AUTOPILOT_ALTITUDE_INCREMENT")
 
-        public PresetItem(string _text,
+        public ScreenFieldItem(string _text,
             ushort _x,
             ushort _y,
             ushort _fontSize,
@@ -112,10 +113,11 @@ namespace MSFS2020_Ardunio_Cockpit
             textWidth = _textWidth;
             string[] simVarEvent = _sim_variable.Split('!');
             simVariable = simVarEvent[0];
-            if(simVarEvent.Length>1)
+            if (simVarEvent.Length > 1)
             {
                 simEvent = simVarEvent[1];
-            } else
+            }
+            else
             {
                 simEvent = "";
             }
@@ -130,15 +132,57 @@ namespace MSFS2020_Ardunio_Cockpit
         }
     }
 
+    internal class SwitchDefItem
+    {
+        public string simEventOn;  // event to trigger when turned on
+        public int simEventOnID = -1;
+        public uint simEventOnValue = 0;
+        public string simEventOff; // event to trigger when turned off
+        public int simEventOffID = -1;
+        public uint simEventOffValue = 0;
+
+        /**
+         * Constructor can take name:value pair for the event definition. I.e. "RECOGNITION_LIGHTS_SET:1"
+         */
+        public void SetEvents(string _simEventOn, string _simEventOff)
+        {
+            string[] split = _simEventOn.Split(':');
+            simEventOn = split[0];
+            if (split.Length>1)
+            {
+                simEventOnValue = (uint)Int16.Parse(split[1]);
+            }
+
+            split = _simEventOff.Split(':');
+            simEventOff = split[0];
+            if (split.Length > 1)
+            {
+                simEventOffValue = (uint)Int16.Parse(split[1]);
+            }
+        }
+    }
+
     internal class CockpitPreset
     {
+        public const uint SWITCHES_COUNT = 20; // overall switches count on the dashboard
+
         public string bgColor; // dashboard background color
-        public List<PresetItem> presetItems = new List<PresetItem>();
+        public List<ScreenFieldItem> screenFieldItems = new List<ScreenFieldItem>();
+        public SwitchDefItem[] switchDefItems;
+
+        public CockpitPreset()
+        {
+            switchDefItems = new SwitchDefItem[SWITCHES_COUNT];
+            for (int i = 0; i < CockpitPreset.SWITCHES_COUNT; i++)
+            {
+                switchDefItems[i] = new SwitchDefItem();
+            }
+        }
     }
 
     internal class PresetsManager
     {
-        private CockpitPreset preset;
+        public CockpitPreset preset;
         public PresetsManager()
         {
 
@@ -157,21 +201,21 @@ namespace MSFS2020_Ardunio_Cockpit
         /// Returns the number of the preset items in the current preset
         /// </summary>
         /// <returns>items count</returns>
-        public int GetPresetItemsCount()
+        public int GetScreenFieldItemsCount()
         {
-            return (preset == null) ? 0 : preset.presetItems.Count;
+            return (preset == null) ? 0 : preset.screenFieldItems.Count;
         }
 
-        public PresetItem GetPresetItem(int itemID)
+        public ScreenFieldItem GetScreenFieldItem(int itemID)
         {
-            return preset.presetItems[itemID];
+            return preset.screenFieldItems[itemID];
         }
 
         public int GetItemIDForSimVar(string simVar)
         {
-            for (int i = 0; i < preset.presetItems.Count; i++)
+            for (int i = 0; i < preset.screenFieldItems.Count; i++)
             {
-                if (preset.presetItems[i].simVariable.Equals(simVar))
+                if (preset.screenFieldItems[i].simVariable.Equals(simVar))
                 {
                     return i;
                 }
@@ -186,60 +230,60 @@ namespace MSFS2020_Ardunio_Cockpit
             if (atc_model == "TT:ATCCOM.AC_MODEL_A20N.0.text")
             {
                 preset.bgColor = "0000";
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "SPD", 10, 10, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "220", 20, 30, 4, 3, "FFE0",
                       "!!!!"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "\x4", 110, 42, 4, 1, "FFE0",
                       "!!!"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "HDG", 190, 10, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "011", 200, 30, 4, 3, "FFE0",
                       "!!!!"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "\x4", 285, 42, 4, 0, "FFE0",
                       "!!!"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "ALT", 10, 100, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "22000", 20, 120, 4, 5, "FFE0",
                       "!!!"
                     ));
                 //XMLVAR_AUTOPILOT_ALTITUDE_INCREMENT - returns 100 or 1000
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "\x4", 160, 132, 4, 0, "FFE0",
                       "!!!"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "V/S", 190, 100, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "-----", 200, 120, 4, 5, "FFE0",
                       "!!!"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "AP", 10, 185, 2, 0, "D6BA",
                       "!!!"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "A/THR", 60, 185, 2, 0, "07E0",
                       "!!!"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "APPR", 150, 185, 2, 0, "D6BA",
                       "!!!"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "LDG GEAR", 10, 220, 2, 0, "D6BA",
                       "!!!"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "AUTO BRK: MAX", 160, 220, 2, 0, "07E0",
                       "!!!"
                     ));
@@ -248,9 +292,13 @@ namespace MSFS2020_Ardunio_Cockpit
                 if (atc_model == "Seneca V")
             {
                 preset.bgColor = "0000";
-                preset.presetItems.Add(new PresetItem(
+
+                /**
+                 * Screen fields + encoders
+                 */
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "HDG", 10, 10, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "220", 20, 30, 4, 3, "FFE0",
                       "AUTOPILOT HEADING LOCK DIR",
                       "degrees",
@@ -260,7 +308,7 @@ namespace MSFS2020_Ardunio_Cockpit
                       "",
                       "0000000000359Y" // knob specification
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "\x4", 110, 42, 4, 1, "FFE0",
                       "AUTOPILOT HEADING LOCK",
                       "Bool",
@@ -269,9 +317,9 @@ namespace MSFS2020_Ardunio_Cockpit
                       "\x4",
                       "0000"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "CRS", 10, 100, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "120", 20, 120, 4, 3, "FFE0",
                       "NAV OBS:1!VOR1_SET",
                       "degrees",
@@ -281,7 +329,7 @@ namespace MSFS2020_Ardunio_Cockpit
                       "",
                       "1000000000359Y" // knob specification
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "\x4", 110, 132, 4, 0, "FFE0",
                       "AUTOPILOT NAV1 LOCK",
                       "Bool",
@@ -290,7 +338,7 @@ namespace MSFS2020_Ardunio_Cockpit
                       "\x4",
                       "0000"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "GPS ", 20, 160, 2, 4, "07E0",
                       "GPS DRIVES NAV1",
                       "Bool",
@@ -299,15 +347,15 @@ namespace MSFS2020_Ardunio_Cockpit
                       "VLOC",
                       "07E0"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "ALT", 160, 10, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "01100", 170, 30, 4, 5, "FFE0",
                       "INDICATED ALTITUDE",
                       "feet",
                       SIMVAR_TYPE.TYPE_NUMBER
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "\x4", 310, 42, 4, 0, "FFE0",
                       "AUTOPILOT ALTITUDE LOCK",
                       "Bool",
@@ -317,9 +365,9 @@ namespace MSFS2020_Ardunio_Cockpit
                       "0000"
                     ));
 
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "V/S", 160, 100, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "     ", 170, 120, 4, 5, "FFE0",
                       "AUTOPILOT VERTICAL HOLD VAR",
                       "feet/minute",
@@ -330,7 +378,7 @@ namespace MSFS2020_Ardunio_Cockpit
                       "2-06000006000N", // knob specification NmmmmmmMMMMMMC
                       "0100"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "\x4", 310, 132, 4, 0, "FFE0",
                       "AUTOPILOT VERTICAL HOLD",
                       "Bool",
@@ -341,7 +389,7 @@ namespace MSFS2020_Ardunio_Cockpit
                     ));
 
 
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "AP", 10, 220, 2, 0, "07E0",
                       "AUTOPILOT MASTER",
                       "Bool",
@@ -350,15 +398,15 @@ namespace MSFS2020_Ardunio_Cockpit
                       "AP",
                       "D6BA"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "Flaps:", 60, 220, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "0", 130, 220, 2, 1, "FFE0",
                       "FLAPS HANDLE INDEX",
                       "number",
                       SIMVAR_TYPE.TYPE_NUMBER
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "GEAR: DOWN", 170, 220, 2, 0, "FFE0",
                       "GEAR POSITION",
                       "Bool",
@@ -367,6 +415,31 @@ namespace MSFS2020_Ardunio_Cockpit
                       "GEAR: UP  ",
                       "FFE0"
                     ));
+
+                /**
+                 * Switches definitions
+                 * BTW: some Seneca switches are strangely handled, and do not allow to change the position in the cockpit
+                 */
+                preset.switchDefItems[0].SetEvents("STROBES_ON", "STROBES_OFF");
+                preset.switchDefItems[1].SetEvents("BEACON_LIGHTS_ON", "BEACON_LIGHTS_OFF");
+                preset.switchDefItems[2].SetEvents("NAV_LIGHTS_ON", "NAV_LIGHTS_OFF");
+                preset.switchDefItems[3].SetEvents("", "");
+                preset.switchDefItems[4].SetEvents("", "");
+                preset.switchDefItems[5].SetEvents("", "");
+                preset.switchDefItems[6].SetEvents("TAXI_LIGHTS_ON", "TAXI_LIGHTS_OFF");
+                preset.switchDefItems[7].SetEvents("", "");
+                preset.switchDefItems[8].SetEvents("LANDING_LIGHTS_ON", "LANDING_LIGHTS_OFF");
+                preset.switchDefItems[9].SetEvents("", "");
+                preset.switchDefItems[10].SetEvents("GEAR_UP", "");
+                preset.switchDefItems[11].SetEvents("GEAR_DOWN", "");
+                preset.switchDefItems[12].SetEvents("AP_HDG_HOLD_ON", "");
+                preset.switchDefItems[13].SetEvents("AP_NAV1_HOLD_ON", "");
+                preset.switchDefItems[14].SetEvents("AP_VS_ON", "");
+                preset.switchDefItems[15].SetEvents("", "");
+                preset.switchDefItems[16].SetEvents("AP_HDG_HOLD_OFF", "");
+                preset.switchDefItems[17].SetEvents("AP_NAV1_HOLD_OFF", "");
+                preset.switchDefItems[18].SetEvents("AP_ALT_HOLD_ON", ""); //?AP_ALT_HOLD_ON - close
+                preset.switchDefItems[19].SetEvents("AP_APR_HOLD_ON", ""); //?
             }
             else
             {
@@ -374,39 +447,39 @@ namespace MSFS2020_Ardunio_Cockpit
                 preset.bgColor = "0000";
 
 
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "SPD", 10, 10, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "220", 20, 30, 4, 3, "FFE0",
                       "AIRSPEED INDICATED",
                       "knots",
                       SIMVAR_TYPE.TYPE_P0_NUMBER
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "HDG", 190, 10, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "011", 200, 30, 4, 3, "FFE0",
                       "HEADING INDICATOR",
                       "degrees",
                       SIMVAR_TYPE.TYPE_P0_NUMBER
                       ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "ALT", 10, 100, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "22000", 20, 120, 4, 5, "FFE0",
                       "INDICATED ALTITUDE",
                       "feet",
                       SIMVAR_TYPE.TYPE_P0_NUMBER
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "V/S", 190, 100, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "-----", 200, 120, 4, 5, "FFE0",
                       "VERTICAL SPEED",
                       "feet/minute",
                       SIMVAR_TYPE.TYPE_P0_NUMBER
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "AP", 10, 220, 2, 0, "07E0",
                       "AUTOPILOT MASTER",
                       "Bool",
@@ -415,15 +488,15 @@ namespace MSFS2020_Ardunio_Cockpit
                       "AP",
                       "D6BA"
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "Flaps:", 60, 220, 2, 0, "FFE0"));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "0", 130, 220, 2, 1, "FFE0",
                       "FLAPS HANDLE INDEX",
                       "number",
                       SIMVAR_TYPE.TYPE_NUMBER
                     ));
-                preset.presetItems.Add(new PresetItem(
+                preset.screenFieldItems.Add(new ScreenFieldItem(
                       "GEAR: DOWN", 165, 220, 2, 0, "FFE0",
                       "GEAR POSITION",
                       "Bool",

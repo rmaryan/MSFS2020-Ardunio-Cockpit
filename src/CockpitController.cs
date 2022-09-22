@@ -19,7 +19,6 @@
  */
 
 using ArduinoConnector;
-using Microsoft.FlightSimulator.SimConnect;
 using MSFSConnector;
 using System;
 using System.Diagnostics;
@@ -43,10 +42,11 @@ namespace MSFS2020_Ardunio_Cockpit
 
         // this array stores the Sim Variable names associated with the corresponding knobs
         private int[] knobToVarMapping = { -1, -1, -1, -1 };
-
         // knobs debounce time: 500 ms
         private readonly long KNOB_DEBOUNCE_TICKS = 500 * TimeSpan.TicksPerMillisecond;
-        private long[] knobLastChangeTicks = { 0, 0, 0, 0};
+        private long[] knobLastChangeTicks = { 0, 0, 0, 0 };
+
+        private char[] switchesState = new char[CockpitPreset.SWITCHES_COUNT];
 
         private readonly MainWindow mainWindow_ref;
 
@@ -134,7 +134,7 @@ namespace MSFS2020_Ardunio_Cockpit
                 int itemID = presetsManager.GetItemIDForSimVar(simActivity.Variable);
                 if (itemID >= 0)
                 {
-                    PresetItem item = presetsManager.GetPresetItem(itemID);
+                    ScreenFieldItem item = presetsManager.GetScreenFieldItem(itemID);
                     string itemIDStr = (itemID + 1).ToString("D2");
                     if (item.simvarType == SIMVAR_TYPE.TYPE_STRING)
                     {
@@ -234,7 +234,7 @@ namespace MSFS2020_Ardunio_Cockpit
                     firmwareIsValid = true;
 
                     // do we have any preset available for activation?
-                    if (presetsManager.GetPresetItemsCount() > 0)
+                    if (presetsManager.GetScreenFieldItemsCount() > 0)
                     {
                         ActivateCockpitPreset();
                     }
@@ -271,11 +271,13 @@ namespace MSFS2020_Ardunio_Cockpit
                         {
                             if (knobToVarMapping[knobID] != -1)
                             {
-                                PresetItem item = presetsManager.GetPresetItem(knobToVarMapping[knobID]);
+                                ScreenFieldItem item = presetsManager.GetScreenFieldItem(knobToVarMapping[knobID]);
                                 if (item.simEventID == -1)
                                 {
                                     simControl.SetDataValue(item.simVariable, message.Data.Substring(1));
-                                } else {
+                                }
+                                else
+                                {
                                     simControl.TransmitEvent((uint)item.simEventID, (uint)Int16.Parse(message.Data.Substring(1)));
                                 }
                                 knobLastChangeTicks[knobID] = DateTime.Now.Ticks;
@@ -283,9 +285,30 @@ namespace MSFS2020_Ardunio_Cockpit
                         }
                     }
                     break;
-                case 'S':
-                    //TODO: Complete switches Arduino handling
-                    //mainWindow_ref.AppendLogMessage(message.Data);
+                case 'S':                    
+                    for (int i = 0; i < CockpitPreset.SWITCHES_COUNT; i++)
+                    {
+                        if (switchesState[i] != message.Data[i])
+                        {
+                            if (switchesState[i] == '1')
+                            {
+                                if (presetsManager.preset.switchDefItems[i].simEventOffID > -1)
+                                {
+                                    simControl.TransmitEvent((uint)presetsManager.preset.switchDefItems[i].simEventOffID, presetsManager.preset.switchDefItems[i].simEventOffValue);
+                                }
+                            }
+                            else
+                            if (message.Data[i] == '1')
+                            {
+                                if (presetsManager.preset.switchDefItems[i].simEventOnID > -1)
+                                {
+                                    simControl.TransmitEvent((uint)presetsManager.preset.switchDefItems[i].simEventOnID, presetsManager.preset.switchDefItems[i].simEventOnValue);
+                                }
+                            }
+                            switchesState[i] = message.Data[i];
+                        }
+                    }
+
                     break;
                 default:
                     break;
@@ -417,19 +440,19 @@ namespace MSFS2020_Ardunio_Cockpit
             simControl.RemoveAllRequests();
 
             // clear old knob mappings
-            for(int i = 0; i<4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 knobToVarMapping[i] = -1;
-            }            
+            }
 
             // C - start configuration
-            arduinoControl.SendMessage('C', presetsManager.GetPresetItemsCount().ToString("D2"));
+            arduinoControl.SendMessage('C', presetsManager.GetScreenFieldItemsCount().ToString("D2"));
             // B - background color
             arduinoControl.SendMessage('B', presetsManager.getBGColor());
 
-            for (int i = 0; i < presetsManager.GetPresetItemsCount(); i++)
+            for (int i = 0; i < presetsManager.GetScreenFieldItemsCount(); i++)
             {
-                PresetItem item = presetsManager.GetPresetItem(i);
+                ScreenFieldItem item = presetsManager.GetScreenFieldItem(i);
                 string itemID = (i + 1).ToString("D2");
                 // I - definition of the items (one line per item)
                 arduinoControl.SendMessage('I', itemID + item.screenItemDefinition);
@@ -462,19 +485,32 @@ namespace MSFS2020_Ardunio_Cockpit
             arduinoControl.SendMessage('S', "");
 
             // having the layout processed - register for the sim events
-            for (int i = 0; i < presetsManager.GetPresetItemsCount(); i++)
+            for (int i = 0; i < presetsManager.GetScreenFieldItemsCount(); i++)
             {
-                PresetItem item = presetsManager.GetPresetItem(i);
+                ScreenFieldItem item = presetsManager.GetScreenFieldItem(i);
                 // request the variable values monitoring in the sim
                 if (!item.simVariable.Equals(""))
                 {
                     simControl.AddRequest(item.simVariable, item.unitOfMeasure);
-                    if(!item.simEvent.Equals(""))
+                    if (!item.simEvent.Equals(""))
                     {
                         item.simEventID = simControl.RegisterEvent(item.simEvent);
                     }
                 }
 
+            }
+
+            // register the switches events
+            for (int i = 0; i < CockpitPreset.SWITCHES_COUNT; i++)
+            {
+                if (!presetsManager.preset.switchDefItems[i].simEventOn.Equals(""))
+                {
+                    presetsManager.preset.switchDefItems[i].simEventOnID = simControl.RegisterEvent(presetsManager.preset.switchDefItems[i].simEventOn);
+                }
+                if (!presetsManager.preset.switchDefItems[i].simEventOff.Equals(""))
+                {
+                    presetsManager.preset.switchDefItems[i].simEventOffID = simControl.RegisterEvent(presetsManager.preset.switchDefItems[i].simEventOff);
+                }
             }
         }
     }
