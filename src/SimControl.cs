@@ -182,7 +182,7 @@ namespace MSFSConnector
         public void SetDataValue(string simConnectVariable, string value)
         {
             int simvarID = monitoredVars.FindIndex(p => p.name.Equals(simConnectVariable));
-            Debug.WriteLine($"Setting Value: {simConnectVariable}({simvarID}) = '{value}'");
+            Debug.WriteLine($"SET: {simConnectVariable}({simvarID}) = '{value}'");
             if(simvarID >= 0)
             {
                 if(monitoredVars[simvarID].unit == "")
@@ -208,7 +208,7 @@ namespace MSFSConnector
         public int RegisterEvent(string eventName)
         {
             int nextEventID = usedEvents.Count;
-            Debug.WriteLine($"Registering Event: {nextEventID}:{eventName}");
+            Debug.WriteLine($"RegEv: {nextEventID}:{eventName}");
             _simConnect.MapClientEventToSimEvent((DEFINITION)nextEventID, eventName);
             return nextEventID;
         }

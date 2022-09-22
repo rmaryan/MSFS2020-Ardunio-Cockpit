@@ -323,7 +323,12 @@ namespace MSFS2020_Ardunio_Cockpit
                       "     ", 170, 120, 4, 5, "FFE0",
                       "AUTOPILOT VERTICAL HOLD VAR",
                       "feet/minute",
-                      SIMVAR_TYPE.TYPE_NUMBER
+                      SIMVAR_TYPE.TYPE_NUMBER,
+                      0,
+                      "",
+                      "",
+                      "2-06000006000N", // knob specification NmmmmmmMMMMMMC
+                      "0100"
                     ));
                 preset.presetItems.Add(new PresetItem(
                       "\x4", 310, 132, 4, 0, "FFE0",

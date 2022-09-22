@@ -44,44 +44,55 @@ bool configurationMode = false;
 
 uint16_t bgColor = 0x0000;
 
+// Sets the screen field text, cutting it if needed
+void SetFieldText(uint8_t itemID, const char* srcString) {
+  // if the source string is too long, the rightmost part will be trimmed
+  strncpy(screenItems[itemID - 1].text, srcString, screenItems[itemID - 1].textWidth);
+  screenItems[itemID - 1].text[screenItems[itemID - 1].textWidth] = 0;
+}
+
 // Populates the screen item with properly formatted text (aligned and padded if needed)
 // Field ID starts from 1
-void FormatScreenField(uint8_t itemID, String srcString) {
+void SetScreenDecimalField(uint8_t itemID, long value) {
+  const uint8_t textWidth = screenItems[itemID - 1].textWidth;
+  char buffer[MAX_TEXT_SIZE];
 
-  unsigned int len = srcString.length();
+  ltoa(value, buffer, 10);
+
+  uint8_t len = strlen(buffer);
+  uint8_t padsCount = textWidth - len;
 
   // is padding needed?
-  if (len < screenItems[itemID - 1].textWidth) {
-    String buffer;
-    char paddingChar = screenItems[itemID - 1].paddingChar;
-    if(paddingChar != '0') {
-      paddingChar = ' ';
-    }
-    
-    buffer.reserve((screenItems[itemID - 1].textWidth - len));
-    for (int i = 0; i < (screenItems[itemID - 1].textWidth - len); i++) {
-      buffer = buffer + paddingChar;
+  if (padsCount > 0) {
+    // set the new termination 0
+    buffer[textWidth] = 0;
+
+    // move all characters to the end of the field
+    for (uint8_t i = 0; i < len; i++) {
+      buffer[textWidth - 1 - i] = buffer[len - 1 - i];
     }
 
-    if (screenItems[itemID - 1].paddingChar == ' ') {
-      srcString = buffer + srcString;
-    } else if (screenItems[itemID - 1].paddingChar == '0') {
-      if(srcString[0] == '-') {
-        srcString = '-' + buffer + srcString.substring(1);
-      } else {
-        srcString = buffer + srcString;
+    char paddingChar = screenItems[itemID - 1].paddingChar;
+    if (paddingChar != '0') {
+      paddingChar = ' ';
+      for (uint8_t i = 0; i < padsCount; i++) {
+        buffer[i] = paddingChar;
       }
     } else {
-      // align left, add the missing spaces
-      srcString.concat(buffer);
+      // in fields, padded with '0' place a negative sign first
+      uint8_t j = 0;
+      if (value < 0) {
+        buffer[0] = '-';
+        j++;
+        padsCount++;
+      }
+      for (; j < padsCount; j++) {
+        buffer[j] = paddingChar;
+      }
     }
   }
-  // is trimming needed?
-  else if(len > screenItems[itemID - 1].textWidth) {
-    // drop the leftmost characters which do not fit
-    srcString = srcString.substring(len - screenItems[itemID - 1].textWidth);
-  }
-  strncpy(screenItems[itemID - 1].text, srcString.c_str(), MAX_TEXT_SIZE - 1);
+
+  SetFieldText(itemID, buffer);
 }
 
 void DrawItem(uint8_t i) {

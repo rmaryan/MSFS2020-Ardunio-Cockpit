@@ -113,7 +113,7 @@ void processMessage(String rawMessage)
         break;
       }
 
-      FormatScreenField(itemID, rawMessage.substring(3, 3 + screenItems[itemID - 1].textWidth));
+      SetFieldText(itemID, rawMessage.substring(3, 3 + screenItems[itemID - 1].textWidth).c_str());
 
       // in regular mode - text changes should be drawn immediatelly
       if (!configurationMode) {
@@ -166,7 +166,7 @@ void processMessage(String rawMessage)
         knobs[knobID].write(0);
         if (knobStates[knobID].fieldID != -1) {
 
-          FormatScreenField(knobStates[knobID].fieldID, kValueString);
+          SetScreenDecimalField(knobStates[knobID].fieldID, kValue);
           
           // in regular mode - text changes should be drawn immediatelly
           if (!configurationMode) {

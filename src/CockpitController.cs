@@ -44,6 +44,10 @@ namespace MSFS2020_Ardunio_Cockpit
         // this array stores the Sim Variable names associated with the corresponding knobs
         private int[] knobToVarMapping = { -1, -1, -1, -1 };
 
+        // knobs debounce time: 500 ms
+        private readonly long KNOB_DEBOUNCE_TICKS = 500 * TimeSpan.TicksPerMillisecond;
+        private long[] knobLastChangeTicks = { 0, 0, 0, 0};
+
         private readonly MainWindow mainWindow_ref;
 
         // the connection persistance thread
@@ -150,15 +154,19 @@ namespace MSFS2020_Ardunio_Cockpit
                         {
                             if (item.knobSpec != "")
                             {
-                                if (dValue < 0)
+                                // debounce the knobs changes, ignore value changes from simvar for some time
+                                if ((DateTime.Now.Ticks - knobLastChangeTicks[item.knobSpec[0] - '0']) > KNOB_DEBOUNCE_TICKS)
                                 {
-                                    arduinoControl.SendMessage('D', item.knobSpec[0] +
-                                        '-' +
-                                        simActivity.Value.Substring(1).PadLeft(4, '0'));
-                                }
-                                else
-                                {
-                                    arduinoControl.SendMessage('D', item.knobSpec[0] + simActivity.Value.PadLeft(5, '0'));
+                                    if (dValue < 0)
+                                    {
+                                        arduinoControl.SendMessage('D', item.knobSpec[0] +
+                                            '-' +
+                                            simActivity.Value.Substring(1).PadLeft(4, '0'));
+                                    }
+                                    else
+                                    {
+                                        arduinoControl.SendMessage('D', item.knobSpec[0] + simActivity.Value.PadLeft(5, '0'));
+                                    }
                                 }
                             }
                             else
@@ -270,6 +278,7 @@ namespace MSFS2020_Ardunio_Cockpit
                                 } else {
                                     simControl.TransmitEvent((uint)item.simEventID, (uint)Int16.Parse(message.Data.Substring(1)));
                                 }
+                                knobLastChangeTicks[knobID] = DateTime.Now.Ticks;
                             }
                         }
                     }

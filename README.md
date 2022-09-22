@@ -16,6 +16,8 @@ MSFS connection is done through the SimConnect API.
 
 Start the Cockpit Connector application. Once Arduino is connected to USB and the MSFS is started, click on the "Connect" box - the indicators to the right will show if the connection to the Arduino and MSFS were successful.
 
+![Windows Sim Connector App](extra/pc_connector)
+
 As long as "Connect" box is checked, the application will try reconnecting to the simulator and Arduino.
 
 Once the connections are established, Sim Connector checks the aircraft model which is currently loaded in MSFS, and tries to find the most appropriate dashboard layout for it.

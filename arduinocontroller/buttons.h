@@ -132,7 +132,7 @@ bool refreshKnob(uint8_t knobID) {
 
     // show the new value on the screen
     if (knobStates[knobID].fieldID != -1) {
-      FormatScreenField(knobStates[knobID].fieldID, String(newValue));
+      SetScreenDecimalField(knobStates[knobID].fieldID, newValue);
 
       // in regular mode - text changes should be drawn immediatelly
       if (!configurationMode) {
