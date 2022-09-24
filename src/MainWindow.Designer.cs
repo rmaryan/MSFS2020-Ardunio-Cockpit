@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.ComLabel = new System.Windows.Forms.Label();
             this.COMComboBox = new System.Windows.Forms.ComboBox();
@@ -144,9 +145,9 @@
             this.ClientSize = new System.Drawing.Size(521, 387);
             this.Controls.Add(this.LogTextBox);
             this.Controls.Add(this.flowLayoutPanel2);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainWindow";
-            this.ShowIcon = false;
             this.Text = "MSFS2020 Ardunio Cockpit Connector";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
             this.Load += new System.EventHandler(this.MainWindow_Load);
