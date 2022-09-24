@@ -33,7 +33,7 @@ MCUFRIEND_kbv tft;
 
 // the screen configuration array
 struct ScreenItemDefinition {
-  char text[MAX_TEXT_SIZE];
+  char text[MAX_TEXT_SIZE] = "";
   uint16_t x, y, color, fontSize, textWidth;
   char paddingChar;
 };
@@ -58,7 +58,6 @@ void SetScreenDecimalField(uint8_t itemID, long value) {
   char buffer[MAX_TEXT_SIZE];
 
   ltoa(value, buffer, 10);
-
   uint8_t len = strlen(buffer);
   uint8_t padsCount = textWidth - len;
 
@@ -91,7 +90,6 @@ void SetScreenDecimalField(uint8_t itemID, long value) {
       }
     }
   }
-
   SetFieldText(itemID, buffer);
 }
 

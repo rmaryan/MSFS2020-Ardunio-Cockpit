@@ -134,10 +134,10 @@ namespace MSFS2020_Ardunio_Cockpit
 
     internal class SwitchDefItem
     {
-        public string simEventOn;  // event to trigger when turned on
+        public string simEventOn = "";  // event to trigger when turned on
         public int simEventOnID = -1;
         public uint simEventOnValue = 0;
-        public string simEventOff; // event to trigger when turned off
+        public string simEventOff = ""; // event to trigger when turned off
         public int simEventOffID = -1;
         public uint simEventOffValue = 0;
 
@@ -388,7 +388,6 @@ namespace MSFS2020_Ardunio_Cockpit
                       "0000"
                     ));
 
-
                 preset.screenFieldItems.Add(new ScreenFieldItem(
                       "AP", 10, 220, 2, 0, "07E0",
                       "AUTOPILOT MASTER",
@@ -420,6 +419,7 @@ namespace MSFS2020_Ardunio_Cockpit
                  * Switches definitions
                  * BTW: some Seneca switches are strangely handled, and do not allow to change the position in the cockpit
                  */
+
                 preset.switchDefItems[0].SetEvents("STROBES_ON", "STROBES_OFF");
                 preset.switchDefItems[1].SetEvents("BEACON_LIGHTS_ON", "BEACON_LIGHTS_OFF");
                 preset.switchDefItems[2].SetEvents("NAV_LIGHTS_ON", "NAV_LIGHTS_OFF");

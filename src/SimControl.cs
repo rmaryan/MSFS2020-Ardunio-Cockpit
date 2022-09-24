@@ -152,6 +152,8 @@ namespace MSFSConnector
 
         public void AddRequest(string simConnectVariable, string simConnectUnit)
         {
+            if (_simConnect == null) return;
+
             int nextID = monitoredVars.Count;
             monitoredVars.Add(new SimVar(simConnectVariable, simConnectUnit));
 
