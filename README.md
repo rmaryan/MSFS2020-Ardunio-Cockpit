@@ -1,3 +1,8 @@
+  <img src="extra/MSFS2020-Ardunio-Cockpit.png"
+       alt="Application Logo"
+       width="256px"
+       align="right"
+  />
 # Microsoft Flight Simulator Arduino-driven Cockpit
 
 ## Introduction
