@@ -90,10 +90,10 @@ In all messages, the first letter defines the message type. The ending character
 
  All the electronic elements are soldered to the prototype PCB boards. Arduino MEGA with the screen shield comes separately.
  
- The box for the dashboard was printed on 3D printer. See the design [here](/extra/box design).
+ The box for the dashboard was printed on 3D printer. See the design [here](/extra/box_design).
 
- ![Front Panel](extra/box design/front_panel.png)
- ![Base Panel](extra/box design/base_panel.png)
+ ![Front Panel](extra/box_design/front_panel.png)
+ ![Base Panel](extra/box_design/base_panel.png)
 
 ### Schematics
 
