@@ -29,6 +29,8 @@ Once the connections are established, Sim Connector checks the aircraft model wh
 
 Dashboard layouts are currently hard-coded in the C# code. Later we plan to implement dynamic layouts loading from the plain text files.
 
+*Currently only Seneca V preset is functioning.*
+
 ## Dashboard Layout
 
 ![Dashboard layout](extra/dashboard.png)
@@ -77,12 +79,21 @@ In all messages, the first letter defines the message type. The ending character
 
  * [Arduino Mega 2560](http://www.banggood.com/Mega2560-R3-ATmega2560-16AU-Control-Board-With-USB-Cable-For-Arduino-p-73020.html?p=M908156347868201609Y)
  * [2.8 TFT screen shield (320x240)](https://www.banggood.com/2_8-Inch-TFT-LCD-Shield-Touch-Display-Screen-Module-Geekcreit-for-Arduino-products-that-work-with-official-Arduino-boards-p-989697.html?p=M908156347868201609Y)
+ * [Prototype PCB Boards](https://www.banggood.com/Geekcreit-40pcs-FR-4-2_54mm-Double-Side-Prototype-PCB-Printed-Circuit-Board-p-995732.html?p=M908156347868201609Y)
  * 6x three-position switches
  * 4x rotary encoders with a push button
  * 4x pushbuttons
  * 3x 74HC165 shift registers. We need them to avoid wasting too many Arduino pins for switches connections. Check for more details on [Gammon Forum](http://www.gammon.com.au/forum/?id=11979). 
  * 3x 0.1 uF condensers to stabilize power for the register chips
  * 28x 10-15 kOhm resistors to pull up the switches
+
+
+ All the electronic elements are soldered to the prototype PCB boards. Arduino MEGA with the screen shield comes separately.
+ 
+ The box for the dashboard was printed on 3D printer. See the design [here](/extra/box design).
+
+ ![Front Panel](extra/box design/front_panel.png)
+ ![Base Panel](extra/box design/base_panel.png)
 
 ### Schematics
 
