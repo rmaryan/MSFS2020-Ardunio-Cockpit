@@ -34,6 +34,8 @@ namespace MSFS2020_Ardunio_Cockpit
     public partial class MainWindow : Form
     {
         private CockpitController cockpitController = null;
+        private const uint SWITCH_LABELS_COUNT = 14;
+        private Label[] switchLabels;
 
         public MainWindow()
         {
@@ -67,6 +69,22 @@ namespace MSFS2020_Ardunio_Cockpit
         private void MainWindow_Load(object sender, EventArgs e)
         {
             GenerateSerialPortsList();
+
+            switchLabels = new Label[SWITCH_LABELS_COUNT];
+            switchLabels[0] = labelSW01;
+            switchLabels[1] = labelSW23;
+            switchLabels[2] = labelSW45;
+            switchLabels[3] = labelSW67;
+            switchLabels[4] = labelSW89;
+            switchLabels[5] = labelSW1011;
+            switchLabels[6] = labelENC1;
+            switchLabels[7] = labelENC2;
+            switchLabels[8] = labelENC3;
+            switchLabels[9] = labelENC4;
+            switchLabels[10] = labelSW16;
+            switchLabels[11] = labelSW17;
+            switchLabels[12] = labelSW18;
+            switchLabels[13] = labelSW19;
 
             cockpitController = new CockpitController(this);
         }
@@ -158,6 +176,16 @@ namespace MSFS2020_Ardunio_Cockpit
                         SimConnectedLabel.Text = "  MSFS";
                         SimConnectedLabel.ForeColor = SystemColors.ControlText;
                         break;
+                }
+            }));
+        }
+        public void SetSwitchLabels(string[] switchLabelText)
+        {
+            LogTextBox.Invoke(new MethodInvoker(delegate
+            {
+                for(int i=0; i< SWITCH_LABELS_COUNT; i++)
+                {
+                    switchLabels[i].Text = switchLabelText[i];
                 }
             }));
         }

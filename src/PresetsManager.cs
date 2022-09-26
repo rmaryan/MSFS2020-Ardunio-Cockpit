@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MSFS2020_Ardunio_Cockpit
 {
@@ -182,10 +183,47 @@ namespace MSFS2020_Ardunio_Cockpit
 
     internal class PresetsManager
     {
+        private string[] initialPresetSwitchLabels = { "SW 0/1","SW 2/3","SW 4/5","SW 6/7","SW 8/9","SW 10/11",
+            "ENC 1 / SW 12","ENC 2 / SW 13","ENC 3 / SW 14","ENC 4 / SW 15","SW 16","SW 17","SW 18","SW 19"
+        };
+        private string[] presetSwitchLabels = new string[14];
+        private Dictionary<string, string> SIMVAR_TO_TITLE_MAP = new Dictionary<string, string>();
+
+        private string _niceTitle(string key)
+        {
+            if (!SIMVAR_TO_TITLE_MAP.TryGetValue(key, out string result))
+            {
+                result = key;
+            }
+            return result;
+        }
+
         public CockpitPreset preset;
         public PresetsManager()
         {
-
+            // initialize the mapping between the Sim Var names and human-readable titles
+            SIMVAR_TO_TITLE_MAP.Add("AUTOPILOT HEADING LOCK DIR", "AP HDG");
+            SIMVAR_TO_TITLE_MAP.Add("NAV OBS:1!VOR1_SET", "AP CRS");
+            SIMVAR_TO_TITLE_MAP.Add("AUTOPILOT VERTICAL HOLD VAR", "AP V/S");
+            SIMVAR_TO_TITLE_MAP.Add("STROBES_ON", "STRB ON");
+            SIMVAR_TO_TITLE_MAP.Add("STROBES_OFF", "STRB OFF");
+            SIMVAR_TO_TITLE_MAP.Add("BEACON_LIGHTS_ON", "BCN ON");
+            SIMVAR_TO_TITLE_MAP.Add("BEACON_LIGHTS_OFF", "BCN OFF");
+            SIMVAR_TO_TITLE_MAP.Add("NAV_LIGHTS_ON", "NAV ON");
+            SIMVAR_TO_TITLE_MAP.Add("NAV_LIGHTS_OFF", "NAV OFF");
+            SIMVAR_TO_TITLE_MAP.Add("TAXI_LIGHTS_ON", "TAXI ON");
+            SIMVAR_TO_TITLE_MAP.Add("TAXI_LIGHTS_OFF", "TAXI OFF");
+            SIMVAR_TO_TITLE_MAP.Add("LANDING_LIGHTS_ON", "LDG ON");
+            SIMVAR_TO_TITLE_MAP.Add("LANDING_LIGHTS_OFF", "LDG OFF");
+            SIMVAR_TO_TITLE_MAP.Add("GEAR_UP", "GEAR UP");
+            SIMVAR_TO_TITLE_MAP.Add("GEAR_DOWN", "GEAR DOWN");
+            SIMVAR_TO_TITLE_MAP.Add("AP_HDG_HOLD_ON", "AP HDG LOCK");
+            SIMVAR_TO_TITLE_MAP.Add("AP_NAV1_HOLD_ON", "AP NAV LOCK");
+            SIMVAR_TO_TITLE_MAP.Add("AP_VS_ON", "AP V/S LOCK");
+            SIMVAR_TO_TITLE_MAP.Add("AP_HDG_HOLD_OFF", "AP HDG UNLOCK");
+            SIMVAR_TO_TITLE_MAP.Add("AP_NAV1_HOLD_OFF", "AP NAV UNLOCK");
+            SIMVAR_TO_TITLE_MAP.Add("AP_ALT_HOLD_ON", "AP ALT HOLD");
+            SIMVAR_TO_TITLE_MAP.Add("AP_APR_HOLD_ON", "AP APPR ON");
         }
 
         /// <summary>
@@ -221,6 +259,22 @@ namespace MSFS2020_Ardunio_Cockpit
                 }
             }
             return -1;
+        }
+
+        public string[] GetPresetSwitchLabels()
+        {
+            if (preset == null)
+            {
+                return initialPresetSwitchLabels;
+            } else
+            {
+                return presetSwitchLabels;
+            }            
+        }
+
+        public void DeactivatePreset()
+        {
+            preset = null;
         }
 
         public void BuildPresetForAircraft(string atc_model)
@@ -505,6 +559,35 @@ namespace MSFS2020_Ardunio_Cockpit
                       "GEAR: UP  ",
                       "FFE0"
                     ));
+            }
+
+            // generate the main window form labels
+            
+            // 3-positions switches
+            for(int i=0; i< 6; i++)
+            {
+                presetSwitchLabels[i] = _niceTitle(preset.switchDefItems[i*2].simEventOn) + '\n' +
+                    _niceTitle(preset.switchDefItems[i * 2].simEventOff) + '\n' +
+                    _niceTitle(preset.switchDefItems[i * 2 + 1].simEventOff) + '\n' +
+                    _niceTitle(preset.switchDefItems[i * 2 + 1].simEventOn);
+            }
+
+            // pushbuttons
+            for(int i = 6; i< 14; i++)
+            {
+                presetSwitchLabels[i] = _niceTitle(preset.switchDefItems[i + 6].simEventOn) + '\n' +
+                    _niceTitle(preset.switchDefItems[i + 6].simEventOff);
+            }
+
+            // knobs
+            for (int i = 0; i < preset.screenFieldItems.Count; i++)
+            {
+                if (!preset.screenFieldItems[i].knobSpec.Equals(""))
+                {
+                    int knobID = preset.screenFieldItems[i].knobSpec[0] - '0';
+                    presetSwitchLabels[knobID + 6] = _niceTitle(preset.screenFieldItems[i].simVariable) + "\n\n" +
+                        presetSwitchLabels[knobID + 6];
+                }
             }
         }
     }

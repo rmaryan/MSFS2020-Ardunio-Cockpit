@@ -37,6 +37,7 @@
             this.SerialConnectedLabel = new System.Windows.Forms.Label();
             this.SimConnectedLabel = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.LogTextBox = new System.Windows.Forms.TextBox();
             this.switchesTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.labelSW1011 = new System.Windows.Forms.Label();
             this.labelSW67 = new System.Windows.Forms.Label();
@@ -66,7 +67,6 @@
             this.labelSW17 = new System.Windows.Forms.Label();
             this.labelSW18 = new System.Windows.Forms.Label();
             this.labelSW19 = new System.Windows.Forms.Label();
-            this.LogTextBox = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel2.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -100,7 +100,7 @@
             this.flowLayoutPanel2.Margin = new System.Windows.Forms.Padding(5);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Padding = new System.Windows.Forms.Padding(5);
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(918, 47);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(896, 47);
             this.flowLayoutPanel2.TabIndex = 1;
             this.flowLayoutPanel2.WrapContents = false;
             // 
@@ -177,8 +177,22 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 47);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(918, 350);
+            this.panel1.Size = new System.Drawing.Size(896, 350);
             this.panel1.TabIndex = 14;
+            // 
+            // LogTextBox
+            // 
+            this.LogTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.LogTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LogTextBox.Location = new System.Drawing.Point(0, 148);
+            this.LogTextBox.Margin = new System.Windows.Forms.Padding(0);
+            this.LogTextBox.MinimumSize = new System.Drawing.Size(150, 150);
+            this.LogTextBox.Multiline = true;
+            this.LogTextBox.Name = "LogTextBox";
+            this.LogTextBox.ReadOnly = true;
+            this.LogTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.LogTextBox.Size = new System.Drawing.Size(896, 202);
+            this.LogTextBox.TabIndex = 15;
             // 
             // switchesTableLayoutPanel
             // 
@@ -233,13 +247,13 @@
             this.switchesTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64F));
             this.switchesTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64F));
             this.switchesTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.switchesTableLayoutPanel.Size = new System.Drawing.Size(918, 148);
+            this.switchesTableLayoutPanel.Size = new System.Drawing.Size(896, 148);
             this.switchesTableLayoutPanel.TabIndex = 14;
             // 
             // labelSW1011
             // 
             this.labelSW1011.AutoSize = true;
-            this.labelSW1011.Location = new System.Drawing.Point(300, 64);
+            this.labelSW1011.Location = new System.Drawing.Point(294, 64);
             this.labelSW1011.Name = "labelSW1011";
             this.labelSW1011.Size = new System.Drawing.Size(57, 13);
             this.labelSW1011.TabIndex = 20;
@@ -257,7 +271,7 @@
             // labelSW45
             // 
             this.labelSW45.AutoSize = true;
-            this.labelSW45.Location = new System.Drawing.Point(300, 0);
+            this.labelSW45.Location = new System.Drawing.Point(294, 0);
             this.labelSW45.Name = "labelSW45";
             this.labelSW45.Size = new System.Drawing.Size(45, 13);
             this.labelSW45.TabIndex = 18;
@@ -266,7 +280,7 @@
             // labelSW89
             // 
             this.labelSW89.AutoSize = true;
-            this.labelSW89.Location = new System.Drawing.Point(170, 64);
+            this.labelSW89.Location = new System.Drawing.Point(167, 64);
             this.labelSW89.Name = "labelSW89";
             this.labelSW89.Size = new System.Drawing.Size(45, 13);
             this.labelSW89.TabIndex = 17;
@@ -275,7 +289,7 @@
             // labelSW23
             // 
             this.labelSW23.AutoSize = true;
-            this.labelSW23.Location = new System.Drawing.Point(170, 0);
+            this.labelSW23.Location = new System.Drawing.Point(167, 0);
             this.labelSW23.Name = "labelSW23";
             this.labelSW23.Size = new System.Drawing.Size(45, 13);
             this.labelSW23.TabIndex = 16;
@@ -285,7 +299,7 @@
             // 
             this.pictureBox14.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox14.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources.pushb;
-            this.pictureBox14.Location = new System.Drawing.Point(786, 67);
+            this.pictureBox14.Location = new System.Drawing.Point(768, 67);
             this.pictureBox14.Name = "pictureBox14";
             this.pictureBox14.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.pictureBox14.Size = new System.Drawing.Size(31, 58);
@@ -297,7 +311,7 @@
             // 
             this.pictureBox13.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox13.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources.pushb;
-            this.pictureBox13.Location = new System.Drawing.Point(656, 67);
+            this.pictureBox13.Location = new System.Drawing.Point(641, 67);
             this.pictureBox13.Name = "pictureBox13";
             this.pictureBox13.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.pictureBox13.Size = new System.Drawing.Size(31, 58);
@@ -309,7 +323,7 @@
             // 
             this.pictureBox12.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox12.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources.pushb;
-            this.pictureBox12.Location = new System.Drawing.Point(526, 67);
+            this.pictureBox12.Location = new System.Drawing.Point(514, 67);
             this.pictureBox12.Name = "pictureBox12";
             this.pictureBox12.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.pictureBox12.Size = new System.Drawing.Size(31, 58);
@@ -321,7 +335,7 @@
             // 
             this.pictureBox11.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox11.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources.pushb;
-            this.pictureBox11.Location = new System.Drawing.Point(393, 67);
+            this.pictureBox11.Location = new System.Drawing.Point(384, 67);
             this.pictureBox11.Name = "pictureBox11";
             this.pictureBox11.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this.pictureBox11.Size = new System.Drawing.Size(34, 58);
@@ -333,7 +347,7 @@
             // 
             this.pictureBox10.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox10.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources.encoder;
-            this.pictureBox10.Location = new System.Drawing.Point(786, 3);
+            this.pictureBox10.Location = new System.Drawing.Point(768, 3);
             this.pictureBox10.Name = "pictureBox10";
             this.pictureBox10.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.pictureBox10.Size = new System.Drawing.Size(31, 58);
@@ -345,7 +359,7 @@
             // 
             this.pictureBox9.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox9.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources.encoder;
-            this.pictureBox9.Location = new System.Drawing.Point(656, 3);
+            this.pictureBox9.Location = new System.Drawing.Point(641, 3);
             this.pictureBox9.Name = "pictureBox9";
             this.pictureBox9.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.pictureBox9.Size = new System.Drawing.Size(31, 58);
@@ -357,7 +371,7 @@
             // 
             this.pictureBox8.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox8.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources.encoder;
-            this.pictureBox8.Location = new System.Drawing.Point(526, 3);
+            this.pictureBox8.Location = new System.Drawing.Point(514, 3);
             this.pictureBox8.Name = "pictureBox8";
             this.pictureBox8.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.pictureBox8.Size = new System.Drawing.Size(31, 58);
@@ -369,7 +383,7 @@
             // 
             this.pictureBox7.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox7.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources.encoder;
-            this.pictureBox7.Location = new System.Drawing.Point(393, 3);
+            this.pictureBox7.Location = new System.Drawing.Point(384, 3);
             this.pictureBox7.Name = "pictureBox7";
             this.pictureBox7.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this.pictureBox7.Size = new System.Drawing.Size(34, 58);
@@ -381,7 +395,7 @@
             // 
             this.pictureBox6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox6.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources._3switch;
-            this.pictureBox6.Location = new System.Drawing.Point(263, 67);
+            this.pictureBox6.Location = new System.Drawing.Point(257, 67);
             this.pictureBox6.Name = "pictureBox6";
             this.pictureBox6.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.pictureBox6.Size = new System.Drawing.Size(31, 58);
@@ -393,7 +407,7 @@
             // 
             this.pictureBox5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox5.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources._3switch;
-            this.pictureBox5.Location = new System.Drawing.Point(133, 67);
+            this.pictureBox5.Location = new System.Drawing.Point(130, 67);
             this.pictureBox5.Name = "pictureBox5";
             this.pictureBox5.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.pictureBox5.Size = new System.Drawing.Size(31, 58);
@@ -405,7 +419,7 @@
             // 
             this.pictureBox4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox4.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources._3switch;
-            this.pictureBox4.Location = new System.Drawing.Point(263, 3);
+            this.pictureBox4.Location = new System.Drawing.Point(257, 3);
             this.pictureBox4.Name = "pictureBox4";
             this.pictureBox4.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.pictureBox4.Size = new System.Drawing.Size(31, 58);
@@ -417,7 +431,7 @@
             // 
             this.pictureBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox3.Image = global::MSFS2020_Ardunio_Cockpit.Properties.Resources._3switch;
-            this.pictureBox3.Location = new System.Drawing.Point(133, 3);
+            this.pictureBox3.Location = new System.Drawing.Point(130, 3);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.pictureBox3.Size = new System.Drawing.Size(31, 58);
@@ -461,7 +475,7 @@
             // labelENC1
             // 
             this.labelENC1.AutoSize = true;
-            this.labelENC1.Location = new System.Drawing.Point(433, 0);
+            this.labelENC1.Location = new System.Drawing.Point(424, 0);
             this.labelENC1.Name = "labelENC1";
             this.labelENC1.Size = new System.Drawing.Size(82, 13);
             this.labelENC1.TabIndex = 21;
@@ -470,7 +484,7 @@
             // labelENC2
             // 
             this.labelENC2.AutoSize = true;
-            this.labelENC2.Location = new System.Drawing.Point(563, 0);
+            this.labelENC2.Location = new System.Drawing.Point(551, 0);
             this.labelENC2.Name = "labelENC2";
             this.labelENC2.Size = new System.Drawing.Size(82, 13);
             this.labelENC2.TabIndex = 22;
@@ -479,7 +493,7 @@
             // labelENC3
             // 
             this.labelENC3.AutoSize = true;
-            this.labelENC3.Location = new System.Drawing.Point(693, 0);
+            this.labelENC3.Location = new System.Drawing.Point(678, 0);
             this.labelENC3.Name = "labelENC3";
             this.labelENC3.Size = new System.Drawing.Size(82, 13);
             this.labelENC3.TabIndex = 23;
@@ -488,7 +502,7 @@
             // labelENC4
             // 
             this.labelENC4.AutoSize = true;
-            this.labelENC4.Location = new System.Drawing.Point(823, 0);
+            this.labelENC4.Location = new System.Drawing.Point(805, 0);
             this.labelENC4.Name = "labelENC4";
             this.labelENC4.Size = new System.Drawing.Size(82, 13);
             this.labelENC4.TabIndex = 24;
@@ -497,7 +511,7 @@
             // labelSW16
             // 
             this.labelSW16.AutoSize = true;
-            this.labelSW16.Location = new System.Drawing.Point(433, 64);
+            this.labelSW16.Location = new System.Drawing.Point(424, 64);
             this.labelSW16.Name = "labelSW16";
             this.labelSW16.Size = new System.Drawing.Size(40, 13);
             this.labelSW16.TabIndex = 25;
@@ -506,7 +520,7 @@
             // labelSW17
             // 
             this.labelSW17.AutoSize = true;
-            this.labelSW17.Location = new System.Drawing.Point(563, 64);
+            this.labelSW17.Location = new System.Drawing.Point(551, 64);
             this.labelSW17.Name = "labelSW17";
             this.labelSW17.Size = new System.Drawing.Size(40, 13);
             this.labelSW17.TabIndex = 26;
@@ -515,7 +529,7 @@
             // labelSW18
             // 
             this.labelSW18.AutoSize = true;
-            this.labelSW18.Location = new System.Drawing.Point(693, 64);
+            this.labelSW18.Location = new System.Drawing.Point(678, 64);
             this.labelSW18.Name = "labelSW18";
             this.labelSW18.Size = new System.Drawing.Size(40, 13);
             this.labelSW18.TabIndex = 27;
@@ -524,31 +538,17 @@
             // labelSW19
             // 
             this.labelSW19.AutoSize = true;
-            this.labelSW19.Location = new System.Drawing.Point(823, 64);
+            this.labelSW19.Location = new System.Drawing.Point(805, 64);
             this.labelSW19.Name = "labelSW19";
             this.labelSW19.Size = new System.Drawing.Size(40, 13);
             this.labelSW19.TabIndex = 28;
             this.labelSW19.Text = "SW 19";
             // 
-            // LogTextBox
-            // 
-            this.LogTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.LogTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LogTextBox.Location = new System.Drawing.Point(0, 148);
-            this.LogTextBox.Margin = new System.Windows.Forms.Padding(0);
-            this.LogTextBox.MinimumSize = new System.Drawing.Size(150, 150);
-            this.LogTextBox.Multiline = true;
-            this.LogTextBox.Name = "LogTextBox";
-            this.LogTextBox.ReadOnly = true;
-            this.LogTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.LogTextBox.Size = new System.Drawing.Size(918, 202);
-            this.LogTextBox.TabIndex = 15;
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(918, 397);
+            this.ClientSize = new System.Drawing.Size(896, 397);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.flowLayoutPanel2);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

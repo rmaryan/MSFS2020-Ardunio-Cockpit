@@ -31,6 +31,8 @@ Dashboard layouts are currently hard-coded in the C# code. Later we plan to impl
 
 *Currently only Seneca V preset is functioning.*
 
+To make it easier remembering all the switches designations an active preset actions mapping is also shown on the screen.
+
 ## Dashboard Layout
 
 ![Dashboard layout](extra/dashboard.png)

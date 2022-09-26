@@ -91,6 +91,10 @@ namespace MSFS2020_Ardunio_Cockpit
                 // disconnect everything
                 DisconnectAll();
 
+                // deactivate the current preset
+                presetsManager.DeactivatePreset();
+                mainWindow_ref.SetSwitchLabels(presetsManager.GetPresetSwitchLabels());
+
                 // gray out the indicators
                 mainWindow_ref.SetSerialConnectedLabel(CONNECTED_STATE.STATE_INACTIVE);
                 mainWindow_ref.SetMSFSConnectedLabel(CONNECTED_STATE.STATE_INACTIVE);
@@ -512,6 +516,8 @@ namespace MSFS2020_Ardunio_Cockpit
                     presetsManager.preset.switchDefItems[i].simEventOffID = simControl.RegisterEvent(presetsManager.preset.switchDefItems[i].simEventOff);
                 }
             }
+
+            mainWindow_ref.SetSwitchLabels(presetsManager.GetPresetSwitchLabels());
         }
     }
 }
