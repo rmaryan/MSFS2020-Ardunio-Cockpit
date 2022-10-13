@@ -79,11 +79,12 @@ Encoder knobs[4] = {
 };
 
 struct KnobState {
-  long knobValue = 0; // this is the actual in-sim variable value
+  double knobValue = 0; // this is the actual in-sim variable value
   long lastKnobPosition = -99; // this is the actual last known knob "hardware" position
   int8_t fieldID = -1;
-  long min, max;
-  uint16_t step;
+  double min, max;
+  uint8_t decimalPlaces = 0;
+  double step;
   bool cycle;
 } knobStates[4];
 
@@ -110,7 +111,7 @@ bool refreshKnob(uint8_t knobID) {
     knobChanged = true;
 
     // calculate the new value based on knob ticks
-    long newValue = knobStates[knobID].knobValue + (newPosition - knobStates[knobID].lastKnobPosition) * knobStates[knobID].step;
+    double newValue = knobStates[knobID].knobValue + (newPosition - knobStates[knobID].lastKnobPosition) * knobStates[knobID].step;
 
     if (knobStates[knobID].cycle) {
       // cycle the value
@@ -132,7 +133,7 @@ bool refreshKnob(uint8_t knobID) {
 
     // show the new value on the screen
     if (knobStates[knobID].fieldID != -1) {
-      SetScreenDecimalField(knobStates[knobID].fieldID, newValue);
+      SetScreenDecimalField(knobStates[knobID].fieldID, newValue, knobStates[knobID].decimalPlaces);
 
       // in regular mode - text changes should be drawn immediatelly
       if (!configurationMode) {

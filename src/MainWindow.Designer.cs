@@ -36,6 +36,7 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.SerialConnectedLabel = new System.Windows.Forms.Label();
             this.SimConnectedLabel = new System.Windows.Forms.Label();
+            this.presetNameLabel = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.LogTextBox = new System.Windows.Forms.TextBox();
             this.switchesTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -95,6 +96,7 @@
             this.flowLayoutPanel2.Controls.Add(this.COMComboBox);
             this.flowLayoutPanel2.Controls.Add(this.ConnectCheckBox);
             this.flowLayoutPanel2.Controls.Add(this.flowLayoutPanel1);
+            this.flowLayoutPanel2.Controls.Add(this.presetNameLabel);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel2.Margin = new System.Windows.Forms.Padding(5);
@@ -169,6 +171,16 @@
             this.SimConnectedLabel.Size = new System.Drawing.Size(42, 13);
             this.SimConnectedLabel.TabIndex = 1;
             this.SimConnectedLabel.Text = "  MSFS";
+            // 
+            // presetNameLabel
+            // 
+            this.presetNameLabel.AutoSize = true;
+            this.presetNameLabel.Location = new System.Drawing.Point(392, 15);
+            this.presetNameLabel.Margin = new System.Windows.Forms.Padding(10, 10, 5, 10);
+            this.presetNameLabel.Name = "presetNameLabel";
+            this.presetNameLabel.Padding = new System.Windows.Forms.Padding(50, 0, 0, 0);
+            this.presetNameLabel.Size = new System.Drawing.Size(50, 13);
+            this.presetNameLabel.TabIndex = 9;
             // 
             // panel1
             // 
@@ -624,6 +636,7 @@
         private System.Windows.Forms.Label labelSW17;
         private System.Windows.Forms.Label labelSW18;
         private System.Windows.Forms.Label labelSW19;
+        private System.Windows.Forms.Label presetNameLabel;
     }
 }
 

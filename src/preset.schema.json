@@ -1,0 +1,87 @@
+{
+  "$schema": "preset.schema.json",
+  "type": "object",
+  "properties": {
+    "presetName": {
+      "type": "string"
+    },
+    "aircraftName": {
+      "type": "string"
+    },
+    "bgColor": {
+      "type": "string"
+    },
+    "screenFieldItems": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ScreenFieldItem"
+      }
+    },
+    "switchDefItems": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/SwitchDefItem"
+      }
+    }
+  },
+  "definitions": {
+    "ScreenFieldItem": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "screenItemDefinition": {
+          "type": "string"
+        },
+        "textWidth": {
+          "type": "integer"
+        },
+        "simVariable": {
+          "type": "string"
+        },
+        "simEvent": {
+          "type": "string"
+        },
+        "unitOfMeasure": {
+          "type": "string"
+        },
+        "simvarType": {
+          "type": "integer"
+        },
+        "decimalPlaces": {
+          "type": "integer"
+        },
+        "altText": {
+          "type": "string"
+        },
+        "altColor": {
+          "type": "string"
+        },
+        "knobSpec": {
+          "type": "string"
+        },
+        "knobStep": {
+          "type": "string"
+        }
+      }
+    },
+    "SwitchDefItem": {
+      "type": "object",
+      "properties": {
+        "simEventOn": {
+          "type": "string"
+        },
+        "simEventOnValue": {
+          "type": "integer"
+        },
+        "simEventOff": {
+          "type": "string"
+        },
+        "simEventOffValue": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

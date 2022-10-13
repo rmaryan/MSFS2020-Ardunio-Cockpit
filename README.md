@@ -41,6 +41,12 @@ We use 6 three-position switches (SW1-SW12), 4 rotary encoders (ENC1 - ENC4) wit
 
 2.8 TFT screen on the right side is used to show the instrument indications.
 
+## Presets Definition
+
+All layout presets are stored as JSON files in the "presets" folder.
+
+Please note - for the KOHLSMAN controls we assume either "millibars" or "inHg" are used as a unit of measure.
+
 ## Arduino Firmware
 
 ### Serial Connection Protocol
@@ -65,7 +71,7 @@ In all messages, the first letter defines the message type. The ending character
 | B | Bcccc | Background color. cccc - color code string in hex. |
 | I | INNxxxyyyCCCCFWWP | Definition of the screen item. <br/>NN - item ID, starts from 1<br/> xxx,yyy - coordinates; <br/> CCCC - color code string in hex <br/> F - font size (normally 1-4)<br/>WW - field width (characters). P - padding character (if ' ' or '0' the field is right-aligned and padded with the character specified. If other value - the field is left-aligned and not padded). <br/>Example: "I01010010F81F230" |
 | T | TNNxxx... | Change field text. Can be sent outside of the configuration mode. <br/> NN - item ID, starts from 1<br/>xxx... Text to be placed in the field (all text till the command end is loaded). In configuration mode, text changes will be shown on the screen after the "S" message, together with all other layout changes. |
-| K | KNFFmmmmmmMMMMMMCSSSS | Knob behavior definition. N - knob ID (0 - 3),  FF - associated screen item ID (starts from 1, the knob rotation will instantly update the associated field on the screen, if no field associated - put two spaces here '  '), mmmmmm - minimum value (can have a leading minus sign), MMMMMM - maximum value (can have a leading minus sign), C - if 'Y' change the value in circle (when the knob rolls bellow the minimum, the value changes to max and vise versa), SSSS - change step (integer). Example: K102000000000359Y0001  |
+| K | KNFFmmmmmmMMMMMMCDSSSS | Knob behavior definition. N - knob ID (0 - 3),  FF - associated screen item ID (starts from 1, the knob rotation will instantly update the associated field on the screen, if no field associated - put two spaces here '  '), mmmmmm - minimum value (can have a leading minus sign), MMMMMM - maximum value (can have a leading minus sign), C - if 'Y' change the value in circle (when the knob rolls bellow the minimum, the value changes to max and vise versa), D - number of digits after decimal points, SSSS - change step (integer). Example: K102000000000359Y00001  |
 | D | DNVVVVV | Set the knob current value. N - knob ID (0 - 3), VVVVV - value (can have a leading minus sign. Please note - if some screen was associated with that knob - the value on the screen is also updated. No need to send a T-command. |
 | R | R | Reset the screen. Arduino will go to the initial "Waiting..." state. |
 
@@ -76,6 +82,12 @@ In all messages, the first letter defines the message type. The ending character
 | E | Exxxx... | Error message. xxxx... - error text. |
 | K | KNv...  | Knob position change notification. N - knob ID (0-3), v... - value, up to 5 symbols (can be negative). |
 | S | SABCDEFGHIJKLMNOPQRST | Knob position change notification. A-T - switch position '1' - ON, other value - OFF. |
+
+#### Used Arduino libraries
+
+ * [Adafruit GFX](https://github.com/adafruit/Adafruit-GFX-Library)
+ * [MCUFRIEND_kbv](https://github.com/prenticedavid/MCUFRIEND_kbv)
+ * [Encoder](https://github.com/PaulStoffregen/Encoder)
 
 ### Hardware
 

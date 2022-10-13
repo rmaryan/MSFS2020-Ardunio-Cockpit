@@ -53,40 +53,28 @@ void SetFieldText(uint8_t itemID, const char* srcString) {
 
 // Populates the screen item with properly formatted text (aligned and padded if needed)
 // Field ID starts from 1
-void SetScreenDecimalField(uint8_t itemID, long value) {
-  const uint8_t textWidth = screenItems[itemID - 1].textWidth;
-  char buffer[MAX_TEXT_SIZE];
+void SetScreenDecimalField(uint8_t itemID, double value, uint8_t decimalPlaces) {
+  char buffer[MAX_TEXT_SIZE + 1] = "";
 
-  ltoa(value, buffer, 10);
-  uint8_t len = strlen(buffer);
-  uint8_t padsCount = textWidth - len;
+  // snprintf does not work with floats???!!!
 
-  // is padding needed?
-  if (padsCount > 0) {
-    // set the new termination 0
-    buffer[textWidth] = 0;
+  dtostrf(value, screenItems[itemID - 1].textWidth, decimalPlaces, buffer);
 
-    // move all characters to the end of the field
-    for (uint8_t i = 0; i < len; i++) {
-      buffer[textWidth - 1 - i] = buffer[len - 1 - i];
+  // for zero-padded fields need to play a bit
+  if(screenItems[itemID - 1].paddingChar == '0') {
+    uint8_t pos = 0;
+
+    // move the leading minus to the first place if needed
+    if(value < 0) {
+      buffer[0] = '-';
+      pos = 1;
     }
 
-    char paddingChar = screenItems[itemID - 1].paddingChar;
-    if (paddingChar != '0') {
-      paddingChar = ' ';
-      for (uint8_t i = 0; i < padsCount; i++) {
-        buffer[i] = paddingChar;
-      }
-    } else {
-      // in fields, padded with '0' place a negative sign first
-      uint8_t j = 0;
-      if (value < 0) {
-        buffer[0] = '-';
-        j++;
-        padsCount++;
-      }
-      for (; j < padsCount; j++) {
-        buffer[j] = paddingChar;
+    for(uint8_t i = pos; i<screenItems[itemID - 1].textWidth; i++) {
+      if((buffer[i] == ' ') || (buffer[i] == '-')) {
+        buffer[i] = '0';
+      } else {
+        break;
       }
     }
   }

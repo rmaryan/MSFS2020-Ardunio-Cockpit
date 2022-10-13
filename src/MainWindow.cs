@@ -19,7 +19,9 @@
  */
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace MSFS2020_Ardunio_Cockpit
@@ -135,6 +137,11 @@ namespace MSFS2020_Ardunio_Cockpit
         public void AppendLogMessage(string message)
         {
             LogTextBox.Invoke(new MethodInvoker(delegate { LogTextBox.AppendText($"{message}{Environment.NewLine}"); }));
+        }
+
+        public void SetPresetName(string name)
+        {
+            LogTextBox.Invoke(new MethodInvoker(delegate { presetNameLabel.Text = name; }));
         }
 
         public void SetSerialConnectedLabel(CONNECTED_STATE state)

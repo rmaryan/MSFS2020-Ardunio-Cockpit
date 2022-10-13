@@ -196,7 +196,7 @@ namespace MSFSConnector
                 else
                 {
                     // Send a double value
-                    if (double.TryParse(value, NumberStyles.Any, null, out double dValue))
+                    if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dValue))
                     {
                         _simConnect.SetDataOnSimObject((DEFINITION)simvarID, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dValue);
                     }
@@ -206,6 +206,8 @@ namespace MSFSConnector
 
         public int RegisterEvent(string eventName)
         {
+            if (_simConnect == null) return -1;
+
             int nextEventID = usedEvents.Count;
             _simConnect.MapClientEventToSimEvent((DEFINITION)nextEventID, eventName);
             usedEvents.Add(eventName);
@@ -216,7 +218,7 @@ namespace MSFSConnector
         {
 
             _simConnect.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                (DEFINITION)eventID, (uint)data,
+                (DEFINITION)eventID, data,
                 (DEFINITION)1, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
         }
 

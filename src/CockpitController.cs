@@ -20,8 +20,11 @@
 
 using ArduinoConnector;
 using MSFSConnector;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -122,10 +125,13 @@ namespace MSFS2020_Ardunio_Cockpit
 
             if (simActivity.Variable.Equals(SimControl.ATC_MODEL_VAR))
             {
-                mainWindow_ref.AppendLogMessage($"Loading preset for: {simActivity.Value}");
-
                 // A new aircraft was selected in the sim. We need to reload the cockpit layout
-                presetsManager.BuildPresetForAircraft(simActivity.Value);
+                presetsManager.EmergePresetForAircraft(simActivity.Value);
+
+                mainWindow_ref.Invoke(new MethodInvoker(delegate
+                {
+                    mainWindow_ref.SetPresetName(presetsManager.GetPresetName());
+                }));
 
                 // feed the preset to Arduino if it is ready
                 if (arduinoControl.Connected() && firmwareIsValid)
@@ -139,7 +145,7 @@ namespace MSFS2020_Ardunio_Cockpit
                 if (itemID >= 0)
                 {
                     ScreenFieldItem item = presetsManager.GetScreenFieldItem(itemID);
-                    string itemIDStr = (itemID + 1).ToString("D2");
+                    string itemIDStr = (itemID + 1).ToString("D2");                    
                     if (item.simvarType == SIMVAR_TYPE.TYPE_STRING)
                     {
                         arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth));
@@ -151,8 +157,10 @@ namespace MSFS2020_Ardunio_Cockpit
                         double dValue = 0;
                         try
                         {
-                            dValue = Convert.ToDouble(simActivity.Value);
-                            simActivity.Value = Math.Round(dValue, item.decimalPlaces).ToString();
+                            if (double.TryParse(simActivity.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out dValue))
+                            {
+                                simActivity.Value = Math.Round(dValue, item.decimalPlaces).ToString();
+                            }
                         }
                         finally
                         {
@@ -228,7 +236,7 @@ namespace MSFS2020_Ardunio_Cockpit
         private void ArduinoMessageReceived(object sender, EventArgs e)
         {
             var message = (ArduinoControl.MessageEventArgs)e;
-            //!!!
+
             Debug.WriteLine("R: " + message.MessageType + message.Data);
             if (!firmwareIsValid)
             {
@@ -282,7 +290,31 @@ namespace MSFS2020_Ardunio_Cockpit
                                 }
                                 else
                                 {
-                                    simControl.TransmitEvent((uint)item.simEventID, (uint)Int16.Parse(message.Data.Substring(1)));
+                                    uint value = 0;
+                                    Double d = 0.0;
+                                    if(!Double.TryParse(message.Data.Substring(1), NumberStyles.Float, CultureInfo.InvariantCulture, out d))
+                                    {
+                                        // malformed number
+                                        break;
+                                    }
+                                    
+                                    // a separate hack for KOHLSMAN_SET
+                                    // we assume it is 
+                                    if (item.simEvent.Equals("KOHLSMAN_SET"))
+                                    {
+                                        if(item.unitOfMeasure == "millibars")
+                                        {
+                                            value = (uint)(d * 16);
+                                        } else
+                                        {
+                                            value = (uint)(d * 541.8224);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        value = (uint)d;
+                                    }
+                                    simControl.TransmitEvent((uint)item.simEventID, value);
                                 }
                                 knobLastChangeTicks[knobID] = DateTime.Now.Ticks;
                             }
@@ -296,17 +328,19 @@ namespace MSFS2020_Ardunio_Cockpit
                         {
                             if (switchesState[i] == '1')
                             {
-                                if (presetsManager.preset.switchDefItems[i].simEventOffID > -1)
+                                int eventOFFID = presetsManager.GetSwitchEventOFFID(i);
+                                if (eventOFFID > -1)
                                 {
-                                    simControl.TransmitEvent((uint)presetsManager.preset.switchDefItems[i].simEventOffID, presetsManager.preset.switchDefItems[i].simEventOffValue);
+                                    simControl.TransmitEvent((uint)eventOFFID, presetsManager.GetSwitchEventOFFValue(i));
                                 }
                             }
                             else
                             if (message.Data[i] == '1')
                             {
-                                if (presetsManager.preset.switchDefItems[i].simEventOnID > -1)
+                                int eventONID = presetsManager.GetSwitchEventONID(i);
+                                if (eventONID > -1)
                                 {
-                                    simControl.TransmitEvent((uint)presetsManager.preset.switchDefItems[i].simEventOnID, presetsManager.preset.switchDefItems[i].simEventOnValue);
+                                    simControl.TransmitEvent((uint)eventONID, presetsManager.GetSwitchEventONValue(i));
                                 }
                             }
                             switchesState[i] = message.Data[i];
@@ -452,7 +486,7 @@ namespace MSFS2020_Ardunio_Cockpit
             // C - start configuration
             arduinoControl.SendMessage('C', presetsManager.GetScreenFieldItemsCount().ToString("D2"));
             // B - background color
-            arduinoControl.SendMessage('B', presetsManager.getBGColor());
+            arduinoControl.SendMessage('B', presetsManager.GetBGColor());
 
             for (int i = 0; i < presetsManager.GetScreenFieldItemsCount(); i++)
             {
@@ -472,8 +506,8 @@ namespace MSFS2020_Ardunio_Cockpit
                         // record the knob to SimVar name mapping
                         knobToVarMapping[knobID] = i;
 
-                        // KNFFmmmmmmMMMMMMCSSSS
-                        arduinoControl.SendMessage('K', item.knobSpec[0] + itemID + item.knobSpec.Substring(1) + item.knobStep);
+                        // KNFFmmmmmmMMMMMMCDSSSS
+                        arduinoControl.SendMessage('K', item.knobSpec[0] + itemID + item.knobSpec.Substring(1) + item.decimalPlaces + item.knobStep);
                         // DNVVVVV
                         arduinoControl.SendMessage('D', item.knobSpec[0] + item.text.PadLeft(5, '0'));
                     }
@@ -507,17 +541,21 @@ namespace MSFS2020_Ardunio_Cockpit
             // register the switches events
             for (int i = 0; i < CockpitPreset.SWITCHES_COUNT; i++)
             {
-                if (!presetsManager.preset.switchDefItems[i].simEventOn.Equals(""))
+                string eventON = presetsManager.GetSwitchEventON(i);
+                string eventOFF = presetsManager.GetSwitchEventOFF(i);
+                if (!eventON.Equals(""))
                 {
-                    presetsManager.preset.switchDefItems[i].simEventOnID = simControl.RegisterEvent(presetsManager.preset.switchDefItems[i].simEventOn);
+                    presetsManager.SetSwitchEventONID(i, simControl.RegisterEvent(eventON));
                 }
-                if (!presetsManager.preset.switchDefItems[i].simEventOff.Equals(""))
+                if (!eventOFF.Equals(""))
                 {
-                    presetsManager.preset.switchDefItems[i].simEventOffID = simControl.RegisterEvent(presetsManager.preset.switchDefItems[i].simEventOff);
+                    presetsManager.SetSwitchEventOFFID(i, simControl.RegisterEvent(eventOFF));
                 }
             }
 
             mainWindow_ref.SetSwitchLabels(presetsManager.GetPresetSwitchLabels());
+
+            //!!!Debug.WriteLine(JsonConvert.SerializeObject(presetsManager.preset));
         }
     }
 }

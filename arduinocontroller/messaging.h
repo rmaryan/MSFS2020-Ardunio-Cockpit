@@ -35,7 +35,7 @@ void processMessage(String rawMessage)
   uint8_t itemID = 0;
   uint8_t knobID = 0;
   String kValueString;
-  long kValue;
+  double kValue;
 
   switch (rawMessage[0]) {
     case 'P':
@@ -122,8 +122,8 @@ void processMessage(String rawMessage)
       break;
 
     case 'K':
-      // KNFFmmmmmmMMMMMMCSSSS
-      if (rawMessage.length() != 21) {
+      // KNFFmmmmmmMMMMMMCDSSSS
+      if (rawMessage.length() != 22) {
         SendMsg("EKnob definition length is incorrect. Got: " + rawMessage);
         break;
       }
@@ -139,10 +139,11 @@ void processMessage(String rawMessage)
         // no valid mapping was provided, let's mark this knob as unlinked to the scren field
         knobStates[knobID].fieldID = -1;
       }
-      knobStates[knobID].min = rawMessage.substring(4, 10).toInt();
-      knobStates[knobID].max = rawMessage.substring(10, 16).toInt();
+      knobStates[knobID].min = rawMessage.substring(4, 10).toDouble();
+      knobStates[knobID].max = rawMessage.substring(10, 16).toDouble();
       knobStates[knobID].cycle = (rawMessage[16] == 'Y');
-      knobStates[knobID].step = rawMessage.substring(17).toInt();
+      knobStates[knobID].decimalPlaces = rawMessage[17] - '0';
+      knobStates[knobID].step = rawMessage.substring(18).toDouble();
 
       break;
 
@@ -159,14 +160,14 @@ void processMessage(String rawMessage)
       }
       kValueString = rawMessage.substring(2);
       kValueString.trim();
-      kValue = kValueString.toInt();
+      kValue = kValueString.toDouble();
       if (knobStates[knobID].knobValue != kValue) {
         knobStates[knobID].knobValue = kValue;
         knobStates[knobID].lastKnobPosition = 0;
         knobs[knobID].write(0);
         if (knobStates[knobID].fieldID != -1) {
 
-          SetScreenDecimalField(knobStates[knobID].fieldID, kValue);
+          SetScreenDecimalField(knobStates[knobID].fieldID, kValue, knobStates[knobID].decimalPlaces);
           
           // in regular mode - text changes should be drawn immediatelly
           if (!configurationMode) {
