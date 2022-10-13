@@ -1,4 +1,5 @@
 {
+  "$schema": "../preset.schema.json",
   "presetName": "Default",
   "aircraftName": "Default",
   "bgColor": "0000",

@@ -1,4 +1,5 @@
 {
+  "$schema": "../preset.schema.json",
   "presetName": "PA34T SENECA V",
   "aircraftName": "Seneca V",
   "bgColor": "0000",
@@ -15,7 +16,7 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "888",
@@ -43,7 +44,7 @@
       "altText": "\u0004",
       "altColor": "0000",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "CRS",
@@ -57,7 +58,7 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "888",
@@ -85,7 +86,7 @@
       "altText": "\u0004",
       "altColor": "0000",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "GPS ",
@@ -99,7 +100,7 @@
       "altText": "VLOC",
       "altColor": "07E0",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "ALT",
@@ -113,7 +114,7 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "00000",
@@ -127,7 +128,7 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "\u0004",
@@ -141,7 +142,7 @@
       "altText": "\u0004",
       "altColor": "0000",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "V/S",
@@ -155,10 +156,10 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
-      "text": "     ",
+      "text": "    0",
       "screenItemDefinition": "170100FFE0405 ",
       "textWidth": 5,
       "simVariable": "AUTOPILOT VERTICAL HOLD VAR",
@@ -183,7 +184,7 @@
       "altText": "\u0004",
       "altColor": "0000",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "QNH",
@@ -197,11 +198,11 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "29.92",
-      "screenItemDefZinition": "170170FFE0405 ",
+      "screenItemDefinition": "170170FFE0405 ",
       "textWidth": 5,
       "simVariable": "KOHLSMAN SETTING HG",
       "simEvent": "KOHLSMAN_SET",
@@ -225,7 +226,7 @@
       "altText": "AP",
       "altColor": "D6BA",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "Flaps:",
@@ -239,7 +240,7 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "0",
@@ -253,7 +254,7 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "GEAR: DOWN",
@@ -267,7 +268,7 @@
       "altText": "GEAR: UP  ",
       "altColor": "FFE0",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     }
   ],
   "switchDefItems": [

@@ -145,7 +145,7 @@ namespace MSFS2020_Ardunio_Cockpit
                 if (itemID >= 0)
                 {
                     ScreenFieldItem item = presetsManager.GetScreenFieldItem(itemID);
-                    string itemIDStr = (itemID + 1).ToString("D2");                    
+                    string itemIDStr = (itemID + 1).ToString("D2");
                     if (item.simvarType == SIMVAR_TYPE.TYPE_STRING)
                     {
                         arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth));
@@ -153,53 +153,48 @@ namespace MSFS2020_Ardunio_Cockpit
                     else
                     if ((item.simvarType == SIMVAR_TYPE.TYPE_NUMBER) || (item.simvarType == SIMVAR_TYPE.TYPE_P0_NUMBER))
                     {
+
                         // round the value first
-                        double dValue = 0;
-                        try
-                        {
-                            if (double.TryParse(simActivity.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out dValue))
-                            {
-                                simActivity.Value = Math.Round(dValue, item.decimalPlaces).ToString();
-                            }
+                        if (double.TryParse(simActivity.Value, NumberStyles.Float, null, out double dValue))
+                        {                            
+                            simActivity.Value = Math.Round(dValue, item.decimalPlaces).ToString();
                         }
-                        finally
+
+                        if (item.knobSpec != "")
                         {
-                            if (item.knobSpec != "")
+                            // debounce the knobs changes, ignore value changes from simvar for some time
+                            if ((DateTime.Now.Ticks - knobLastChangeTicks[item.knobSpec[0] - '0']) > KNOB_DEBOUNCE_TICKS)
                             {
-                                // debounce the knobs changes, ignore value changes from simvar for some time
-                                if ((DateTime.Now.Ticks - knobLastChangeTicks[item.knobSpec[0] - '0']) > KNOB_DEBOUNCE_TICKS)
+                                if (dValue < 0)
                                 {
-                                    if (dValue < 0)
-                                    {
-                                        arduinoControl.SendMessage('D', item.knobSpec[0] +
-                                            '-' +
-                                            simActivity.Value.Substring(1).PadLeft(4, '0'));
-                                    }
-                                    else
-                                    {
-                                        arduinoControl.SendMessage('D', item.knobSpec[0] + simActivity.Value.PadLeft(5, '0'));
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (item.simvarType == SIMVAR_TYPE.TYPE_NUMBER)
-                                {
-                                    arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth, ' '));
+                                    arduinoControl.SendMessage('D', item.knobSpec[0] +
+                                        '-' +
+                                        simActivity.Value.Substring(1).PadLeft(4, '0'));
                                 }
                                 else
                                 {
-                                    if (dValue < 0)
-                                    {
-                                        // move the negative sign to the first place before padding with zeroes
-                                        arduinoControl.SendMessage('T', itemIDStr +
-                                            '-' +
-                                            simActivity.Value.Substring(1).PadLeft(item.textWidth - 1, '0'));
-                                    }
-                                    else
-                                    {
-                                        arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth, '0'));
-                                    }
+                                    arduinoControl.SendMessage('D', item.knobSpec[0] + simActivity.Value.PadLeft(5, '0'));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (item.simvarType == SIMVAR_TYPE.TYPE_NUMBER)
+                            {
+                                arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth, ' '));
+                            }
+                            else
+                            {
+                                if (dValue < 0)
+                                {
+                                    // move the negative sign to the first place before padding with zeroes
+                                    arduinoControl.SendMessage('T', itemIDStr +
+                                        '-' +
+                                        simActivity.Value.Substring(1).PadLeft(item.textWidth - 1, '0'));
+                                }
+                                else
+                                {
+                                    arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth, '0'));
                                 }
                             }
                         }
@@ -291,21 +286,21 @@ namespace MSFS2020_Ardunio_Cockpit
                                 else
                                 {
                                     uint value = 0;
-                                    Double d = 0.0;
-                                    if(!Double.TryParse(message.Data.Substring(1), NumberStyles.Float, CultureInfo.InvariantCulture, out d))
+                                    if (!Double.TryParse(message.Data.Substring(1), NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
                                     {
                                         // malformed number
                                         break;
                                     }
-                                    
+
                                     // a separate hack for KOHLSMAN_SET
                                     // we assume it is 
                                     if (item.simEvent.Equals("KOHLSMAN_SET"))
                                     {
-                                        if(item.unitOfMeasure == "millibars")
+                                        if (item.unitOfMeasure == "millibars")
                                         {
                                             value = (uint)(d * 16);
-                                        } else
+                                        }
+                                        else
                                         {
                                             value = (uint)(d * 541.8224);
                                         }
@@ -321,7 +316,7 @@ namespace MSFS2020_Ardunio_Cockpit
                         }
                     }
                     break;
-                case 'S':                    
+                case 'S':
                     for (int i = 0; i < CockpitPreset.SWITCHES_COUNT; i++)
                     {
                         if (switchesState[i] != message.Data[i])
@@ -517,6 +512,8 @@ namespace MSFS2020_Ardunio_Cockpit
                     // T - sending the initial text value
                     arduinoControl.SendMessage('T', itemID + item.text);
                 }
+                // Give Arduino some time to process the preset items
+                Thread.Sleep(100);
             }
 
             // S - submit all layout changes

@@ -196,7 +196,7 @@ namespace MSFSConnector
                 else
                 {
                     // Send a double value
-                    if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dValue))
+                    if (double.TryParse(value, NumberStyles.Float, null, out double dValue))
                     {
                         _simConnect.SetDataOnSimObject((DEFINITION)simvarID, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dValue);
                     }
