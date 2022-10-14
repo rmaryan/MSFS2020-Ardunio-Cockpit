@@ -18,13 +18,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using MSFS2020_Ardunio_Cockpit;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using static System.Net.Mime.MediaTypeNames;
+using System.Runtime.Serialization;
 
 namespace MSFS2020_Ardunio_Cockpit
 {
@@ -40,25 +37,27 @@ namespace MSFS2020_Ardunio_Cockpit
     {
         public string text = "";
 
-        /**
-         * The screen definition is a string which defines how the item is going to be shown on the screen
-         * Format: xxxyyyCCCCFWW 
-         *         xxx, yyyy  - field coordinates on the screen
-         *         CCCC       - a hexadecimal representation of the 16-bit color (without the leading 0x)
-         *                       Examples:
-         *                        BLACK   0000
-         *                        BLUE    001F
-         *                        RED     F800
-         *                        GREEN   07E0
-         *                        CYAN    07FF
-         *                        MAGENTA F81F
-         *                        YELLOW  FFE0
-         *                        WHITE   FFFF
-         *                        GREY    D6BA
-         *         F          - the relative font size from 1 to 4
-         *         WW         - the max number of characters in the field
+        public string x = "0"; // field coordinates on the screen XXX
+        public string y = "0"; // field coordinates on the screen YYY
+        /*
+         *  CCCC - a hexadecimal representation of the 16-bit color(without the leading 0x)
+         *         Examples:
+         *          BLACK   0000
+         *          BLUE    001F
+         *          RED F800
+         *          GREEN   07E0
+         *          CYAN    07FF
+         *          MAGENTA F81F
+         *          YELLOW  FFE0
+         *          WHITE   FFFF
+         *          GREY    D6BA
          */
+        public string color = "D6BA";
+        public string fontSize = "2";   // F - the relative font size from 1 to 4
+
+        [JsonIgnore]
         public string screenItemDefinition = "";
+
         public ushort textWidth = 0;    // max width of the field
         public string simVariable = ""; // If empty - the item is a constant text, which is never changed
         public string simEvent = "";    // Some variables in MSFS are randomly unwritable. For such cases an event name should be specified.
@@ -67,23 +66,50 @@ namespace MSFS2020_Ardunio_Cockpit
         public int simEventID = -1;     // the ID which was used to register the sim event
         public string unitOfMeasure = ""; // foot, meter per second squared, etc
         public SIMVAR_TYPE simvarType = SIMVAR_TYPE.TYPE_STRING;  // simple values are just shown on the screen, booleans have two text/color variants
-                                        // 0 - TYPE_STRING - the value is shown as string
-                                        // 1 - TYPE_NUMBER - the value is rounded as defined by decimalPoints, padded with leading spaces
-                                        // 2 - TYPE_P0_NUMBER - the value is rounded as defined by decimalPoints, padded with leading zeroes
-                                        // 3 - TYPE_BOOLEAN - a special processing is performed if value is 1.0 or 0.0
+                                                                  // 0 - TYPE_STRING - the value is shown as string
+                                                                  // 1 - TYPE_NUMBER - the value is rounded as defined by decimalPoints, padded with leading spaces
+                                                                  // 2 - TYPE_P0_NUMBER - the value is rounded as defined by decimalPoints, padded with leading zeroes
+                                                                  // 3 - TYPE_BOOLEAN - a special processing is performed if value is 1.0 or 0.0
 
         public int decimalPlaces = 0;   // the number of decimals after the point
         public string altText = "";     // for boolean - text to show if value=false
         public string altColor = "";    // for boolean - color to use if value=false
         public string knobSpec = "";    // If set - associates the item with the dashboard encoder.
-                                     // Format: NmmmmmmMMMMMMC
-                                     // N - knob ID ('0' - '3'),
-                                     // mmmmmm - minimum value (can have a leading minus sign)
-                                     // MMMMMM - maximum value (can have a leading minus sign)
-                                     // C - if 'Y' change the value in circle (when the knob rolls bellow the minumum, the value changes to max and vise versa).
-                                     // Example: 1000000000359Y
+                                        // Format: NmmmmmmMMMMMMC
+                                        // N - knob ID ('0' - '3'),
+                                        // mmmmmm - minimum value (can have a leading minus sign)
+                                        // MMMMMM - maximum value (can have a leading minus sign)
+                                        // C - if 'Y' change the value in circle (when the knob rolls bellow the minumum, the value changes to max and vise versa).
+                                        // Example: 1000000000359Y
         public string knobStep = ""; // Knob step specification. If it is parsable to integer (i.e. "0100") - this hard-coded value is taken.
                                      // Otherwise - we'll try to get the increment from the SimVar with such name (i.e. "XMLVAR_AUTOPILOT_ALTITUDE_INCREMENT")
+
+        [OnDeserialized]
+        internal void OnDeserialized(StreamingContext context)
+        {
+            // after loading the item - build its definition string
+            // Format: xxxyyyCCCCFWWP
+            screenItemDefinition = x.PadLeft(3, '0') +
+                y.PadLeft(3, '0') +
+                color +
+                fontSize;
+            if (textWidth == 0)
+            {
+                screenItemDefinition += text.Length.ToString("D2");
+            }
+            else
+            {
+                screenItemDefinition += textWidth.ToString("D2");
+            }
+            if (simvarType == SIMVAR_TYPE.TYPE_P0_NUMBER)
+            {
+                screenItemDefinition += "0";
+            }
+            else
+            {
+                screenItemDefinition += " ";
+            }
+        }
     }
 
     internal class SwitchDefItem
@@ -164,7 +190,7 @@ namespace MSFS2020_Ardunio_Cockpit
         /// <returns>A string representation of the preset BG color in the format "cccc" </returns>
         public string GetBGColor()
         {
-            return (pID > -1) ? presets[pID].bgColor: "";
+            return (pID > -1) ? presets[pID].bgColor : "";
         }
 
         /// <summary>
@@ -201,14 +227,15 @@ namespace MSFS2020_Ardunio_Cockpit
             if (pID > -1)
             {
                 return presetSwitchLabels;
-            } else
-            {                
+            }
+            else
+            {
                 return initialPresetSwitchLabels;
-            }            
+            }
         }
 
         public string GetSwitchEventON(int sID)
-        {            
+        {
             return (pID > -1) ? presets[pID].switchDefItems[sID].simEventOn : "";
         }
         public string GetSwitchEventOFF(int sID)
@@ -225,7 +252,8 @@ namespace MSFS2020_Ardunio_Cockpit
         }
         public void SetSwitchEventONID(int sID, int eventID)
         {
-            if (pID > -1) {
+            if (pID > -1)
+            {
                 presets[pID].switchDefItems[sID].simEventOnID = eventID;
             }
         }
@@ -254,7 +282,7 @@ namespace MSFS2020_Ardunio_Cockpit
         {
             // find the approriate preset
             pID = -1;
-            for(int i=0; i< presets.Count; i++)
+            for (int i = 0; i < presets.Count; i++)
             {
                 if (presets[i].aircraftName.Equals(atc_model))
                 {
@@ -287,16 +315,16 @@ namespace MSFS2020_Ardunio_Cockpit
 
             // generate the main window form labels
             // 3-positions switches
-            for (int i=0; i< 6; i++)
+            for (int i = 0; i < 6; i++)
             {
-                presetSwitchLabels[i] = _niceTitle(presets[pID].switchDefItems[i*2].simEventOn) + '\n' +
+                presetSwitchLabels[i] = _niceTitle(presets[pID].switchDefItems[i * 2].simEventOn) + '\n' +
                     _niceTitle(presets[pID].switchDefItems[i * 2].simEventOff) + '\n' +
                     _niceTitle(presets[pID].switchDefItems[i * 2 + 1].simEventOff) + '\n' +
                     _niceTitle(presets[pID].switchDefItems[i * 2 + 1].simEventOn);
             }
 
             // pushbuttons
-            for(int i = 6; i< 14; i++)
+            for (int i = 6; i < 14; i++)
             {
                 presetSwitchLabels[i] = _niceTitle(presets[pID].switchDefItems[i + 6].simEventOn) + '\n' +
                     _niceTitle(presets[pID].switchDefItems[i + 6].simEventOff);
@@ -316,33 +344,6 @@ namespace MSFS2020_Ardunio_Cockpit
     }
 }
 
-//public ScreenFieldItem(string _text,
-//    ushort _x,
-//    ushort _y,
-//    ushort _fontSize,
-//    ushort _textWidth = 0, // if zero - the _text length will be used
-//    string _color = "FFFF",
-//    string _sim_variable = "",
-//    string _unitOfMeasure = "", // if empty - a plain text will be assumed
-//    SIMVAR_TYPE _simvarType = SIMVAR_TYPE.TYPE_STRING,
-//    int _decimalPlaces = 0,
-//    string _altText = "",
-//    string _altColor = "",
-//    string _knobSpec = "",
-//    string _knobStep = "0001"
-//    )
-//{
-//    text = _text;
-
-//    char padCharacter = ' ';
-//    if (_simvarType == SIMVAR_TYPE.TYPE_P0_NUMBER)
-//    {
-//        padCharacter = '0';
-//    }
-//    else if (_simvarType == SIMVAR_TYPE.TYPE_BOOLEAN)
-//    {
-//        padCharacter = '*';
-//    }
 
 //    screenItemDefinition =
 //        _x.ToString("D3") +

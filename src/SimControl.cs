@@ -161,13 +161,13 @@ namespace MSFSConnector
             {
                 // this is a string variable
                 _simConnect.AddToDataDefinition((DEFINITION)nextID, simConnectVariable, simConnectUnit,
-                    SIMCONNECT_DATATYPE.STRING256, 0.01f, SimConnect.SIMCONNECT_UNUSED);
+                    SIMCONNECT_DATATYPE.STRING256, 0.005f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnect.RegisterDataDefineStruct<Struct1>((DEFINITION)nextID);
             }
             else
             {
                 _simConnect.AddToDataDefinition((DEFINITION)nextID, simConnectVariable, simConnectUnit,
-                    SIMCONNECT_DATATYPE.FLOAT64, 0.01f, SimConnect.SIMCONNECT_UNUSED);
+                    SIMCONNECT_DATATYPE.FLOAT64, 0.005f, SimConnect.SIMCONNECT_UNUSED);
                 _simConnect.RegisterDataDefineStruct<double>((DEFINITION)nextID);
             }
 
@@ -196,7 +196,8 @@ namespace MSFSConnector
                 else
                 {
                     // Send a double value
-                    if (double.TryParse(value, NumberStyles.Float, null, out double dValue))
+                    // The float string representations comes from Arduino - parse the decimal point as a point
+                    if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double dValue))
                     {
                         _simConnect.SetDataOnSimObject((DEFINITION)simvarID, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dValue);
                     }

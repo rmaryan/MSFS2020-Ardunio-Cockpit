@@ -20,8 +20,6 @@
 
 using ArduinoConnector;
 using MSFSConnector;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -156,8 +154,9 @@ namespace MSFS2020_Ardunio_Cockpit
 
                         // round the value first
                         if (double.TryParse(simActivity.Value, NumberStyles.Float, null, out double dValue))
-                        {                            
-                            simActivity.Value = Math.Round(dValue, item.decimalPlaces).ToString();
+                        {
+                            dValue = Math.Round(dValue, item.decimalPlaces);
+                            simActivity.Value = dValue.ToString("F" + item.decimalPlaces.ToString(), CultureInfo.InvariantCulture);
                         }
 
                         if (item.knobSpec != "")
@@ -168,12 +167,13 @@ namespace MSFS2020_Ardunio_Cockpit
                                 if (dValue < 0)
                                 {
                                     arduinoControl.SendMessage('D', item.knobSpec[0] +
-                                        '-' +
+                                        "-" +
                                         simActivity.Value.Substring(1).PadLeft(4, '0'));
                                 }
                                 else
                                 {
-                                    arduinoControl.SendMessage('D', item.knobSpec[0] + simActivity.Value.PadLeft(5, '0'));
+                                    arduinoControl.SendMessage('D', item.knobSpec[0] + 
+                                        simActivity.Value.PadLeft(5, '0'));
                                 }
                             }
                         }
@@ -552,7 +552,7 @@ namespace MSFS2020_Ardunio_Cockpit
 
             mainWindow_ref.SetSwitchLabels(presetsManager.GetPresetSwitchLabels());
 
-            //!!!Debug.WriteLine(JsonConvert.SerializeObject(presetsManager.preset));
+            //!!!Debug.WriteLine(JsonConvert.SerializeObject(presetsManager.presets[0]));
         }
     }
 }

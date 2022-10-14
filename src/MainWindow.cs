@@ -19,9 +19,7 @@
  */
 
 using System;
-using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.Windows.Forms;
 
 namespace MSFS2020_Ardunio_Cockpit
@@ -190,7 +188,7 @@ namespace MSFS2020_Ardunio_Cockpit
         {
             LogTextBox.Invoke(new MethodInvoker(delegate
             {
-                for(int i=0; i< SWITCH_LABELS_COUNT; i++)
+                for (int i = 0; i < SWITCH_LABELS_COUNT; i++)
                 {
                     switchLabels[i].Text = switchLabelText[i];
                 }

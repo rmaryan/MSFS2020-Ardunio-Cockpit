@@ -1,12 +1,14 @@
 {
-  "$schema": "../preset.schema.json",
-  "presetName": "Default",
-  "aircraftName": "Default",
+  "presetName": "PA34T SENECA V",
+  "aircraftName": "Seneca V",
   "bgColor": "0000",
   "screenFieldItems": [
     {
       "text": "HDG",
-      "screenItemDefinition": "010010FFE0203 ",
+      "x": "010",
+      "y": "010",
+      "color": "FFE0",
+      "fontSize": "2",
       "textWidth": 0,
       "simVariable": "",
       "simEvent": "",
@@ -16,11 +18,14 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
-      "text": "220",
-      "screenItemDefinition": "020030FFE04030",
+      "text": "888",
+      "x": "020",
+      "y": "030",
+      "color": "FFE0",
+      "fontSize": "4",
       "textWidth": 3,
       "simVariable": "AUTOPILOT HEADING LOCK DIR",
       "simEvent": "",
@@ -34,7 +39,10 @@
     },
     {
       "text": "\u0004",
-      "screenItemDefinition": "110042FFE0401*",
+      "x": "110",
+      "y": "042",
+      "color": "FFE0",
+      "fontSize": "4",
       "textWidth": 1,
       "simVariable": "AUTOPILOT HEADING LOCK",
       "simEvent": "",
@@ -44,11 +52,14 @@
       "altText": "\u0004",
       "altColor": "0000",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "CRS",
-      "screenItemDefinition": "010100FFE0203 ",
+      "x": "010",
+      "y": "080",
+      "color": "FFE0",
+      "fontSize": "2",
       "textWidth": 0,
       "simVariable": "",
       "simEvent": "",
@@ -58,11 +69,14 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
-      "text": "120",
-      "screenItemDefinition": "020120FFE04030",
+      "text": "888",
+      "x": "020",
+      "y": "100",
+      "color": "FFE0",
+      "fontSize": "4",
       "textWidth": 3,
       "simVariable": "NAV OBS:1",
       "simEvent": "VOR1_SET",
@@ -76,7 +90,10 @@
     },
     {
       "text": "\u0004",
-      "screenItemDefinition": "110132FFE0401*",
+      "x": "110",
+      "y": "112",
+      "color": "FFE0",
+      "fontSize": "4",
       "textWidth": 0,
       "simVariable": "AUTOPILOT NAV1 LOCK",
       "simEvent": "",
@@ -86,11 +103,14 @@
       "altText": "\u0004",
       "altColor": "0000",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "GPS ",
-      "screenItemDefinition": "02016007E0204*",
+      "x": "020",
+      "y": "140",
+      "color": "07E0",
+      "fontSize": "2",
       "textWidth": 4,
       "simVariable": "GPS DRIVES NAV1",
       "simEvent": "",
@@ -100,11 +120,14 @@
       "altText": "VLOC",
       "altColor": "07E0",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "ALT",
-      "screenItemDefinition": "160010FFE0203 ",
+      "x": "160",
+      "y": "010",
+      "color": "FFE0",
+      "fontSize": "2",
       "textWidth": 0,
       "simVariable": "",
       "simEvent": "",
@@ -114,11 +137,14 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
-      "text": "01100",
-      "screenItemDefinition": "170030FFE0405 ",
+      "text": "00000",
+      "x": "170",
+      "y": "030",
+      "color": "FFE0",
+      "fontSize": "4",
       "textWidth": 5,
       "simVariable": "INDICATED ALTITUDE",
       "simEvent": "",
@@ -128,11 +154,14 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "\u0004",
-      "screenItemDefinition": "310042FFE0401*",
+      "x": "310",
+      "y": "042",
+      "color": "FFE0",
+      "fontSize": "4",
       "textWidth": 0,
       "simVariable": "AUTOPILOT ALTITUDE LOCK",
       "simEvent": "",
@@ -142,11 +171,14 @@
       "altText": "\u0004",
       "altColor": "0000",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "V/S",
-      "screenItemDefinition": "160100FFE0203 ",
+      "x": "160",
+      "y": "080",
+      "color": "FFE0",
+      "fontSize": "2",
       "textWidth": 0,
       "simVariable": "",
       "simEvent": "",
@@ -156,11 +188,14 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
-      "text": "     ",
-      "screenItemDefinition": "170120FFE0405 ",
+      "text": "    0",
+      "x": "170",
+      "y": "100",
+      "color": "FFE0",
+      "fontSize": "4",
       "textWidth": 5,
       "simVariable": "AUTOPILOT VERTICAL HOLD VAR",
       "simEvent": "",
@@ -174,7 +209,10 @@
     },
     {
       "text": "\u0004",
-      "screenItemDefinition": "310132FFE0401*",
+      "x": "310",
+      "y": "112",
+      "color": "FFE0",
+      "fontSize": "4",
       "textWidth": 0,
       "simVariable": "AUTOPILOT VERTICAL HOLD",
       "simEvent": "",
@@ -184,25 +222,14 @@
       "altText": "\u0004",
       "altColor": "0000",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
-      "text": "AP",
-      "screenItemDefinition": "01022007E0202*",
-      "textWidth": 0,
-      "simVariable": "AUTOPILOT MASTER",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "AP",
-      "altColor": "D6BA",
-      "knobSpec": "",
-      "knobStep": "0001"
-    },
-    {
-      "text": "Flaps:",
-      "screenItemDefinition": "060220FFE0206 ",
+      "text": "QNH",
+      "x": "160",
+      "y": "150",
+      "color": "FFE0",
+      "fontSize": "2",
       "textWidth": 0,
       "simVariable": "",
       "simEvent": "",
@@ -212,11 +239,65 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
+    },
+    {
+      "text": "29.92",
+      "x": "170",
+      "y": "170",
+      "color": "FFE0",
+      "fontSize": "4",
+      "textWidth": 5,
+      "simVariable": "KOHLSMAN SETTING HG",
+      "simEvent": "KOHLSMAN_SET",
+      "unitOfMeasure": "inHg",
+      "simvarType": 1,
+      "decimalPlaces": 2,
+      "altText": "",
+      "altColor": "",
+      "knobSpec": "3028.17031.27N",
+      "knobStep": "0.01"
+    },
+    {
+      "text": "AP",
+      "x": "010",
+      "y": "220",
+      "color": "07E0",
+      "fontSize": "2",
+      "textWidth": 0,
+      "simVariable": "AUTOPILOT MASTER",
+      "simEvent": "",
+      "unitOfMeasure": "Bool",
+      "simvarType": 3,
+      "decimalPlaces": 0,
+      "altText": "AP",
+      "altColor": "D6BA",
+      "knobSpec": "",
+      "knobStep": ""
+    },
+    {
+      "text": "Flaps:",
+      "x": "060",
+      "y": "220",
+      "color": "FFE0",
+      "fontSize": "2",
+      "textWidth": 0,
+      "simVariable": "",
+      "simEvent": "",
+      "unitOfMeasure": "",
+      "simvarType": 0,
+      "decimalPlaces": 0,
+      "altText": "",
+      "altColor": "",
+      "knobSpec": "",
+      "knobStep": ""
     },
     {
       "text": "0",
-      "screenItemDefinition": "130220FFE0201 ",
+      "x": "130",
+      "y": "220",
+      "color": "FFE0",
+      "fontSize": "2",
       "textWidth": 1,
       "simVariable": "FLAPS HANDLE INDEX",
       "simEvent": "",
@@ -226,11 +307,14 @@
       "altText": "",
       "altColor": "",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     },
     {
       "text": "GEAR: DOWN",
-      "screenItemDefinition": "170220FFE0210*",
+      "x": "170",
+      "y": "220",
+      "color": "FFE0",
+      "fontSize": "2",
       "textWidth": 0,
       "simVariable": "GEAR POSITION",
       "simEvent": "",
@@ -240,7 +324,7 @@
       "altText": "GEAR: UP  ",
       "altColor": "FFE0",
       "knobSpec": "",
-      "knobStep": "0001"
+      "knobStep": ""
     }
   ],
   "switchDefItems": [
