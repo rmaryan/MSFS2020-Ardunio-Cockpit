@@ -20,6 +20,7 @@
 
 using ArduinoConnector;
 using MSFSConnector;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -553,6 +554,13 @@ namespace MSFS2020_Ardunio_Cockpit
             mainWindow_ref.SetSwitchLabels(presetsManager.GetPresetSwitchLabels());
 
             //!!!Debug.WriteLine(JsonConvert.SerializeObject(presetsManager.presets[0]));
+        }
+        public void ShowCurrentPresetJSON()
+        {
+            if(presetsManager.pID > -1)
+            {
+                mainWindow_ref.AppendLogMessage(JsonConvert.SerializeObject(presetsManager.presets[presetsManager.pID]));
+            }           
         }
     }
 }

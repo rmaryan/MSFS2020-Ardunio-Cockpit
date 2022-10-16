@@ -29,9 +29,13 @@ Once the connections are established, Sim Connector checks the aircraft model wh
 
 Dashboard layouts are currently hard-coded in the C# code. Later we plan to implement dynamic layouts loading from the plain text files.
 
-*Currently only Seneca V preset is functioning.*
+Currently available presets:
+ * Default - a very simple preset that is be loaded by default
+ * PA34T SENECA V
 
 To make it easier remembering all the switches designations an active preset actions mapping is also shown on the screen.
+
+If you create your own JSON preset - keep in mind the following lifehack. Double-click on the preset name shows on the screen the JSON interpretation as it was understood by the application.
 
 ## Dashboard Layout
 

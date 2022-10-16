@@ -181,6 +181,7 @@
             this.presetNameLabel.Padding = new System.Windows.Forms.Padding(50, 0, 0, 0);
             this.presetNameLabel.Size = new System.Drawing.Size(50, 13);
             this.presetNameLabel.TabIndex = 9;
+            this.presetNameLabel.DoubleClick += new System.EventHandler(this.presetNameLabel_DoubleClick);
             // 
             // panel1
             // 

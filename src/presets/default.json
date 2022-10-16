@@ -1,10 +1,10 @@
 {
-  "presetName": "PA34T SENECA V",
-  "aircraftName": "Seneca V",
+  "presetName": "Default",
+  "aircraftName": "Default",
   "bgColor": "0000",
   "screenFieldItems": [
     {
-      "text": "HDG",
+      "text": "SPD",
       "x": "010",
       "y": "010",
       "color": "FFE0",
@@ -27,35 +27,18 @@
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 3,
-      "simVariable": "AUTOPILOT HEADING LOCK DIR",
+      "simVariable": "AIRSPEED INDICATED",
       "simEvent": "",
-      "unitOfMeasure": "degrees",
+      "unitOfMeasure": "knots",
       "simvarType": 2,
       "decimalPlaces": 0,
       "altText": "",
       "altColor": "",
-      "knobSpec": "0000000000359Y",
-      "knobStep": "0001"
-    },
-    {
-      "text": "\u0004",
-      "x": "110",
-      "y": "042",
-      "color": "FFE0",
-      "fontSize": "4",
-      "textWidth": 1,
-      "simVariable": "AUTOPILOT HEADING LOCK",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "\u0004",
-      "altColor": "0000",
       "knobSpec": "",
       "knobStep": ""
     },
     {
-      "text": "CRS",
+      "text": "HDG",
       "x": "010",
       "y": "080",
       "color": "FFE0",
@@ -78,47 +61,13 @@
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 3,
-      "simVariable": "NAV OBS:1",
-      "simEvent": "VOR1_SET",
+      "simVariable": "HEADING INDICATOR",
+      "simEvent": "",
       "unitOfMeasure": "degrees",
       "simvarType": 2,
       "decimalPlaces": 0,
       "altText": "",
       "altColor": "",
-      "knobSpec": "1000000000359Y",
-      "knobStep": "0001"
-    },
-    {
-      "text": "\u0004",
-      "x": "110",
-      "y": "112",
-      "color": "FFE0",
-      "fontSize": "4",
-      "textWidth": 0,
-      "simVariable": "AUTOPILOT NAV1 LOCK",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "\u0004",
-      "altColor": "0000",
-      "knobSpec": "",
-      "knobStep": ""
-    },
-    {
-      "text": "GPS ",
-      "x": "020",
-      "y": "140",
-      "color": "07E0",
-      "fontSize": "2",
-      "textWidth": 4,
-      "simVariable": "GPS DRIVES NAV1",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "VLOC",
-      "altColor": "07E0",
       "knobSpec": "",
       "knobStep": ""
     },
@@ -157,23 +106,6 @@
       "knobStep": ""
     },
     {
-      "text": "\u0004",
-      "x": "310",
-      "y": "042",
-      "color": "FFE0",
-      "fontSize": "4",
-      "textWidth": 0,
-      "simVariable": "AUTOPILOT ALTITUDE LOCK",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "\u0004",
-      "altColor": "0000",
-      "knobSpec": "",
-      "knobStep": ""
-    },
-    {
       "text": "V/S",
       "x": "160",
       "y": "080",
@@ -197,30 +129,13 @@
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 5,
-      "simVariable": "AUTOPILOT VERTICAL HOLD VAR",
+      "simVariable": "VERTICAL SPEED",
       "simEvent": "",
       "unitOfMeasure": "feet/minute",
       "simvarType": 1,
       "decimalPlaces": 0,
       "altText": "",
       "altColor": "",
-      "knobSpec": "2-06000006000N",
-      "knobStep": "0100"
-    },
-    {
-      "text": "\u0004",
-      "x": "310",
-      "y": "112",
-      "color": "FFE0",
-      "fontSize": "4",
-      "textWidth": 0,
-      "simVariable": "AUTOPILOT VERTICAL HOLD",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "\u0004",
-      "altColor": "0000",
       "knobSpec": "",
       "knobStep": ""
     },
@@ -335,9 +250,9 @@
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "BEACON_LIGHTS_ON",
+      "simEventOn": "",
       "simEventOnValue": 0,
-      "simEventOff": "BEACON_LIGHTS_OFF",
+      "simEventOff": "",
       "simEventOffValue": 0
     },
     {
@@ -401,19 +316,7 @@
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_HDG_HOLD_ON",
-      "simEventOnValue": 0,
-      "simEventOff": "",
-      "simEventOffValue": 0
-    },
-    {
-      "simEventOn": "AP_NAV1_HOLD_ON",
-      "simEventOnValue": 0,
-      "simEventOff": "",
-      "simEventOffValue": 0
-    },
-    {
-      "simEventOn": "AP_VS_ON",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
@@ -425,25 +328,37 @@
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_HDG_HOLD_OFF",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_NAV1_HOLD_OFF",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_ALT_HOLD_ON",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_APR_HOLD_ON",
+      "simEventOn": "",
+      "simEventOnValue": 0,
+      "simEventOff": "",
+      "simEventOffValue": 0
+    },
+    {
+      "simEventOn": "",
+      "simEventOnValue": 0,
+      "simEventOff": "",
+      "simEventOffValue": 0
+    },
+    {
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0

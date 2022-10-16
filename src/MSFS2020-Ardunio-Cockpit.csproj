@@ -7,11 +7,12 @@
     <ProjectGuid>{2067CE37-8BCC-4487-B730-068A5E0F2114}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>MSFS2020_Ardunio_Cockpit</RootNamespace>
-    <AssemblyName>MSFS2020-Ardunio-Cockpit</AssemblyName>
+    <AssemblyName>MSFS Ardunio Cockpit</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,7 +25,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -69,6 +69,9 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>MSFS2020-Ardunio-Cockpit.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.FlightSimulator.SimConnect, Version=10.0.61259.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=x86">
@@ -143,6 +146,7 @@
     <None Include="Resources\3switch.png" />
     <None Include="Resources\3switch1.png" />
     <None Include="Resources\3switch2.png" />
+    <Content Include="MSFS2020-Ardunio-Cockpit.ico" />
     <Content Include="SimConnect.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

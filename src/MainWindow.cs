@@ -18,7 +18,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -193,6 +195,11 @@ namespace MSFS2020_Ardunio_Cockpit
                     switchLabels[i].Text = switchLabelText[i];
                 }
             }));
+        }
+
+        private void presetNameLabel_DoubleClick(object sender, EventArgs e)
+        {
+            cockpitController.ShowCurrentPresetJSON();
         }
     }
 }
