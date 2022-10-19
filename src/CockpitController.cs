@@ -282,7 +282,7 @@ namespace MSFS2020_Ardunio_Cockpit
                                 ScreenFieldItem item = presetsManager.GetScreenFieldItem(knobToVarMapping[knobID]);
                                 if (item.simEventID == -1)
                                 {
-                                    simControl.SetDataValue(item.simVariable, message.Data.Substring(1));
+                                    simControl.SetVarValue(item.simVariable, message.Data.Substring(1));
                                 }
                                 else
                                 {
@@ -376,7 +376,7 @@ namespace MSFS2020_Ardunio_Cockpit
                         }
                     }
 
-                    if (!simControl.Connected)
+                    if (!simControl.ConnectedSimConnect)
                     {
                         // make sure to switch to the UI thread
                         mainWindow_ref.Invoke(new MethodInvoker(delegate { ConnectToSim(false); }));
@@ -443,7 +443,7 @@ namespace MSFS2020_Ardunio_Cockpit
 
         private void DisconnectAll()
         {
-            if (simControl.Connected)
+            if (simControl.ConnectedSimConnect)
             {
                 try
                 {
@@ -527,7 +527,7 @@ namespace MSFS2020_Ardunio_Cockpit
                 // request the variable values monitoring in the sim
                 if (!item.simVariable.Equals(""))
                 {
-                    simControl.AddRequest(item.simVariable, item.unitOfMeasure);
+                    simControl.AddVarRequest(item.simVariable, item.unitOfMeasure);
                     if (!item.simEvent.Equals(""))
                     {
                         item.simEventID = simControl.RegisterEvent(item.simEvent);
@@ -552,9 +552,8 @@ namespace MSFS2020_Ardunio_Cockpit
             }
 
             mainWindow_ref.SetSwitchLabels(presetsManager.GetPresetSwitchLabels());
-
-            //!!!Debug.WriteLine(JsonConvert.SerializeObject(presetsManager.presets[0]));
         }
+
         public void ShowCurrentPresetJSON()
         {
             if(presetsManager.pID > -1)

@@ -19,11 +19,13 @@
  */
 
 using Microsoft.FlightSimulator.SimConnect;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using static MSFSConnector.SimControl;
 
 namespace MSFSConnector
 {
@@ -34,8 +36,9 @@ namespace MSFSConnector
         private IntPtr _hWnd = new IntPtr(0);
         private SimConnect _simConnect = null;
 
-        private List<SimVar> monitoredVars;
-        private List<String> usedEvents;
+        private readonly List<SimVar> monitoredVars = new List<SimVar>();
+        private readonly List<String> usedEvents = new List<String>();
+        private readonly List<String> WASMSimVars = new List<String>();
 
         public const string ATC_MODEL_VAR = "ATC MODEL";
 
@@ -43,13 +46,15 @@ namespace MSFSConnector
 
         public event EventHandler DataReceived;
 
-        public bool Connected { get; private set; } = false;
+        public bool ConnectedSimConnect { get; private set; } = false;
+        public bool ConnectedWASM { get; private set; } = false;
 
-        public SimControl()
-        {
-            monitoredVars = new List<SimVar>();
-            usedEvents = new List<String>();
-        }
+        private const string WASM_CLIENT_NAME = "ArduFlight";
+        private const string WASM_CLIENT_DATA_NAME_SIMVAR = WASM_CLIENT_NAME + ".LVars";
+        private const string WASM_CLIENT_DATA_NAME_COMMAND = WASM_CLIENT_NAME + ".Command";
+        private const string WASM_CLIENT_DATA_NAME_RESPONSE = WASM_CLIENT_NAME + ".Response";
+
+
 
         public void ReceiveSimConnectMessage()
         {
@@ -72,7 +77,7 @@ namespace MSFSConnector
                     _simConnect.OnRecvQuit += new SimConnect.RecvQuitEventHandler(SimConnect_OnDisconnected);
                     _simConnect.OnRecvException += new SimConnect.RecvExceptionEventHandler(SimConnect_OnError);
                     _simConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(SimConnect_OnGotData);
-                    //                    _simConnect.OnRecvEvent += new SimConnect.RecvEventEventHandler(SimConnect_OnRecvEvent);
+                    _simConnect.OnRecvClientData += new SimConnect.RecvClientDataEventHandler(SimConnect_OnGotWASMData);
                 }
                 catch (COMException ex)
                 {
@@ -91,26 +96,30 @@ namespace MSFSConnector
                 _simConnect.Dispose();
                 _simConnect = null;
                 monitoredVars.Clear();
-                usedEvents.Clear();
+                WASMSimVars.Clear();
             }
 
-            Connected = false;
+            ConnectedSimConnect = false;
+            ConnectedWASM = false;
         }
 
         private void SimConnect_OnConnected(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
             Debug.WriteLine("SimConnect Connected");
-            Connected = true;
+            ConnectedSimConnect = true;
 
             // Register to receive aircraft type - this is a key to choose the cockpit layout
-            AddRequest(ATC_MODEL_VAR, "");
+            AddVarRequest(ATC_MODEL_VAR, "");
 
+            // Kick-off the WASM module
+            WasmModuleClient.AddClient(_simConnect, WASM_CLIENT_NAME);
         }
 
         private void SimConnect_OnDisconnected(SimConnect sender, SIMCONNECT_RECV data)
         {
             Debug.WriteLine("SimConnect Disconnected");
             monitoredVars.Clear();
+            WASMSimVars.Clear();
             usedEvents.Clear();
             Disconnect();
         }
@@ -150,56 +159,164 @@ namespace MSFSConnector
             }
         }
 
-        public void AddRequest(string simConnectVariable, string simConnectUnit)
+        private void SimConnect_OnGotWASMData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
         {
-            if (_simConnect == null) return;
-
-            int nextID = monitoredVars.Count;
-            monitoredVars.Add(new SimVar(simConnectVariable, simConnectUnit));
-
-            if (simConnectUnit.Equals(""))
+            /** !!!
+        Debug.WriteLine($"dwRequestID={data.dwRequestID}");
+        Debug.WriteLine($"dwObjectID={data.dwObjectID}");
+        Debug.WriteLine($"dwDefineID={data.dwDefineID}");
+        Debug.WriteLine($"dwFlags={data.dwFlags}");
+        Debug.WriteLine($"dwentrynumber={data.dwentrynumber}");
+        Debug.WriteLine($"dwoutof={data.dwoutof}");
+        Debug.WriteLine($"dwDefineCount={data.dwDefineCount}");
+            */
+            // Simvars use ID's starting from 10
+            if (data.dwRequestID >= 10)
             {
-                // this is a string variable
-                _simConnect.AddToDataDefinition((DEFINITION)nextID, simConnectVariable, simConnectUnit,
-                    SIMCONNECT_DATATYPE.STRING256, 0.005f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnect.RegisterDataDefineStruct<Struct1>((DEFINITION)nextID);
+                uint varID = data.dwRequestID - 10;
+                if (varID >= WASMSimVars.Count) return;
+
+                var simData = (WASMClientDataValue)(data.dwData[0]);
+
+                DataReceived?.Invoke(this, new SimActivityEventArgs(WASMSimVars[(int)varID], simData.data.ToString("F9")));
             }
             else
+            if(data.dwRequestID == (uint)SIMCONNECT_CLIENT_DATA_ID.MOBIFLIGHT_RESPONSE)
             {
-                _simConnect.AddToDataDefinition((DEFINITION)nextID, simConnectVariable, simConnectUnit,
-                    SIMCONNECT_DATATYPE.FLOAT64, 0.005f, SimConnect.SIMCONNECT_UNUSED);
-                _simConnect.RegisterDataDefineStruct<double>((DEFINITION)nextID);
-            }
+                // this is a message from the main channel
+                // we expect here only client adding confirmation
+                var simData = (WASMResponseString)(data.dwData[0]);
 
-            _simConnect?.RequestDataOnSimObject(
-                (DEFINITION)nextID,
-                (DEFINITION)nextID,
-                SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                SIMCONNECT_PERIOD.SECOND,  // refreshing the data once per second
-                SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
-        }
-
-        public void SetDataValue(string simConnectVariable, string value)
-        {
-            int simvarID = monitoredVars.FindIndex(p => p.name.Equals(simConnectVariable));
-            if (simvarID >= 0)
-            {
-                if (monitoredVars[simvarID].unit == "")
+                if (simData.Data == "MF.Clients.Add." + WASM_CLIENT_NAME + ".Finished")
                 {
-                    // Send a String value
-                    Struct1 sValueStruct = new Struct1()
-                    {
-                        sValue = value
-                    };
-                    _simConnect.SetDataOnSimObject((DEFINITION)simvarID, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, sValueStruct);
+                    Debug.WriteLine("WASM Module Connected");
+                    ConnectedWASM = true;
+
+                    // map the custom communication channels
+                    (sender).MapClientDataNameToID(WASM_CLIENT_DATA_NAME_SIMVAR, SIMCONNECT_CLIENT_DATA_ID.CLIENT_LVARS);
+                    (sender).MapClientDataNameToID(WASM_CLIENT_DATA_NAME_COMMAND, SIMCONNECT_CLIENT_DATA_ID.CLIENT_CMD);
+                    (sender).MapClientDataNameToID(WASM_CLIENT_DATA_NAME_RESPONSE, SIMCONNECT_CLIENT_DATA_ID.CLIENT_RESPONSE);
+
+                    (sender).AddToClientDataDefinition(SIMCONNECT_CLIENT_DATA_ID.CLIENT_RESPONSE, 0, WasmModuleClient.MOBIFLIGHT_MESSAGE_SIZE, 0, 0);
+                    (sender).RegisterStruct<SIMCONNECT_RECV_CLIENT_DATA, WASMResponseString>(SIMCONNECT_CLIENT_DATA_ID.CLIENT_RESPONSE);
+                    (sender).RequestClientData(
+                        SIMCONNECT_CLIENT_DATA_ID.CLIENT_RESPONSE,
+                        SIMCONNECT_CLIENT_DATA_ID.CLIENT_RESPONSE,
+                        SIMCONNECT_CLIENT_DATA_ID.CLIENT_RESPONSE,
+                        SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET,
+                        SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.CHANGED,
+                        0,
+                        0,
+                        0
+                    );
+
+                    WasmModuleClient.SetConfig(_simConnect, "MAX_VARS_PER_FRAME", "30");
                 }
                 else
                 {
-                    // Send a double value
-                    // The float string representations comes from Arduino - parse the decimal point as a point
-                    if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double dValue))
+                    Debug.WriteLine($"Received from WASM: {simData.Data}");
+                }
+            } else
+            if(data.dwRequestID == (uint)SIMCONNECT_CLIENT_DATA_ID.CLIENT_RESPONSE)
+            {
+                // handling the client-specific messages goes here
+            }
+        }
+
+        public void AddVarRequest(string simConnectVariable, string simConnectUnit)
+        {
+            if (_simConnect == null) return;
+
+            // If the variable name starts with '(' - process it with the WASM
+            if (simConnectVariable.StartsWith("("))
+            {
+                int nextID = WASMSimVars.Count + 10;
+                WASMSimVars.Add(simConnectVariable);
+
+                _simConnect.AddToClientDataDefinition(
+                    (DEFINITION)nextID,
+                    (uint)((WASMSimVars.Count - 1) * sizeof(float)),
+                    sizeof(float),
+                    0,
+                    0);
+
+                _simConnect.RegisterStruct<SIMCONNECT_RECV_CLIENT_DATA, WASMClientDataValue>((DEFINITION)nextID);
+
+                _simConnect.RequestClientData(
+                    SIMCONNECT_CLIENT_DATA_ID.CLIENT_LVARS,
+                    (DEFINITION)nextID,
+                    (DEFINITION)nextID,
+                    SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET,
+                    SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.CHANGED,
+                    0,
+                    0,
+                    0
+                );
+                WasmModuleClient.SendWasmCmd(_simConnect, "MF.SimVars.Add." + simConnectVariable);
+            }
+            else
+            {
+
+                int nextID = monitoredVars.Count;
+                monitoredVars.Add(new SimVar(simConnectVariable, simConnectUnit));
+
+                if (simConnectUnit.Equals(""))
+                {
+                    // this is a string variable
+                    _simConnect.AddToDataDefinition((DEFINITION)nextID, simConnectVariable, simConnectUnit,
+                        SIMCONNECT_DATATYPE.STRING256, 0.005f, SimConnect.SIMCONNECT_UNUSED);
+                    _simConnect.RegisterDataDefineStruct<Struct1>((DEFINITION)nextID);
+                }
+                else
+                {
+                    _simConnect.AddToDataDefinition((DEFINITION)nextID, simConnectVariable, simConnectUnit,
+                        SIMCONNECT_DATATYPE.FLOAT64, 0.005f, SimConnect.SIMCONNECT_UNUSED);
+                    _simConnect.RegisterDataDefineStruct<double>((DEFINITION)nextID);
+                }
+
+                _simConnect?.RequestDataOnSimObject(
+                    (DEFINITION)nextID,
+                    (DEFINITION)nextID,
+                    SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                    SIMCONNECT_PERIOD.SECOND,  // refreshing the data once per second
+                    SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
+            }
+        }
+
+        public void SetVarValue(string simConnectVariable, string value)
+        {
+            if (simConnectVariable.StartsWith("("))
+            {
+                if(!ConnectedWASM)
+                {
+                    Debug.WriteLine($"WASM IS NOT CONNECTED. Can't set a variable {simConnectVariable}");
+                    return;
+                }
+                WasmModuleClient.SendWasmCmd(_simConnect, "MF.WASMSimVars.Set." + "!!!");
+                WasmModuleClient.DummyCommand(_simConnect);
+            }
+            else
+            {
+                int simvarID = monitoredVars.FindIndex(p => p.name.Equals(simConnectVariable));
+                if (simvarID >= 0)
+                {
+                    if (monitoredVars[simvarID].unit == "")
                     {
-                        _simConnect.SetDataOnSimObject((DEFINITION)simvarID, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dValue);
+                        // Send a String value
+                        Struct1 sValueStruct = new Struct1()
+                        {
+                            sValue = value
+                        };
+                        _simConnect.SetDataOnSimObject((DEFINITION)simvarID, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, sValueStruct);
+                    }
+                    else
+                    {
+                        // Send a double value
+                        // The float string representations comes from Arduino - parse the decimal point as a point
+                        if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double dValue))
+                        {
+                            _simConnect.SetDataOnSimObject((DEFINITION)simvarID, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dValue);
+                        }
                     }
                 }
             }
@@ -225,6 +342,11 @@ namespace MSFSConnector
 
         public void RemoveAllRequests()
         {
+            if (ConnectedWASM)
+            {
+                WasmModuleClient.Stop(_simConnect);
+            }
+
             // keep the ATC MODEL listener active
             if (monitoredVars.Count > 1)
             {
@@ -234,6 +356,7 @@ namespace MSFSConnector
                 }
                 monitoredVars.RemoveRange(1, monitoredVars.Count - 1);
             }
+            WASMSimVars.Clear();
             usedEvents.Clear();
         }
 

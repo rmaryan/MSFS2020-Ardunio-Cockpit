@@ -17,7 +17,9 @@ MSFS Arduino Cockpit Connector is a mediator between the cockpit Arduino control
 
 Arduino is connected through the native Serial over the USB interface.
 
-MSFS connection is done through the SimConnect API.
+MSFS connection is done through the SimConnect API. It is expanded with the [MobiFlight WASM module](https://github.com/Mobiflight/MobiFlight-WASM-Module), since that is the only way to access L-variables and other internal entities.
+
+Before using this software - please copy the folder *mobiflight-event-module* from [MSFS2020-module](MSFS2020-module) to your MSFS Community folder. You can also get the most recent version of this module from the original repository [MobiFlight WASM module](https://github.com/Mobiflight/MobiFlight-WASM-Module).
 
 Start the Cockpit Connector application. Once Arduino is connected to USB and the MSFS is started, click on the "Connect" box - the indicators to the right will show if the connection to the Arduino and MSFS were successful.
 
@@ -30,8 +32,8 @@ Once the connections are established, Sim Connector checks the aircraft model wh
 Dashboard layouts are currently hard-coded in the C# code. Later we plan to implement dynamic layouts loading from the plain text files.
 
 Currently available presets:
- * Default - a very simple preset that is be loaded by default
- * PA34T SENECA V
+ * *Default* - a very simple preset that is loaded by default
+ * *PA34T SENECA V*
 
 To make it easier remembering all the switches designations an active preset actions mapping is also shown on the screen.
 
