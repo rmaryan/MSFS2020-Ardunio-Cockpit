@@ -214,12 +214,14 @@ namespace MSFSConnector
                 }
                 else
                 {
-                    Debug.WriteLine($"Received from WASM: {simData.Data}");
+                    Debug.WriteLine($"Received WASM MBF RESPONSE: {simData.Data}");
                 }
             } else
             if(data.dwRequestID == (uint)SIMCONNECT_CLIENT_DATA_ID.CLIENT_RESPONSE)
             {
                 // handling the client-specific messages goes here
+                var simData = (WASMResponseString)(data.dwData[0]);
+                Debug.WriteLine($"Received WASM CLIENT RESPONSE: {simData.Data}");
             }
         }
 
@@ -292,8 +294,8 @@ namespace MSFSConnector
                     Debug.WriteLine($"WASM IS NOT CONNECTED. Can't set a variable {simConnectVariable}");
                     return;
                 }
-                WasmModuleClient.SendWasmCmd(_simConnect, "MF.WASMSimVars.Set." + "!!!");
-                WasmModuleClient.DummyCommand(_simConnect);
+                string simVarCode = $"{value} (>{simConnectVariable.Substring(1)}";
+                WASMExecute(simVarCode);
             }
             else
             {
@@ -338,6 +340,14 @@ namespace MSFSConnector
             _simConnect.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER,
                 (DEFINITION)eventID, data,
                 (DEFINITION)1, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+        }
+
+        public void WASMExecute(string code)        
+        {
+            Debug.WriteLine($"Executing code: {code}");
+            // the "code" is directly fed to the Sim execute_calculator_code
+            WasmModuleClient.SendWasmCmd(_simConnect, "MF.SimVars.Set." + code);
+            WasmModuleClient.DummyCommand(_simConnect);
         }
 
         public void RemoveAllRequests()

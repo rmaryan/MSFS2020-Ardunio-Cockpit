@@ -327,18 +327,17 @@
       "knobStep": ""
     }
   ],
-  //(L:XMLVAR_StrobeBeaconState,number)
   "switchDefItems": [
     {
-      "simEventOn": "STROBES_ON",
+      "simEventOn": "!0 (>L:XMLVAR_StrobeBeaconState,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "STROBES_OFF",
+      "simEventOff": "!1 (>L:XMLVAR_StrobeBeaconState,enum)",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "BEACON_LIGHTS_ON",
+      "simEventOn": "!2 (>L:XMLVAR_StrobeBeaconState,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "BEACON_LIGHTS_OFF",
+      "simEventOff": "!1 (>L:XMLVAR_StrobeBeaconState,enum)",
       "simEventOffValue": 0
     },
     {
@@ -378,15 +377,15 @@
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "LANDING_LIGHTS_ON",
+      "simEventOn": "!0 (>L:XMLVAR_LandingPulseState,enum) > 1 (>A:LIGHT LANDING,bool)",
       "simEventOnValue": 0,
-      "simEventOff": "LANDING_LIGHTS_OFF",
+      "simEventOff": "!1 (>L:XMLVAR_LandingPulseState,enum) > 0 (>A:LIGHT LANDING,bool)",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "",
+      "simEventOn": "!2 (>L:XMLVAR_LandingPulseState,enum) > 1 (>A:LIGHT RECOGNITION,bool)",
       "simEventOnValue": 0,
-      "simEventOff": "",
+      "simEventOff": "!1 (>L:XMLVAR_LandingPulseState,enum) > 0 (>A:LIGHT RECOGNITION,bool)",
       "simEventOffValue": 0
     },
     {

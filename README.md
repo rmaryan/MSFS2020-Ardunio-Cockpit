@@ -19,7 +19,7 @@ Arduino is connected through the native Serial over the USB interface.
 
 MSFS connection is done through the SimConnect API. It is expanded with the [MobiFlight WASM module](https://github.com/Mobiflight/MobiFlight-WASM-Module), since that is the only way to access L-variables and other internal entities.
 
-Before using this software - please copy the folder *mobiflight-event-module* from [MSFS2020-module](MSFS2020-module) to your MSFS Community folder. You can also get the most recent version of this module from the original repository [MobiFlight WASM module](https://github.com/Mobiflight/MobiFlight-WASM-Module).
+Before using this software - please copy the folder *mobiflight-event-module* from [MSFS2020-module](MSFS2020-module) to your MSFS Community folder. You can also get the most recent version of this module from the [main MobiFlight distribution](https://github.com/MobiFlight/MobiFlight-Connector/tree/main/MSFS2020-module).
 
 Start the Cockpit Connector application. Once Arduino is connected to USB and the MSFS is started, click on the "Connect" box - the indicators to the right will show if the connection to the Arduino and MSFS were successful.
 
@@ -32,8 +32,8 @@ Once the connections are established, Sim Connector checks the aircraft model wh
 Dashboard layouts are currently hard-coded in the C# code. Later we plan to implement dynamic layouts loading from the plain text files.
 
 Currently available presets:
- * *Default* - a very simple preset that is loaded by default
- * *PA34T SENECA V*
+ * **Default** - a very simple preset that is loaded by default
+ * **PA34T SENECA V**
 
 To make it easier remembering all the switches designations an active preset actions mapping is also shown on the screen.
 
@@ -53,7 +53,66 @@ All layout presets are stored as JSON files in the "presets" folder.
 
 Please note - for the KOHLSMAN controls we assume either "millibars" or "inHg" are used as a unit of measure.
 
-## Arduino Firmware
+The format of the JSON file is the following:
+
+```
+{
+  "presetName": "PA34T SENECA V", // a free-form text which is shown on the main screen to identify the preset activated
+  "aircraftName": "Seneca V",     // the aircraft name which should exactly correspond to the ATC_MODEL_VAR variable value
+  "bgColor": "0000",              // screen background color in the RGB
+  "screenFieldItems": [           // the screen fields definition section - these are fields which are shown on the screen and can be changed by the knobs
+                                  // screenFieldItems can contain any reasonable number of entries
+    {
+      "text": "HDG",         // the initial text to be shown on the screen
+      "x": "010",            // X coordinate of the top left corner of the field on the screen
+      "y": "010",            // Y coordinate of the top left corner of the field on the screen
+      "color": "FFE0",       // text color
+      "fontSize": "2",       // relative font size (normally - between 1 and 4)
+      "textWidth": 0,        // field width in characters, if zero - a "text" length is taken instead
+      "simVariable": "",     // the name of the Sim variable to bind the field to
+      "simEvent": "",        // the name of Sim event which is triggered if we need to change the variable value (helpful for read-only vars)
+      "unitOfMeasure": "",   // the unit of measure, i.e.: "feet", "inHg"
+      "simvarType": 0,       // simple values are just shown on the screen, booleans have two text/color variants
+                             // 0 - TYPE_STRING - the value is shown as string
+                             // 1 - TYPE_NUMBER - the value is rounded as defined by decimalPoints, padded with leading spaces
+                             // 2 - TYPE_P0_NUMBER - the value is rounded as defined by decimalPoints, padded with leading zeroes
+                             // 3 - TYPE_BOOLEAN - a special processing is performed if value is 1.0 (true) or 0.0 (false)
+      "decimalPlaces": 0,    // the number of decimals after the point
+      "altText": "",         // for boolean - text to show if value=false
+      "altColor": "",        // for boolean - color to use if value=false
+      "knobSpec": "",        // If set - associates the item with the dashboard encoder.
+                             // Format: NmmmmmmMMMMMMC
+                             // N - knob ID ('0' - '3'),
+                             // mmmmmm - minimum value (can have a leading minus sign)
+                             // MMMMMM - maximum value (can have a leading minus sign)
+                             // C - if 'Y' change the value in circle (when the knob rolls bellow the minumum, the value changes to max and vise versa).
+                             // Example: 1000000000359Y
+      "knobStep": ""         // Knob step specification. If it is parsable to integer (i.e. "0100") - this hard-coded value is taken.
+    },
+    ...
+  ],
+  "switchDefItems": [                // the switches behavior definition section
+    {                                // this section should contain precisely 20 entries, as this is the number of physical switches in our dashboard
+      "simEventOn": "STROBES_ON",    // the Sim event that should be triggered if switch turns ON
+      "simEventOnValue": 0,          // the value that should be send along with the ON event
+      "simEventOff": "STROBES_OFF",  // the Sim event that should be triggered if switch turns OFF
+      "simEventOffValue": 0          // the value that should be send along with the OFF event
+    },
+    ...
+  ]
+}
+```
+
+**|Additional comments on JSON format:**
+ * All color values are coded in the RGB565 format (see more details here: [http://www.barth-dev.de/online/rgb565-color-picker/](http://www.barth-dev.de/online/rgb565-color-picker/]))
+ * If the field text is specified as "\u0004", it will be shown on the dashboard's screen as a filled circle - this is an indicator which is widely used on real aircraft dashboards
+ * There is a possibility to use the [MobiFlight WASM module](https://github.com/Mobiflight/MobiFlight-WASM-Module) instead of regular SimConnect interfaces. It works for simVariable, simEvent, simEventOn, simEventOff definition, just start the variable or event definition with the opening bracket.
+   If the value is loaded from simVariable - the MobiFlight WASM LVARS channel is used. Expected format: "(L:MyVar)" 
+   If the value needs to be set according to the simVariable definition, it is changed to the following format "5 (>L:MyVar)" and sent to the simulator to be executed with [execute_calculator_code](https://docs.flightsimulator.com/html/Programming_Tools/WASM/Gauge_API/execute_calculator_code.htm).
+   simEvent, simEventOn, simEventOff texts are also executed with [execute_calculator_code](https://docs.flightsimulator.com/html/Programming_Tools/WASM/Gauge_API/execute_calculator_code.htm). Start the event definition with ! to identify that it should be sent to WASM.
+
+
+# Arduino Firmware
 
 ### Serial Connection Protocol
 

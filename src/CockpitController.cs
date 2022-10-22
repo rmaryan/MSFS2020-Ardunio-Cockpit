@@ -324,19 +324,34 @@ namespace MSFS2020_Ardunio_Cockpit
                         {
                             if (switchesState[i] == '1')
                             {
-                                int eventOFFID = presetsManager.GetSwitchEventOFFID(i);
-                                if (eventOFFID > -1)
+                                string eventOFF = presetsManager.GetSwitchEventOFF(i);
+                                if(eventOFF.StartsWith("!"))
                                 {
-                                    simControl.TransmitEvent((uint)eventOFFID, presetsManager.GetSwitchEventOFFValue(i));
+                                    simControl.WASMExecute(eventOFF.Substring(1));
+                                } else
+                                {
+                                    int eventOFFID = presetsManager.GetSwitchEventOFFID(i);
+                                    if (eventOFFID > -1)
+                                    {
+                                        simControl.TransmitEvent((uint)eventOFFID, presetsManager.GetSwitchEventOFFValue(i));
+                                    }
                                 }
                             }
                             else
                             if (message.Data[i] == '1')
                             {
-                                int eventONID = presetsManager.GetSwitchEventONID(i);
-                                if (eventONID > -1)
+                                string eventON = presetsManager.GetSwitchEventON(i);
+                                if (eventON.StartsWith("!"))
                                 {
-                                    simControl.TransmitEvent((uint)eventONID, presetsManager.GetSwitchEventONValue(i));
+                                    simControl.WASMExecute(eventON.Substring(1));
+                                }
+                                else
+                                {
+                                    int eventONID = presetsManager.GetSwitchEventONID(i);
+                                    if (eventONID > -1)
+                                    {
+                                        simControl.TransmitEvent((uint)eventONID, presetsManager.GetSwitchEventONValue(i));
+                                    }
                                 }
                             }
                             switchesState[i] = message.Data[i];
@@ -543,11 +558,18 @@ namespace MSFS2020_Ardunio_Cockpit
                 string eventOFF = presetsManager.GetSwitchEventOFF(i);
                 if (!eventON.Equals(""))
                 {
-                    presetsManager.SetSwitchEventONID(i, simControl.RegisterEvent(eventON));
+                    // no need to register event for WASM module
+                    if(!eventON.StartsWith("!"))
+                    {
+                        presetsManager.SetSwitchEventONID(i, simControl.RegisterEvent(eventON));
+                    }                    
                 }
                 if (!eventOFF.Equals(""))
                 {
-                    presetsManager.SetSwitchEventOFFID(i, simControl.RegisterEvent(eventOFF));
+                    if (!eventOFF.StartsWith("!"))
+                    {
+                        presetsManager.SetSwitchEventOFFID(i, simControl.RegisterEvent(eventOFF));
+                    }
                 }
             }
 
@@ -556,8 +578,8 @@ namespace MSFS2020_Ardunio_Cockpit
 
         public void ShowCurrentPresetJSON()
         {
-            if(presetsManager.pID > -1)
-            {
+            if (presetsManager.pID > -1)
+            {                
                 mainWindow_ref.AppendLogMessage(JsonConvert.SerializeObject(presetsManager.presets[presetsManager.pID]));
             }           
         }
