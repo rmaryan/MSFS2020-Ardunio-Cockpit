@@ -120,9 +120,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="nicetitles.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="presets\a32nx.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

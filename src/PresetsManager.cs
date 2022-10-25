@@ -114,6 +114,7 @@ namespace MSFS2020_Ardunio_Cockpit
 
     internal class SwitchDefItem
     {
+        public string switchLabel = ""; // the label to be shown on the app screen
         public string simEventOn = "";  // event to trigger when turned on
         [JsonIgnore]
         public int simEventOnID = -1;
@@ -150,26 +151,11 @@ namespace MSFS2020_Ardunio_Cockpit
             "ENC 1 / SW 12","ENC 2 / SW 13","ENC 3 / SW 14","ENC 4 / SW 15","SW 16","SW 17","SW 18","SW 19"
         };
         private string[] presetSwitchLabels = new string[14];
-        private readonly Dictionary<string, string> SIMVAR_TO_TITLE_MAP = new Dictionary<string, string>();
-
-        private string _niceTitle(string key)
-        {
-            if (!SIMVAR_TO_TITLE_MAP.TryGetValue(key, out string result))
-            {
-                result = key;
-            }
-            return result;
-        }
 
         public List<CockpitPreset> presets = new List<CockpitPreset>();
         public int pID = -1; // current preset ID
         public PresetsManager()
         {
-            // initialize the mapping between the Sim Var names and human-readable titles
-            string fileName = "nicetitles.json";
-            string jsonString = File.ReadAllText(fileName);
-            SIMVAR_TO_TITLE_MAP = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString);
-
             // load all available presets
             string[] files = Directory.GetFiles("presets", "*.json");
             foreach (string file in files)
@@ -317,28 +303,14 @@ namespace MSFS2020_Ardunio_Cockpit
             // 3-positions switches
             for (int i = 0; i < 6; i++)
             {
-                presetSwitchLabels[i] = _niceTitle(presets[pID].switchDefItems[i * 2].simEventOn) + '\n' +
-                    _niceTitle(presets[pID].switchDefItems[i * 2].simEventOff) + '\n' +
-                    _niceTitle(presets[pID].switchDefItems[i * 2 + 1].simEventOff) + '\n' +
-                    _niceTitle(presets[pID].switchDefItems[i * 2 + 1].simEventOn);
+                presetSwitchLabels[i] = presets[pID].switchDefItems[i * 2].switchLabel + '\n' +
+                    presets[pID].switchDefItems[i * 2 + 1].switchLabel;
             }
 
             // pushbuttons
             for (int i = 6; i < 14; i++)
             {
-                presetSwitchLabels[i] = _niceTitle(presets[pID].switchDefItems[i + 6].simEventOn) + '\n' +
-                    _niceTitle(presets[pID].switchDefItems[i + 6].simEventOff);
-            }
-
-            // knobs
-            for (int i = 0; i < presets[pID].screenFieldItems.Count; i++)
-            {
-                if (!presets[pID].screenFieldItems[i].knobSpec.Equals(""))
-                {
-                    int knobID = presets[pID].screenFieldItems[i].knobSpec[0] - '0';
-                    presetSwitchLabels[knobID + 6] = _niceTitle(presets[pID].screenFieldItems[i].simVariable) + "\n\n" +
-                        presetSwitchLabels[knobID + 6];
-                }
+                presetSwitchLabels[i] = presets[pID].switchDefItems[i + 6].switchLabel;
             }
         }
     }

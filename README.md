@@ -93,6 +93,7 @@ The format of the JSON file is the following:
   ],
   "switchDefItems": [                // the switches behavior definition section
     {                                // this section should contain precisely 20 entries, as this is the number of physical switches in our dashboard
+      "switchLabel": "STRB ON\nOFF", // the label to be shown in the main window (so the user will remember the switch purpose)
       "simEventOn": "STROBES_ON",    // the Sim event that should be triggered if switch turns ON
       "simEventOnValue": 0,          // the value that should be send along with the ON event
       "simEventOff": "STROBES_OFF",  // the Sim event that should be triggered if switch turns OFF

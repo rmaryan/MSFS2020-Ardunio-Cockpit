@@ -244,120 +244,140 @@
   ],
   "switchDefItems": [
     {
+      "switchLabel": "STRB ON\nSTRB OFF",
       "simEventOn": "STROBES_ON",
       "simEventOnValue": 0,
       "simEventOff": "STROBES_OFF",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "NAV ON\nNAV OFF",
       "simEventOn": "NAV_LIGHTS_ON",
       "simEventOnValue": 0,
       "simEventOff": "NAV_LIGHTS_OFF",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "TAXI ON\nTAXI OFF",
       "simEventOn": "TAXI_LIGHTS_ON",
       "simEventOnValue": 0,
       "simEventOff": "TAXI_LIGHTS_OFF",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "LDG ON\nLDG OFF",
       "simEventOn": "LANDING_LIGHTS_ON",
       "simEventOnValue": 0,
       "simEventOff": "LANDING_LIGHTS_OFF",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "GEAR UP",
       "simEventOn": "GEAR_UP",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "GEAR DOWN",
       "simEventOn": "GEAR_DOWN",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "QNH",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",

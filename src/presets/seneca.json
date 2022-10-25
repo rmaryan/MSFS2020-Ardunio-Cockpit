@@ -329,121 +329,141 @@
   ],
   "switchDefItems": [
     {
-      "simEventOn": "!0 (>L:XMLVAR_StrobeBeaconState,enum)",
+      "switchLabel": "STRB ON\nOFF",
+      "simEventOn": "!0 (>L:XMLVAR_StrobeBeaconState,enum) > 1 (>A:LIGHT STROBE,Bool)",
       "simEventOnValue": 0,
-      "simEventOff": "!1 (>L:XMLVAR_StrobeBeaconState,enum)",
+      "simEventOff": "!1 (>L:XMLVAR_StrobeBeaconState,enum) > 0 (>A:LIGHT STROBE,Bool)",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "!2 (>L:XMLVAR_StrobeBeaconState,enum)",
+      "switchLabel": "BCN ON",
+      "simEventOn": "!2 (>L:XMLVAR_StrobeBeaconState,enum) > 1 (>A:LIGHT BEACON,Bool)",
       "simEventOnValue": 0,
-      "simEventOff": "!1 (>L:XMLVAR_StrobeBeaconState,enum)",
+      "simEventOff": "!1 (>L:XMLVAR_StrobeBeaconState,enum) > 0 (>A:LIGHT BEACON,Bool)",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "NAV ON\nNAV OFF",
       "simEventOn": "NAV_LIGHTS_ON",
       "simEventOnValue": 0,
       "simEventOff": "NAV_LIGHTS_OFF",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "",
+      "switchLabel": "AP ON\nFD ON\nAP OFF",
+      "simEventOn": "!0 (>L:XMLVAR_SWITCH_AP_FD,enum) > (>K:AUTOPILOT_ON)",
       "simEventOnValue": 0,
-      "simEventOff": "",
+      "simEventOff": "!(A:AUTOPILOT FLIGHT DIRECTOR ACTIVE,bool) ! if{ 1 (>K:TOGGLE_FLIGHT_DIRECTOR) } 1 (>K:AUTOPILOT_OFF) 1 (>L:XMLVAR_SWITCH_AP_FD,enum)",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "",
+      "switchLabel": "",
+      "simEventOn": "!(A:AUTOPILOT FLIGHT DIRECTOR ACTIVE,bool) if{ 0 (>K:TOGGLE_FLIGHT_DIRECTOR) } 1 (>K:AUTOPILOT_OFF) 2 (>L:XMLVAR_SWITCH_AP_FD,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "",
+      "simEventOff": "!(A:AUTOPILOT FLIGHT DIRECTOR ACTIVE,bool) ! if{ 1 (>K:TOGGLE_FLIGHT_DIRECTOR) } 1 (>K:AUTOPILOT_OFF) 1 (>L:XMLVAR_SWITCH_AP_FD,enum)",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "TAXI ON\nTAXI OFF",
       "simEventOn": "TAXI_LIGHTS_ON",
       "simEventOnValue": 0,
       "simEventOff": "TAXI_LIGHTS_OFF",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "LDG\nOFF",
       "simEventOn": "!0 (>L:XMLVAR_LandingPulseState,enum) > 1 (>A:LIGHT LANDING,bool)",
       "simEventOnValue": 0,
       "simEventOff": "!1 (>L:XMLVAR_LandingPulseState,enum) > 0 (>A:LIGHT LANDING,bool)",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "PULSE",
       "simEventOn": "!2 (>L:XMLVAR_LandingPulseState,enum) > 1 (>A:LIGHT RECOGNITION,bool)",
       "simEventOnValue": 0,
       "simEventOff": "!1 (>L:XMLVAR_LandingPulseState,enum) > 0 (>A:LIGHT RECOGNITION,bool)",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "GEAR UP\n",
       "simEventOn": "GEAR_UP",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "\nGEAR DOWN",
       "simEventOn": "GEAR_DOWN",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_HDG_HOLD_ON",
+      "switchLabel": "AP HDG\n\nAP HDG LOCK",
+      "simEventOn": "AP_HDG_HOLD",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_NAV1_HOLD_ON",
+      "switchLabel": "AP CRS\n\nAP NAV LOCK",
+      "simEventOn": "AP_NAV1_HOLD",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_VS_ON",
+      "switchLabel": "AP V/S\n\nAP V/S LOCK",
+      "simEventOn": "!99999 (>K:AP_ALT_VAR_SET_ENGLISH) (A:AUTOPILOT VERTICAL HOLD,bool) if{ (>K:AP_PANEL_VS_HOLD) } els{ (>K:AP_PANEL_VS_HOLD) }",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "QNH",
       "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_HDG_HOLD_OFF",
+      "switchLabel": "",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_NAV1_HOLD_OFF",
+      "switchLabel": "",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_ALT_HOLD_ON",
+      "switchLabel": "\nAP ALT HOLD",
+      "simEventOn": "!(A:AUTOPILOT ALTITUDE LOCK, bool) if{ (>K:AP_ALT_HOLD) 99999 (>K:AP_ALT_VAR_SET_ENGLISH) } els{ (>K:AP_ALT_HOLD) }",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "simEventOn": "AP_APR_HOLD_ON",
+      "switchLabel": "\nAP APPR",
+      "simEventOn": "!(A:AUTOPILOT APPROACH HOLD, bool) (A:AUTOPILOT GLIDESLOPE HOLD, bool) ! and if{ (>K:AP_APR_HOLD) } (>K:AP_APR_HOLD)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
