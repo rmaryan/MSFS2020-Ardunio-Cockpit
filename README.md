@@ -63,6 +63,14 @@ The format of the JSON file is the following:
   "screenFieldItems": [           // the screen fields definition section - these are fields which are shown on the screen and can be changed by the knobs
                                   // screenFieldItems can contain any reasonable number of entries
     {
+      "visibilityCondition": "", // optional visibility statement. If empty or not specified - the field is always visible.
+                                 // If not empty - the visibility evaluation condition should be specified.
+                                 // The unit of measure may be embedded into WASM variable definition, or after a comma for a regular SimConnect variable.
+                                 // Unit of measure is optional.
+                                 // Format: "SOMEWAR,SOMEUNIT=SOMEVALUE"
+                                 // Ex: "FLAPS HANDLE INDEX,enum=1"
+                                 //     "FLAPS HANDLE INDEX=1"
+                                 //     "(L:A32NX_FLAPS_HANDLE_INDEX,enum)=1"
       "text": "HDG",         // the initial text to be shown on the screen
       "x": "010",            // X coordinate of the top left corner of the field on the screen
       "y": "010",            // Y coordinate of the top left corner of the field on the screen
@@ -104,7 +112,7 @@ The format of the JSON file is the following:
 }
 ```
 
-**|Additional comments on JSON format:**
+**Additional comments on JSON format:**
  * All color values are coded in the RGB565 format (see more details here: [http://www.barth-dev.de/online/rgb565-color-picker/](http://www.barth-dev.de/online/rgb565-color-picker/]))
  * If the field text is specified as "\u0004", it will be shown on the dashboard's screen as a filled circle - this is an indicator which is widely used on real aircraft dashboards
  * There is a possibility to use the [MobiFlight WASM module](https://github.com/Mobiflight/MobiFlight-WASM-Module) instead of regular SimConnect interfaces. It works for simVariable, simEvent, simEventOn, simEventOff definition, just start the variable or event definition with the opening bracket.
@@ -139,6 +147,7 @@ In all messages, the first letter defines the message type. The ending character
 | T | TNNxxx... | Change field text. Can be sent outside of the configuration mode. <br/> NN - item ID, starts from 1<br/>xxx... Text to be placed in the field (all text till the command end is loaded). In configuration mode, text changes will be shown on the screen after the "S" message, together with all other layout changes. |
 | K | KNFFmmmmmmMMMMMMCDSSSS | Knob behavior definition. N - knob ID (0 - 3),  FF - associated screen item ID (starts from 1, the knob rotation will instantly update the associated field on the screen, if no field associated - put two spaces here '  '), mmmmmm - minimum value (can have a leading minus sign), MMMMMM - maximum value (can have a leading minus sign), C - if 'Y' change the value in circle (when the knob rolls bellow the minimum, the value changes to max and vise versa), D - number of digits after decimal points, SSSS - change step (integer). Example: K102000000000359Y00001  |
 | D | DNVVVVV | Set the knob current value. N - knob ID (0 - 3), VVVVV - value (can have a leading minus sign. Please note - if some screen was associated with that knob - the value on the screen is also updated. No need to send a T-command. |
+| A | ANV | Activate or deactivate knob. N - knob ID (0 - 3), V - if "0" knob gets deactivated, otherwise - activated. In deactivated mode - knob rotations are ignored, screen field is not updated. |
 | R | R | Reset the screen. Arduino will go to the initial "Waiting..." state. |
 
 #### Messages from Arduino to PC

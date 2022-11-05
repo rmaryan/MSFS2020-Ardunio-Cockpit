@@ -140,91 +140,133 @@ namespace MSFS2020_Ardunio_Cockpit
             }
             else
             {
+                // regular messages processing
+                Debug.WriteLine($"Received: {simActivity.Variable}={simActivity.Value}");
+
+                // check for the relevant visibility statements first
+                foreach (VisibilityCondition vc in presetsManager.GetVisibilityConditions())
+                {
+                    if (simActivity.Variable.Equals(vc.visibilityVar))
+                    {
+                        ScreenFieldItem item = presetsManager.GetScreenFieldItem(vc.screenItemID);
+                        item.visible = PresetsManager.EvaluateVisibilityFlag(simActivity.Value, vc);
+                        Debug.WriteLine($"Setting Visible: {simActivity.Variable}({vc.screenItemID})->{item.visible}");
+                        // send to Arduino the last known item text (that's why null as a first parameter)
+                        PushFieldChangeToArduino(null, vc.screenItemID, item);
+                    }
+                }
+
                 int itemID = presetsManager.GetItemIDForSimVar(simActivity.Variable);
                 if (itemID >= 0)
                 {
                     ScreenFieldItem item = presetsManager.GetScreenFieldItem(itemID);
-                    string itemIDStr = (itemID + 1).ToString("D2");
+                    PushFieldChangeToArduino(simActivity.Value, itemID, item);
+                }
+            }
+        }
+
+        private void PushFieldChangeToArduino(string value, int itemID, ScreenFieldItem item)
+        {
+            // if value = null, the last known field value will be displayed
+
+            string itemIDStr = (itemID + 1).ToString("D2");
+
+            if (item.simvarType == SIMVAR_TYPE.TYPE_BOOLEAN)
+            {
+
+                try
+                {
+                    if (value != null)
+                    {
+                        // the value is false if equals to 0.0, otherwise - true
+                        item.lastBooleanValue = (Convert.ToDouble(value) != 0.0);
+                    }
+                }
+                finally
+                {
+                    if (item.lastBooleanValue)
+                    {
+                        arduinoControl.SendMessage('I', itemIDStr + item.screenItemDefinition);
+                        arduinoControl.SendMessage('T', itemIDStr + item.text);
+                    }
+                    else
+                    {
+                        // replace the color in the item definition
+                        string alt_screenItemDefinition = item.screenItemDefinition.Substring(0, 6) + item.altColor + item.screenItemDefinition.Substring(10, 3) + '*';
+                        arduinoControl.SendMessage('I', itemIDStr + alt_screenItemDefinition);
+                        arduinoControl.SendMessage('T', itemIDStr + item.altText);
+                    }
+                }
+            }
+            else
+            {
+                if (value != null)
+                {
+
                     if (item.simvarType == SIMVAR_TYPE.TYPE_STRING)
                     {
-                        arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth));
+                        item.text = value.PadLeft(item.textWidth);
                     }
                     else
                     if ((item.simvarType == SIMVAR_TYPE.TYPE_NUMBER) || (item.simvarType == SIMVAR_TYPE.TYPE_P0_NUMBER))
                     {
-
                         // round the value first
-                        if (double.TryParse(simActivity.Value, NumberStyles.Float, null, out double dValue))
+                        if (double.TryParse(value, NumberStyles.Float, null, out double dValue))
                         {
                             dValue = Math.Round(dValue, item.decimalPlaces);
-                            simActivity.Value = dValue.ToString("F" + item.decimalPlaces.ToString(), CultureInfo.InvariantCulture);
+                            value = dValue.ToString("F" + item.decimalPlaces.ToString(), CultureInfo.InvariantCulture);
                         }
 
                         if (item.knobSpec != "")
                         {
-                            // debounce the knobs changes, ignore value changes from simvar for some time
-                            if ((DateTime.Now.Ticks - knobLastChangeTicks[item.knobSpec[0] - '0']) > KNOB_DEBOUNCE_TICKS)
+                            if (dValue < 0)
                             {
-                                if (dValue < 0)
-                                {
-                                    arduinoControl.SendMessage('D', item.knobSpec[0] +
-                                        "-" +
-                                        simActivity.Value.Substring(1).PadLeft(4, '0'));
-                                }
-                                else
-                                {
-                                    arduinoControl.SendMessage('D', item.knobSpec[0] + 
-                                        simActivity.Value.PadLeft(5, '0'));
-                                }
+                                item.text = "-" + value.Substring(1).PadLeft(4, '0');
+                            }
+                            else
+                            {
+                                item.text = value.PadLeft(5, '0');
                             }
                         }
                         else
                         {
                             if (item.simvarType == SIMVAR_TYPE.TYPE_NUMBER)
                             {
-                                arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth, ' '));
+                                item.text = value.PadLeft(item.textWidth, ' ');
                             }
                             else
                             {
                                 if (dValue < 0)
                                 {
                                     // move the negative sign to the first place before padding with zeroes
-                                    arduinoControl.SendMessage('T', itemIDStr +
-                                        '-' +
-                                        simActivity.Value.Substring(1).PadLeft(item.textWidth - 1, '0'));
+                                    item.text = '-' + value.Substring(1).PadLeft(item.textWidth - 1, '0');
                                 }
                                 else
                                 {
-                                    arduinoControl.SendMessage('T', itemIDStr + simActivity.Value.PadLeft(item.textWidth, '0'));
+                                    item.text = value.PadLeft(item.textWidth, '0');
                                 }
                             }
                         }
                     }
-                    else
-                    if (item.simvarType == SIMVAR_TYPE.TYPE_BOOLEAN)
+                }
+
+                if (item.knobSpec != "")
+                {
+                    if(value == null)
                     {
-                        // the value is false if equals to 0.0, otherwise - true
-                        bool boolValue = false;
-                        try
-                        {
-                            boolValue = (Convert.ToDouble(simActivity.Value) != 0.0);
-                        }
-                        finally
-                        {
-                            if (boolValue)
-                            {
-                                arduinoControl.SendMessage('I', itemIDStr + item.screenItemDefinition);
-                                arduinoControl.SendMessage('T', itemIDStr + item.text);
-                            }
-                            else
-                            {
-                                // replace the color in the item definition
-                                string alt_screenItemDefinition = item.screenItemDefinition.Substring(0, 6) + item.altColor + item.screenItemDefinition.Substring(10, 3) + '*';
-                                arduinoControl.SendMessage('I', itemIDStr + alt_screenItemDefinition);
-                                arduinoControl.SendMessage('T', itemIDStr + item.altText);
-                            }
-                        }
+                        // having value null means just the visibility state was changed
+                        arduinoControl.SendMessage('A', item.knobSpec[0] + (item.visible?"1":"0"));
                     }
+                    // debounce the knobs changes, ignore value changes from simvar for some time
+                    if ((DateTime.Now.Ticks - knobLastChangeTicks[item.knobSpec[0] - '0']) > KNOB_DEBOUNCE_TICKS)
+                    {
+                        arduinoControl.SendMessage('D', item.knobSpec[0] + item.text.PadLeft(5, '0'));
+                    }
+                }
+                else
+                if (item.visible)
+                {
+                        arduinoControl.SendMessage('T', itemIDStr + item.text);
                 }
             }
         }
@@ -325,10 +367,11 @@ namespace MSFS2020_Ardunio_Cockpit
                             if (switchesState[i] == '1')
                             {
                                 string eventOFF = presetsManager.GetSwitchEventOFF(i);
-                                if(eventOFF.StartsWith("!"))
+                                if (eventOFF.StartsWith("!"))
                                 {
                                     simControl.WASMExecute(eventOFF.Substring(1));
-                                } else
+                                }
+                                else
                                 {
                                     int eventOFFID = presetsManager.GetSwitchEventOFFID(i);
                                     if (eventOFFID > -1)
@@ -506,6 +549,12 @@ namespace MSFS2020_Ardunio_Cockpit
                 // I - definition of the items (one line per item)
                 arduinoControl.SendMessage('I', itemID + item.screenItemDefinition);
 
+                // all items with the visibility condition set are invisible and inactive by default
+                if (item.visibilityCondition != "")
+                {
+                    item.visible = false;
+                }
+
                 if (item.knobSpec != "")
                 {
                     // knob-bound items are initialized a bit differently
@@ -521,12 +570,19 @@ namespace MSFS2020_Ardunio_Cockpit
                         arduinoControl.SendMessage('K', item.knobSpec[0] + itemID + item.knobSpec.Substring(1) + item.decimalPlaces + item.knobStep);
                         // DNVVVVV
                         arduinoControl.SendMessage('D', item.knobSpec[0] + item.text.PadLeft(5, '0'));
+                        if (!item.visible)
+                        {
+                            arduinoControl.SendMessage('A', item.knobSpec[0] + "0");
+                        }
                     }
                 }
                 else
                 {
                     // T - sending the initial text value
-                    arduinoControl.SendMessage('T', itemID + item.text);
+                    if (item.visible)
+                    {
+                        arduinoControl.SendMessage('T', itemID + item.text);
+                    }
                 }
                 // Give Arduino some time to process the preset items
                 Thread.Sleep(100);
@@ -548,7 +604,13 @@ namespace MSFS2020_Ardunio_Cockpit
                         item.simEventID = simControl.RegisterEvent(item.simEvent);
                     }
                 }
+            }
 
+            // register the field visibility monitoring
+            foreach (VisibilityCondition vc in presetsManager.GetVisibilityConditions())
+            {
+                // Register to the condition variable
+                simControl.AddVarRequest(vc.visibilityVar, vc.visibilityVarUnit);
             }
 
             // register the switches events
@@ -559,10 +621,10 @@ namespace MSFS2020_Ardunio_Cockpit
                 if (!eventON.Equals(""))
                 {
                     // no need to register event for WASM module
-                    if(!eventON.StartsWith("!"))
+                    if (!eventON.StartsWith("!"))
                     {
                         presetsManager.SetSwitchEventONID(i, simControl.RegisterEvent(eventON));
-                    }                    
+                    }
                 }
                 if (!eventOFF.Equals(""))
                 {
@@ -576,12 +638,14 @@ namespace MSFS2020_Ardunio_Cockpit
             mainWindow_ref.SetSwitchLabels(presetsManager.GetPresetSwitchLabels());
         }
 
+        // This is a debug function activated on the preset title label double-click.
+        // Use it to validate what was loaded from the preset JSON file
         public void ShowCurrentPresetJSON()
         {
             if (presetsManager.pID > -1)
-            {                
+            {
                 mainWindow_ref.AppendLogMessage(JsonConvert.SerializeObject(presetsManager.presets[presetsManager.pID]));
-            }           
+            }
         }
     }
 }

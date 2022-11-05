@@ -86,6 +86,7 @@ struct KnobState {
   uint8_t decimalPlaces = 0;
   double step;
   bool cycle;
+  bool active = true;
 } knobStates[4];
 
 // switches
@@ -108,6 +109,12 @@ bool refreshKnob(uint8_t knobID) {
   bool knobChanged = false;
   long newPosition = knobs[knobID].read() / CHANGE_PER_CLICK;
   if (newPosition != knobStates[knobID].lastKnobPosition) {
+    
+    if(!knobStates[knobID].active) {
+      knobStates[knobID].lastKnobPosition = newPosition;
+      return false;
+    }
+
     knobChanged = true;
 
     // calculate the new value based on knob ticks

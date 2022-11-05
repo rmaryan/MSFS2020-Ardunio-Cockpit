@@ -161,15 +161,6 @@ namespace MSFSConnector
 
         private void SimConnect_OnGotWASMData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
         {
-            /** !!!
-        Debug.WriteLine($"dwRequestID={data.dwRequestID}");
-        Debug.WriteLine($"dwObjectID={data.dwObjectID}");
-        Debug.WriteLine($"dwDefineID={data.dwDefineID}");
-        Debug.WriteLine($"dwFlags={data.dwFlags}");
-        Debug.WriteLine($"dwentrynumber={data.dwentrynumber}");
-        Debug.WriteLine($"dwoutof={data.dwoutof}");
-        Debug.WriteLine($"dwDefineCount={data.dwDefineCount}");
-            */
             // Simvars use ID's starting from 10
             if (data.dwRequestID >= 10)
             {
@@ -232,6 +223,12 @@ namespace MSFSConnector
             // If the variable name starts with '(' - process it with the WASM
             if (simConnectVariable.StartsWith("("))
             {
+                if(WASMSimVars.Contains(simConnectVariable))
+                {
+                    // already registered
+                    return;
+                }
+
                 int nextID = WASMSimVars.Count + 10;
                 WASMSimVars.Add(simConnectVariable);
 
@@ -258,6 +255,14 @@ namespace MSFSConnector
             }
             else
             {
+                foreach(SimVar v in monitoredVars)
+                {
+                    if(v.name.Equals(simConnectVariable))
+                    {
+                        // already registered
+                        return;
+                    }
+                }
 
                 int nextID = monitoredVars.Count;
                 monitoredVars.Add(new SimVar(simConnectVariable, simConnectUnit));

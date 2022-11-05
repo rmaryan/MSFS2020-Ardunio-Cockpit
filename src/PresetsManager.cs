@@ -19,7 +19,11 @@
  */
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 
@@ -35,6 +39,10 @@ namespace MSFS2020_Ardunio_Cockpit
 
     internal class ScreenFieldItem
     {
+        public string visibilityCondition = ""; // if empty - the field is always visible
+        [JsonIgnore]
+        public Boolean visible = true;          // all fields are visible by default
+
         public string text = "";
 
         public string x = "0"; // field coordinates on the screen XXX
@@ -74,6 +82,8 @@ namespace MSFS2020_Ardunio_Cockpit
         public int decimalPlaces = 0;   // the number of decimals after the point
         public string altText = "";     // for boolean - text to show if value=false
         public string altColor = "";    // for boolean - color to use if value=false
+        [JsonIgnore]
+        public bool lastBooleanValue = true; // the last boolean value assumed for the field. Used only for TYPE_BOOLEAN.
         public string knobSpec = "";    // If set - associates the item with the dashboard encoder.
                                         // Format: NmmmmmmMMMMMMC
                                         // N - knob ID ('0' - '3'),
@@ -125,6 +135,29 @@ namespace MSFS2020_Ardunio_Cockpit
         public uint simEventOffValue = 0;
     }
 
+    internal class VisibilityCondition
+    {
+        // This class is used to store the visibility conditions and their references
+        public string visibilityVar = "";   // SimVar or WASM variable name (i.e. "FLAPS HANDLE INDEX" or "(L:A32NX_FLAPS_HANDLE_INDEX,enum)")
+        public string visibilityVarUnit = ""; // The unit of measure for the visibility variable. Taken into account only for regular SimConnect variables.
+        public string visibilityValue = ""; // The value expected to make the screen item visible (i.e. "1")
+        public double visibilityDValue = Double.MinValue; // The double representation of the visibilityValue. Double.MinValue if conversion is impossible.
+        public int screenItemID = -1;       // The ID of the screen item which visibility should be toggled
+
+        public VisibilityCondition(string vVar, string vUnit, string vVal, int sID)
+        {
+            visibilityVar = vVar;
+            visibilityValue = vVal;
+            screenItemID = sID;
+
+            if (!double.TryParse(visibilityValue, NumberStyles.Float, null, out visibilityDValue))
+            {
+                visibilityDValue = Double.MinValue;
+            }
+
+        }
+    }
+
     internal class CockpitPreset
     {
         public const uint SWITCHES_COUNT = 20; // overall switches count on the dashboard
@@ -135,12 +168,42 @@ namespace MSFS2020_Ardunio_Cockpit
         public List<ScreenFieldItem> screenFieldItems = new List<ScreenFieldItem>();
         public SwitchDefItem[] switchDefItems;
 
+        public List<VisibilityCondition> visibilityConditions = new List<VisibilityCondition>();
+
         public CockpitPreset()
         {
             switchDefItems = new SwitchDefItem[SWITCHES_COUNT];
             for (int i = 0; i < CockpitPreset.SWITCHES_COUNT; i++)
             {
                 switchDefItems[i] = new SwitchDefItem();
+            }
+        }
+        [OnDeserialized]
+        internal void OnDeserialized(StreamingContext context)
+        {
+            // parse the visibility condition statements
+            for (int i = 0; i < screenFieldItems.Count; i++)
+            {
+                if (screenFieldItems[i].visibilityCondition != "")
+                {
+                    string[] statements = screenFieldItems[i].visibilityCondition.Split('=');
+                    if (statements.Length == 2) {
+                        string varName = statements[0];
+                        string varUnit = "";
+                        if (statements[0][0]!='(')
+                        {
+                            // for regular variable - check if we have a type definition
+                            string[] varDef = statements[0].Split(',');
+                            if (varDef.Length == 2)
+                            {
+                                varName = varDef[0];
+                                varUnit = varDef[1];
+                            }
+                        }
+                        visibilityConditions.Add(new VisibilityCondition(varName, varUnit, statements[1], i));
+                        screenFieldItems[i].visible = false;
+                    }
+                }
             }
         }
     }
@@ -191,6 +254,28 @@ namespace MSFS2020_Ardunio_Cockpit
         public ScreenFieldItem GetScreenFieldItem(int itemID)
         {
             return (pID > -1) ? presets[pID].screenFieldItems[itemID] : null;
+        }
+
+        public List<VisibilityCondition> GetVisibilityConditions()
+        {
+            return (pID > -1) ? presets[pID].visibilityConditions : null;
+        }
+
+        /**
+         * Returns 1 if the item should be visible, 0 - if invisible.
+         */
+        public static bool EvaluateVisibilityFlag(string visibilityValue, VisibilityCondition vc)
+        {
+            // if the values are convertable to double - a double comparison is performed
+            // otherwise - a String comparison is done
+            if (vc.visibilityDValue > Double.MinValue)
+            {
+                if (double.TryParse(visibilityValue, NumberStyles.Float, null, out double visibilityDValue))
+                {
+                    return (visibilityDValue == vc.visibilityDValue);
+                }
+            }
+            return visibilityValue.Equals(vc.visibilityValue);
         }
 
         public int GetItemIDForSimVar(string simVar)
