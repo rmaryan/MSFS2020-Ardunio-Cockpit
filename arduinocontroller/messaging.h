@@ -190,6 +190,10 @@ void processMessage(String rawMessage)
         break;
       }
       knobStates[knobID].active = (rawMessage[2] != '0');
+      if(knobStates[knobID].active) {
+        // force knob field repaint
+        DrawItem(knobStates[knobID].fieldID - 1);
+      }
 
       break;
     case 'R':

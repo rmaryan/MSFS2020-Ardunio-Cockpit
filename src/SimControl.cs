@@ -202,6 +202,8 @@ namespace MSFSConnector
                     );
 
                     WasmModuleClient.SetConfig(_simConnect, "MAX_VARS_PER_FRAME", "30");
+                    // wipe the old variables if they survived somehow
+                    WasmModuleClient.Stop(_simConnect);
                 }
                 else
                 {
@@ -350,9 +352,7 @@ namespace MSFSConnector
         public void WASMExecute(string code)        
         {
             Debug.WriteLine($"Executing code: {code}");
-            // the "code" is directly fed to the Sim execute_calculator_code
-            WasmModuleClient.SendWasmCmd(_simConnect, "MF.SimVars.Set." + code);
-            WasmModuleClient.DummyCommand(_simConnect);
+            WasmModuleClient.WASMExecute(_simConnect, code);
         }
 
         public void RemoveAllRequests()

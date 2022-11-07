@@ -28,9 +28,8 @@
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 3,
-      //"simVariable": "(L:A32NX_AUTOPILOT_SPEED_SELECTED)", 
-      "simVariable": "AUTOPILOT AIRSPEED HOLD VAR",
-      "simEvent": "AP_SPD_VAR_SET",
+      "simVariable": "(L:A32NX_AUTOPILOT_SPEED_SELECTED)", 
+      "simEvent": "!(>K:A32NX.FCU_SPD_SET)",
       "unitOfMeasure": "knots",
       "simvarType": 2,
       "decimalPlaces": 0,
@@ -497,7 +496,7 @@
     },
     {
       "switchLabel": "",
-      "simEventOn": "!1 (>K:A32NX.FCU_VS_PULL)",
+      "simEventOn": "AP_AIRSPEED_OFF",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0

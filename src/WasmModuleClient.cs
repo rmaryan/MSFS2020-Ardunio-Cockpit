@@ -85,8 +85,8 @@ namespace MSFSConnector
             );
 
             // Registering the custom client in the main commands channel
-            WasmModuleClient.SendWasmCmd(simConnect, "MF.DummyCmd", SIMCONNECT_CLIENT_DATA_ID.MOBIFLIGHT_CMD);
-            WasmModuleClient.SendWasmCmd(simConnect, "MF.Clients.Add."+ clientName, SIMCONNECT_CLIENT_DATA_ID.MOBIFLIGHT_CMD);
+            SendWasmCmd(simConnect, "MF.DummyCmd", SIMCONNECT_CLIENT_DATA_ID.MOBIFLIGHT_CMD);
+            SendWasmCmd(simConnect, "MF.Clients.Add."+ clientName, SIMCONNECT_CLIENT_DATA_ID.MOBIFLIGHT_CMD);
         }
 
         public static void Ping(SimConnect simConnect)
@@ -125,6 +125,12 @@ namespace MSFSConnector
 
             SendWasmCmd(simConnect, $"MF.Config.{ConfigName}.Set.{ConfigValue}");
             DummyCommand(simConnect);
+        }
+
+        public static void WASMExecute(SimConnect simConnect, string code)
+        {
+            WasmModuleClient.SendWasmCmd(simConnect, "MF.SimVars.Set." + code);
+            WasmModuleClient.DummyCommand(simConnect);
         }
 
         public static void SendWasmCmd(SimConnect simConnect, String command, SIMCONNECT_CLIENT_DATA_ID clientID = SIMCONNECT_CLIENT_DATA_ID.CLIENT_CMD)

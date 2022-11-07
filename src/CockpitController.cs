@@ -352,7 +352,14 @@ namespace MSFS2020_Ardunio_Cockpit
                                     {
                                         value = (uint)d;
                                     }
-                                    simControl.TransmitEvent((uint)item.simEventID, value);
+                                    if (item.simEventID == int.MaxValue)
+                                    {
+                                        simControl.WASMExecute($"{value} {item.simEvent.Substring(1)}");
+                                    }
+                                    else
+                                    {
+                                        simControl.TransmitEvent((uint)item.simEventID, value);
+                                    }
                                 }
                                 knobLastChangeTicks[knobID] = DateTime.Now.Ticks;
                             }
@@ -601,7 +608,14 @@ namespace MSFS2020_Ardunio_Cockpit
                     simControl.AddVarRequest(item.simVariable, item.unitOfMeasure);
                     if (!item.simEvent.Equals(""))
                     {
-                        item.simEventID = simControl.RegisterEvent(item.simEvent);
+                        if(item.simEvent.StartsWith("!"))
+                        {
+                            // no need to register WASM event
+                            item.simEventID = int.MaxValue;
+                        } else
+                        {
+                            item.simEventID = simControl.RegisterEvent(item.simEvent);
+                        }                        
                     }
                 }
             }
