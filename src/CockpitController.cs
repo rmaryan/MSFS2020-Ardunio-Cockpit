@@ -47,6 +47,8 @@ namespace MSFS2020_Ardunio_Cockpit
         // knobs debounce time: 500 ms
         private readonly long KNOB_DEBOUNCE_TICKS = 500 * TimeSpan.TicksPerMillisecond;
         private long[] knobLastChangeTicks = { 0, 0, 0, 0 };
+        // we should not accept updates from the knobs until the proper value was loaded from the sim
+        private bool[] knobValueSet = { false, false, false, false };
 
         private char[] switchesState = new char[CockpitPreset.SWITCHES_COUNT];
 
@@ -150,7 +152,6 @@ namespace MSFS2020_Ardunio_Cockpit
                     {
                         ScreenFieldItem item = presetsManager.GetScreenFieldItem(vc.screenItemID);
                         item.visible = PresetsManager.EvaluateVisibilityFlag(simActivity.Value, vc);
-                        Debug.WriteLine($"Setting Visible: {simActivity.Variable}({vc.screenItemID})->{item.visible}");
                         // send to Arduino the last known item text (that's why null as a first parameter)
                         PushFieldChangeToArduino(null, vc.screenItemID, item);
                     }
@@ -261,6 +262,7 @@ namespace MSFS2020_Ardunio_Cockpit
                     if ((DateTime.Now.Ticks - knobLastChangeTicks[item.knobSpec[0] - '0']) > KNOB_DEBOUNCE_TICKS)
                     {
                         arduinoControl.SendMessage('D', item.knobSpec[0] + item.text.PadLeft(5, '0'));
+                        knobValueSet[item.knobSpec[0] - '0'] = true;
                     }
                 }
                 else
@@ -317,51 +319,56 @@ namespace MSFS2020_Ardunio_Cockpit
                     {
                         int knobID = message.Data[0] - '0';
 
-                        if ((knobID >= 0) && (knobID <= 3))
+                        // ignore knob settings until a proper value was sent to Arduino
+                        if (knobValueSet[knobID])
                         {
-                            if (knobToVarMapping[knobID] != -1)
-                            {
-                                ScreenFieldItem item = presetsManager.GetScreenFieldItem(knobToVarMapping[knobID]);
-                                if (item.simEventID == -1)
-                                {
-                                    simControl.SetVarValue(item.simVariable, message.Data.Substring(1));
-                                }
-                                else
-                                {
-                                    uint value = 0;
-                                    if (!Double.TryParse(message.Data.Substring(1), NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
-                                    {
-                                        // malformed number
-                                        break;
-                                    }
 
-                                    // a separate hack for KOHLSMAN_SET
-                                    // we assume it is 
-                                    if (item.simEvent.Equals("KOHLSMAN_SET"))
+                            if ((knobID >= 0) && (knobID <= 3))
+                            {
+                                if (knobToVarMapping[knobID] != -1)
+                                {
+                                    ScreenFieldItem item = presetsManager.GetScreenFieldItem(knobToVarMapping[knobID]);
+                                    if (item.simEventID == -1)
                                     {
-                                        if (item.unitOfMeasure == "millibars")
+                                        simControl.SetVarValue(item.simVariable, message.Data.Substring(1));
+                                    }
+                                    else
+                                    {
+                                        uint value = 0;
+                                        if (!Double.TryParse(message.Data.Substring(1), NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
                                         {
-                                            value = (uint)(d * 16);
+                                            // malformed number
+                                            break;
+                                        }
+
+                                        // a separate hack for KOHLSMAN_SET
+                                        // we assume it is 
+                                        if (item.simEvent.Equals("KOHLSMAN_SET"))
+                                        {
+                                            if (item.unitOfMeasure == "millibars")
+                                            {
+                                                value = (uint)(d * 16);
+                                            }
+                                            else
+                                            {
+                                                value = (uint)(d * 541.8224);
+                                            }
                                         }
                                         else
                                         {
-                                            value = (uint)(d * 541.8224);
+                                            value = (uint)d;
+                                        }
+                                        if (item.simEventID == int.MaxValue)
+                                        {
+                                            simControl.WASMExecute($"{value} {item.simEvent.Substring(1)}");
+                                        }
+                                        else
+                                        {
+                                            simControl.TransmitEvent((uint)item.simEventID, value);
                                         }
                                     }
-                                    else
-                                    {
-                                        value = (uint)d;
-                                    }
-                                    if (item.simEventID == int.MaxValue)
-                                    {
-                                        simControl.WASMExecute($"{value} {item.simEvent.Substring(1)}");
-                                    }
-                                    else
-                                    {
-                                        simControl.TransmitEvent((uint)item.simEventID, value);
-                                    }
+                                    knobLastChangeTicks[knobID] = DateTime.Now.Ticks;
                                 }
-                                knobLastChangeTicks[knobID] = DateTime.Now.Ticks;
                             }
                         }
                     }
@@ -542,6 +549,7 @@ namespace MSFS2020_Ardunio_Cockpit
             for (int i = 0; i < 4; i++)
             {
                 knobToVarMapping[i] = -1;
+                knobValueSet[i] = false;
             }
 
             // C - start configuration

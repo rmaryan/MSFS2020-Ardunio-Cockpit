@@ -113,7 +113,7 @@ The format of the JSON file is the following:
 ```
 
 **Additional comments on JSON format:**
- * All color values are coded in the RGB565 format (see more details here: [http://www.barth-dev.de/online/rgb565-color-picker/](http://www.barth-dev.de/online/rgb565-color-picker/]))
+ * All color values are coded in the RGB565 format (see more details here: [http://www.barth-dev.de/online/rgb565-color-picker/](http://www.barth-dev.de/online/rgb565-color-picker/))
  * If the field text is specified as "\u0004", it will be shown on the dashboard's screen as a filled circle - this is an indicator which is widely used on real aircraft dashboards
  * There is a possibility to use the [MobiFlight WASM module](https://github.com/Mobiflight/MobiFlight-WASM-Module) instead of regular SimConnect interfaces. It works for simVariable, simEvent, simEventOn, simEventOff definition, just start the variable or event definition with the opening bracket.
    If the value is loaded from simVariable - the MobiFlight WASM LVARS channel is used. Expected format: "(L:MyVar)" 
