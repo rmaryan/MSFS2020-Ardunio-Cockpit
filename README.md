@@ -34,6 +34,8 @@ Dashboard layouts are currently hard-coded in the C# code. Later we plan to impl
 Currently available presets:
  * **Default** - a very simple preset that is loaded by default
  * **PA34T SENECA V**
+ * **FlyByWire A320neo**
+ * **Headwind A330-900neo** - actually identical to FBW A320neo
 
 To make it easier remembering all the switches designations an active preset actions mapping is also shown on the screen.
 
@@ -46,6 +48,8 @@ If you create your own JSON preset - keep in mind the following lifehack. Double
 We use 6 three-position switches (SW1-SW12), 4 rotary encoders (ENC1 - ENC4) with built-in buttons (SW13-SW16), and 4 push buttons (SW17-SW20).
 
 2.8 TFT screen on the right side is used to show the instrument indications.
+
+![Dashboard build](extra/dashboard_build.JPG)
 
 ## Presets Definition
 
