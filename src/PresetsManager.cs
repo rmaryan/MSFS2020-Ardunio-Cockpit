@@ -147,6 +147,7 @@ namespace MSFS2020_Ardunio_Cockpit
         public VisibilityCondition(string vVar, string vUnit, string vVal, int sID)
         {
             visibilityVar = vVar;
+            visibilityVarUnit = vUnit;
             visibilityValue = vVal;
             screenItemID = sID;
 

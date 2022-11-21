@@ -33,9 +33,11 @@ Dashboard layouts are currently hard-coded in the C# code. Later we plan to impl
 
 Currently available presets:
  * **Default** - a very simple preset that is loaded by default
- * **PA34T SENECA V**
+ * **Cessna 152**
  * **FlyByWire A320neo**
  * **Headwind A330-900neo** - actually identical to FBW A320neo
+ * **PA34T SENECA V**
+
 
 To make it easier remembering all the switches designations an active preset actions mapping is also shown on the screen.
 
