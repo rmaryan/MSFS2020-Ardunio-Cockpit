@@ -170,7 +170,7 @@ void processMessage(String rawMessage)
           SetScreenDecimalField(knobStates[knobID].fieldID, kValue, knobStates[knobID].decimalPlaces);
           
           // in regular mode - text changes should be drawn immediatelly if the knob is active
-          if (!configurationMode && knobStates[knobID].active) {
+          if (!configurationMode) {
             DrawItem(knobStates[knobID].fieldID - 1);
           }
         }
@@ -178,24 +178,6 @@ void processMessage(String rawMessage)
 
       break;
 
-    case 'A':
-      // ANV
-      if (rawMessage.length() != 3) {
-        SendMsg("EKnob activation code is incorrect. Got: " + rawMessage);
-        break;
-      }
-      knobID = rawMessage[1] - '0';
-      if (knobID > 3) {
-        SendMsg("EKnob ID is incorrect. Got: " + rawMessage);
-        break;
-      }
-      knobStates[knobID].active = (rawMessage[2] != '0');
-      if(knobStates[knobID].active) {
-        // force knob field repaint
-        DrawItem(knobStates[knobID].fieldID - 1);
-      }
-
-      break;
     case 'R':
       // reset to the initial state
       if (screenItems != NULL) {
@@ -204,10 +186,6 @@ void processMessage(String rawMessage)
       }
       screenItemsCount = 0;
       connectionActive = false;
-      knobStates[0].active = true;
-      knobStates[1].active = true;
-      knobStates[2].active = true;
-      knobStates[3].active = true;
       initStartScreen();
       break;
 

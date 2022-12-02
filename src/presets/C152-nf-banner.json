@@ -1,10 +1,10 @@
 {
-  "presetName": "PA34T SENECA V",
-  "aircraftName": "Seneca V",
+  "presetName": "Cessna 152 - Neofly",
+  "aircraftName": "152",
   "bgColor": "0000",
   "screenFieldItems": [
     {
-      "text": "HDG",
+      "text": "SPD",
       "x": "010",
       "y": "010",
       "color": "FFE0",
@@ -27,35 +27,18 @@
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 3,
-      "simVariable": "AUTOPILOT HEADING LOCK DIR",
+      "simVariable": "AIRSPEED INDICATED",
       "simEvent": "",
-      "unitOfMeasure": "degrees",
+      "unitOfMeasure": "knots",
       "simvarType": 2,
       "decimalPlaces": 0,
       "altText": "",
       "altColor": "",
-      "knobSpec": "0000000000359Y",
-      "knobStep": "0001"
-    },
-    {
-      "text": "\u0004",
-      "x": "110",
-      "y": "042",
-      "color": "FFE0",
-      "fontSize": "4",
-      "textWidth": 1,
-      "simVariable": "AUTOPILOT HEADING LOCK",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "\u0004",
-      "altColor": "0000",
       "knobSpec": "",
       "knobStep": ""
     },
     {
-      "text": "CRS",
+      "text": "NAV1 CRS",
       "x": "010",
       "y": "080",
       "color": "FFE0",
@@ -79,48 +62,14 @@
       "fontSize": "4",
       "textWidth": 3,
       "simVariable": "NAV OBS:1",
-      "simEvent": "VOR1_SET",
+      "simEvent": "! (>L:INSTRUMENT_Course_1) (L:INSTRUMENT_Course_1) (>K:VOR1_SET)",
       "unitOfMeasure": "degrees",
       "simvarType": 2,
       "decimalPlaces": 0,
       "altText": "",
       "altColor": "",
-      "knobSpec": "1000000000359Y",
+      "knobSpec": "0000000000359Y",
       "knobStep": "0001"
-    },
-    {
-      "text": "\u0004",
-      "x": "110",
-      "y": "112",
-      "color": "FFE0",
-      "fontSize": "4",
-      "textWidth": 0,
-      "simVariable": "AUTOPILOT NAV1 LOCK",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "\u0004",
-      "altColor": "0000",
-      "knobSpec": "",
-      "knobStep": ""
-    },
-    {
-      "text": "GPS ",
-      "x": "020",
-      "y": "140",
-      "color": "07E0",
-      "fontSize": "2",
-      "textWidth": 4,
-      "simVariable": "GPS DRIVES NAV1",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "VLOC",
-      "altColor": "07E0",
-      "knobSpec": "",
-      "knobStep": ""
     },
     {
       "text": "ALT",
@@ -157,24 +106,7 @@
       "knobStep": ""
     },
     {
-      "text": "\u0004",
-      "x": "310",
-      "y": "042",
-      "color": "FFE0",
-      "fontSize": "4",
-      "textWidth": 0,
-      "simVariable": "AUTOPILOT ALTITUDE LOCK",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "\u0004",
-      "altColor": "0000",
-      "knobSpec": "",
-      "knobStep": ""
-    },
-    {
-      "text": "V/S",
+      "text": "NAV2 CRS",
       "x": "160",
       "y": "080",
       "color": "FFE0",
@@ -191,38 +123,21 @@
       "knobStep": ""
     },
     {
-      "text": "    0",
+      "text": "888",
       "x": "170",
       "y": "100",
       "color": "FFE0",
       "fontSize": "4",
-      "textWidth": 5,
-      "simVariable": "AUTOPILOT VERTICAL HOLD VAR",
-      "simEvent": "",
-      "unitOfMeasure": "feet/minute",
-      "simvarType": 1,
+      "textWidth": 3,
+      "simVariable": "NAV OBS:2",
+      "simEvent": "! (>L:INSTRUMENT_Course_2) (L:INSTRUMENT_Course_2) (>K:VOR2_SET)",
+      "unitOfMeasure": "degrees",
+      "simvarType": 2,
       "decimalPlaces": 0,
       "altText": "",
       "altColor": "",
-      "knobSpec": "2-06000006000N",
-      "knobStep": "0100"
-    },
-    {
-      "text": "\u0004",
-      "x": "310",
-      "y": "112",
-      "color": "FFE0",
-      "fontSize": "4",
-      "textWidth": 0,
-      "simVariable": "AUTOPILOT VERTICAL HOLD",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "\u0004",
-      "altColor": "0000",
-      "knobSpec": "",
-      "knobStep": ""
+      "knobSpec": "1000000000359Y",
+      "knobStep": "0001"
     },
     {
       "text": "QNH",
@@ -259,25 +174,8 @@
       "knobStep": "0.01"
     },
     {
-      "text": "AP",
-      "x": "010",
-      "y": "220",
-      "color": "07E0",
-      "fontSize": "2",
-      "textWidth": 0,
-      "simVariable": "AUTOPILOT MASTER",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "AP",
-      "altColor": "D6BA",
-      "knobSpec": "",
-      "knobStep": ""
-    },
-    {
       "text": "Flaps:",
-      "x": "060",
+      "x": "010",
       "y": "220",
       "color": "FFE0",
       "fontSize": "2",
@@ -294,7 +192,7 @@
     },
     {
       "text": "0",
-      "x": "130",
+      "x": "080",
       "y": "220",
       "color": "FFE0",
       "fontSize": "2",
@@ -310,38 +208,114 @@
       "knobStep": ""
     },
     {
-      "text": "GEAR: DOWN",
-      "x": "170",
+      "text": "XPNDR:",
+      "x": "150",
       "y": "220",
       "color": "FFE0",
       "fontSize": "2",
       "textWidth": 0,
-      "simVariable": "GEAR POSITION",
+      "simVariable": "",
       "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
+      "unitOfMeasure": "",
+      "simvarType": 0,
       "decimalPlaces": 0,
-      "altText": "GEAR: UP  ",
-      "altColor": "FFE0",
+      "altText": "",
+      "altColor": "",
+      "knobSpec": "",
+      "knobStep": ""
+    },
+    {
+      "visibilityCondition": "TRANSPONDER STATE:1,enum=0",
+      "text": "OFF",
+      "x": "230",
+      "y": "220",
+      "color": "FFE0",
+      "fontSize": "2",
+      "textWidth": 0,
+      "simVariable": "",
+      "simEvent": "",
+      "unitOfMeasure": "",
+      "simvarType": 0,
+      "decimalPlaces": 0,
+      "altText": "",
+      "altColor": "",
+      "knobSpec": "",
+      "knobStep": ""
+    },
+    {
+      "visibilityCondition": "TRANSPONDER STATE:1,enum=1",
+      "text": "SBY",
+      "x": "230",
+      "y": "220",
+      "color": "FFE0",
+      "fontSize": "2",
+      "textWidth": 0,
+      "simVariable": "",
+      "simEvent": "",
+      "unitOfMeasure": "",
+      "simvarType": 0,
+      "decimalPlaces": 0,
+      "altText": "",
+      "altColor": "",
+      "knobSpec": "",
+      "knobStep": ""
+    },
+    {
+      "visibilityCondition": "TRANSPONDER STATE:1,enum=2",
+      "text": "TST",
+      "x": "230",
+      "y": "220",
+      "color": "FFE0",
+      "fontSize": "2",
+      "textWidth": 0,
+      "simVariable": "",
+      "simEvent": "",
+      "unitOfMeasure": "",
+      "simvarType": 0,
+      "decimalPlaces": 0,
+      "altText": "",
+      "altColor": "",
+      "knobSpec": "",
+      "knobStep": ""
+    },
+    {
+      "visibilityCondition": "TRANSPONDER STATE:1,enum=3",
+      "text": "ON ",
+      "x": "230",
+      "y": "220",
+      "color": "FFE0",
+      "fontSize": "2",
+      "textWidth": 0,
+      "simVariable": "",
+      "simEvent": "",
+      "unitOfMeasure": "",
+      "simvarType": 0,
+      "decimalPlaces": 0,
+      "altText": "",
+      "altColor": "",
+      "knobSpec": "",
+      "knobStep": ""
+    },
+    {
+      "visibilityCondition": "TRANSPONDER STATE:1,enum=4",
+      "text": "ALT",
+      "x": "230",
+      "y": "220",
+      "color": "FFE0",
+      "fontSize": "2",
+      "textWidth": 0,
+      "simVariable": "",
+      "simEvent": "",
+      "unitOfMeasure": "",
+      "simvarType": 0,
+      "decimalPlaces": 0,
+      "altText": "",
+      "altColor": "",
       "knobSpec": "",
       "knobStep": ""
     }
   ],
   "switchDefItems": [
-    {
-      "switchLabel": "STRB ON\nOFF",
-      "simEventOn": "!0 (>L:XMLVAR_StrobeBeaconState,enum) > 1 (>A:LIGHT STROBE,Bool)",
-      "simEventOnValue": 0,
-      "simEventOff": "!1 (>L:XMLVAR_StrobeBeaconState,enum) > 0 (>A:LIGHT STROBE,Bool)",
-      "simEventOffValue": 0
-    },
-    {
-      "switchLabel": "BCN ON",
-      "simEventOn": "!2 (>L:XMLVAR_StrobeBeaconState,enum) > 1 (>A:LIGHT BEACON,Bool)",
-      "simEventOnValue": 0,
-      "simEventOff": "!1 (>L:XMLVAR_StrobeBeaconState,enum) > 0 (>A:LIGHT BEACON,Bool)",
-      "simEventOffValue": 0
-    },
     {
       "switchLabel": "NAV ON\nNAV OFF",
       "simEventOn": "NAV_LIGHTS_ON",
@@ -357,17 +331,31 @@
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "AP ON\nFD ON\nAP OFF",
-      "simEventOn": "!0 (>L:XMLVAR_SWITCH_AP_FD,enum) > (>K:AUTOPILOT_ON)",
+      "switchLabel": "STRB ON\nSTRB OFF",
+      "simEventOn": "STROBES_ON",
       "simEventOnValue": 0,
-      "simEventOff": "!(A:AUTOPILOT FLIGHT DIRECTOR ACTIVE,bool) ! if{ 1 (>K:TOGGLE_FLIGHT_DIRECTOR) } 1 (>K:AUTOPILOT_OFF) 1 (>L:XMLVAR_SWITCH_AP_FD,enum)",
+      "simEventOff": "STROBES_OFF",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "!(A:AUTOPILOT FLIGHT DIRECTOR ACTIVE,bool) if{ 0 (>K:TOGGLE_FLIGHT_DIRECTOR) } 1 (>K:AUTOPILOT_OFF) 2 (>L:XMLVAR_SWITCH_AP_FD,enum)",
+      "simEventOn": "",
       "simEventOnValue": 0,
-      "simEventOff": "!(A:AUTOPILOT FLIGHT DIRECTOR ACTIVE,bool) ! if{ 1 (>K:TOGGLE_FLIGHT_DIRECTOR) } 1 (>K:AUTOPILOT_OFF) 1 (>L:XMLVAR_SWITCH_AP_FD,enum)",
+      "simEventOff": "",
+      "simEventOffValue": 0
+    },
+    {
+      "switchLabel": "BCN ON\nBCN OFF",
+      "simEventOn": "BEACON_LIGHTS_ON",
+      "simEventOnValue": 0,
+      "simEventOff": "BEACON_LIGHTS_OFF",
+      "simEventOffValue": 0
+    },
+    {
+      "switchLabel": "",
+      "simEventOn": "",
+      "simEventOnValue": 0,
+      "simEventOff": "",
       "simEventOffValue": 0
     },
     {
@@ -385,50 +373,50 @@
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "LDG\nOFF",
-      "simEventOn": "!0 (>L:XMLVAR_LandingPulseState,enum) > 1 (>A:LIGHT LANDING,bool)",
+      "switchLabel": "LDG ON\nLDG OFF",
+      "simEventOn": "LANDING_LIGHTS_ON",
       "simEventOnValue": 0,
-      "simEventOff": "!1 (>L:XMLVAR_LandingPulseState,enum) > 0 (>A:LIGHT LANDING,bool)",
+      "simEventOff": "LANDING_LIGHTS_OFF",
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "PULSE",
-      "simEventOn": "!2 (>L:XMLVAR_LandingPulseState,enum) > 1 (>A:LIGHT RECOGNITION,bool)",
-      "simEventOnValue": 0,
-      "simEventOff": "!1 (>L:XMLVAR_LandingPulseState,enum) > 0 (>A:LIGHT RECOGNITION,bool)",
-      "simEventOffValue": 0
-    },
-    {
-      "switchLabel": "GEAR UP\n",
-      "simEventOn": "GEAR_UP",
+      "switchLabel": "",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "\nGEAR DOWN",
-      "simEventOn": "GEAR_DOWN",
+      "switchLabel": "PT. HT. ON\nPT. HT. OFF",
+      "simEventOn": "PITOT_HEAT_ON",
+      "simEventOnValue": 0,
+      "simEventOff": "PITOT_HEAT_OFF",
+      "simEventOffValue": 0
+    },
+    {
+      "switchLabel": "",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "AP HDG\n\nAP HDG LOCK",
-      "simEventOn": "AP_HDG_HOLD",
+      "switchLabel": "NAV1 CRS",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "AP CRS\n\nAP NAV LOCK",
-      "simEventOn": "AP_NAV1_HOLD",
+      "switchLabel": "NAV2 CRS",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "AP V/S\n\nAP V/S LOCK",
-      "simEventOn": "!99999 (>K:AP_ALT_VAR_SET_ENGLISH) (A:AUTOPILOT VERTICAL HOLD,bool) if{ (>K:AP_PANEL_VS_HOLD) } els{ (>K:AP_PANEL_VS_HOLD) }",
+      "switchLabel": "",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
@@ -441,6 +429,13 @@
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "\nXPNDR: OFF",
+      "simEventOn": "!0 (>A:TRANSPONDER STATE:1,enum)",
+      "simEventOnValue": 0,
+      "simEventOff": "",
+      "simEventOffValue": 0
+    },
+    {
       "switchLabel": "\nXPNDR: SBY",
       "simEventOn": "!1 (>A:TRANSPONDER STATE:1,enum)",
       "simEventOnValue": 0,
@@ -448,22 +443,15 @@
       "simEventOffValue": 0
     },
     {
+      "switchLabel": "\nXPNDR: ON",
+      "simEventOn": "!3 (>A:TRANSPONDER STATE:1,enum)",
+      "simEventOnValue": 0,
+      "simEventOff": "",
+      "simEventOffValue": 0
+    },
+    {
       "switchLabel": "\nXPNDR: ALT",
       "simEventOn": "!4 (>A:TRANSPONDER STATE:1,enum)",
-      "simEventOnValue": 0,
-      "simEventOff": "",
-      "simEventOffValue": 0
-    },
-    {
-      "switchLabel": "\nAP ALT HOLD",
-      "simEventOn": "!(A:AUTOPILOT ALTITUDE LOCK, bool) if{ (>K:AP_ALT_HOLD) 99999 (>K:AP_ALT_VAR_SET_ENGLISH) } els{ (>K:AP_ALT_HOLD) }",
-      "simEventOnValue": 0,
-      "simEventOff": "",
-      "simEventOffValue": 0
-    },
-    {
-      "switchLabel": "\nAP APPR",
-      "simEventOn": "!(A:AUTOPILOT APPROACH HOLD, bool) (A:AUTOPILOT GLIDESLOPE HOLD, bool) ! and if{ (>K:AP_APR_HOLD) } (>K:AP_APR_HOLD)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0

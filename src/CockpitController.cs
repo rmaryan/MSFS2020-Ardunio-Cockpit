@@ -152,8 +152,11 @@ namespace MSFS2020_Ardunio_Cockpit
                     {
                         ScreenFieldItem item = presetsManager.GetScreenFieldItem(vc.screenItemID);
                         item.visible = PresetsManager.EvaluateVisibilityFlag(simActivity.Value, vc);
-                        // send to Arduino the last known item text (that's why null as a first parameter)
-                        PushFieldChangeToArduino(null, vc.screenItemID, item);
+                        if (item.visible)
+                        {
+                            // send to Arduino the last known item text (that's why null as a first parameter)
+                            PushFieldChangeToArduino(null, vc.screenItemID, item);
+                        }
                     }
                 }
 
@@ -253,22 +256,26 @@ namespace MSFS2020_Ardunio_Cockpit
 
                 if (item.knobSpec != "")
                 {
-                    if(value == null)
+                    if (value == null)
                     {
                         // having value null means just the visibility state was changed
-                        arduinoControl.SendMessage('A', item.knobSpec[0] + (item.visible?"1":"0"));
+                        // reactivate the knob again
+                        BindArduinoKnob(itemID, itemIDStr);
                     }
-                    // debounce the knobs changes, ignore value changes from simvar for some time
-                    if ((DateTime.Now.Ticks - knobLastChangeTicks[item.knobSpec[0] - '0']) > KNOB_DEBOUNCE_TICKS)
+                    else
                     {
-                        arduinoControl.SendMessage('D', item.knobSpec[0] + item.text.PadLeft(5, '0'));
-                        knobValueSet[item.knobSpec[0] - '0'] = true;
+                        // debounce the knobs changes, ignore value changes from simvar for some time
+                        if ((DateTime.Now.Ticks - knobLastChangeTicks[item.knobSpec[0] - '0']) > KNOB_DEBOUNCE_TICKS)
+                        {
+                            arduinoControl.SendMessage('D', item.knobSpec[0] + item.text.PadLeft(5, '0'));
+                            knobValueSet[item.knobSpec[0] - '0'] = true;
+                        }
                     }
                 }
                 else
                 if (item.visible)
                 {
-                        arduinoControl.SendMessage('T', itemIDStr + item.text);
+                    arduinoControl.SendMessage('T', itemIDStr + item.text);
                 }
             }
         }
@@ -565,37 +572,20 @@ namespace MSFS2020_Ardunio_Cockpit
                 arduinoControl.SendMessage('I', itemID + item.screenItemDefinition);
 
                 // all items with the visibility condition set are invisible and inactive by default
-                if (item.visibilityCondition != "")
-                {
-                    item.visible = false;
-                }
+                item.visible = item.visibilityCondition.Equals("");
 
-                if (item.knobSpec != "")
+                // invisible items are initialized when the visibility is more clear
+                if (item.visible)
                 {
-                    // knob-bound items are initialized a bit differently
-                    int knobID = item.knobSpec[0] - '0';
-                    if ((knobID >= 0) && (knobID <= 3))
+                    if (item.knobSpec != "")
                     {
-                        //HACK: Getting knob step from the simvar id is not implemented yet
-
-                        // record the knob to SimVar name mapping
-                        knobToVarMapping[knobID] = i;
-
-                        // KNFFmmmmmmMMMMMMCDSSSS
-                        arduinoControl.SendMessage('K', item.knobSpec[0] + itemID + item.knobSpec.Substring(1) + item.decimalPlaces + item.knobStep);
-                        // DNVVVVV
-                        arduinoControl.SendMessage('D', item.knobSpec[0] + item.text.PadLeft(5, '0'));
-                        if (!item.visible)
-                        {
-                            arduinoControl.SendMessage('A', item.knobSpec[0] + "0");
-                        }
+                        // K - send the knoob spec
+                        // D - set the knob value
+                        BindArduinoKnob(i, itemID);
                     }
-                }
-                else
-                {
-                    // T - sending the initial text value
-                    if (item.visible)
+                    else
                     {
+                        // T - sending the initial text value
                         arduinoControl.SendMessage('T', itemID + item.text);
                     }
                 }
@@ -616,14 +606,15 @@ namespace MSFS2020_Ardunio_Cockpit
                     simControl.AddVarRequest(item.simVariable, item.unitOfMeasure);
                     if (!item.simEvent.Equals(""))
                     {
-                        if(item.simEvent.StartsWith("!"))
+                        if (item.simEvent.StartsWith("!"))
                         {
                             // no need to register WASM event
                             item.simEventID = int.MaxValue;
-                        } else
+                        }
+                        else
                         {
                             item.simEventID = simControl.RegisterEvent(item.simEvent);
-                        }                        
+                        }
                     }
                 }
             }
@@ -658,6 +649,24 @@ namespace MSFS2020_Ardunio_Cockpit
             }
 
             mainWindow_ref.SetSwitchLabels(presetsManager.GetPresetSwitchLabels());
+        }
+
+        private void BindArduinoKnob(int itemIDX, string itemIDString)
+        {
+            ScreenFieldItem item = presetsManager.GetScreenFieldItem(itemIDX);
+            int knobID = item.knobSpec[0] - '0';
+            if ((knobID >= 0) && (knobID <= 3))
+            {
+                //HACK: Getting knob step from the simvar id is not implemented yet
+
+                // record the knob to SimVar name mapping
+                knobToVarMapping[knobID] = itemIDX;
+
+                // KNFFmmmmmmMMMMMMCDSSSS
+                arduinoControl.SendMessage('K', item.knobSpec[0] + itemIDString + item.knobSpec.Substring(1) + item.decimalPlaces + item.knobStep);
+                // DNVVVVV
+                arduinoControl.SendMessage('D', item.knobSpec[0] + item.text.PadLeft(5, '0'));
+            }
         }
 
         // This is a debug function activated on the preset title label double-click.
