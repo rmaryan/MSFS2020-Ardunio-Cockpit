@@ -36,6 +36,9 @@ Currently available presets:
  * **Cessna 152**
  * **Cessna 152 Neofly Banner Tow version**
  * **Cessna 172 Skyhawk G1000**
+ * **Cessna C208 B Grand Caravan**
+ * **Diamond Aircraft DA40NG**
+ * **Diamond Aircraft DA62**
  * **FlyByWire A320neo**
  * **Headwind A330-900neo** - actually identical to FBW A320neo
  * **PA34T SENECA V**
