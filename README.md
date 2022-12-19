@@ -33,6 +33,7 @@ Dashboard layouts are currently hard-coded in the C# code. Later we plan to impl
 
 Currently available presets:
  * **Default** - a very simple preset that is loaded by default
+ * **Beechcraft Bonanza G36**
  * **Cessna 152**
  * **Cessna 152 Neofly Banner Tow version**
  * **Cessna 172 Skyhawk G1000**
