@@ -208,7 +208,7 @@
       "knobStep": ""
     },
     {
-      "text": "XPNDR:",
+      "text": "XPDR:",
       "x": "150",
       "y": "220",
       "color": "FFE0",
@@ -429,28 +429,28 @@
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "\nXPNDR: OFF",
+      "switchLabel": "\nXPDR: OFF",
       "simEventOn": "!0 (>A:TRANSPONDER STATE:1,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "\nXPNDR: SBY",
+      "switchLabel": "\nXPDR: SBY",
       "simEventOn": "!1 (>A:TRANSPONDER STATE:1,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "\nXPNDR: ON",
+      "switchLabel": "\nXPDR: ON",
       "simEventOn": "!3 (>A:TRANSPONDER STATE:1,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "\nXPNDR: ALT",
+      "switchLabel": "\nXPDR: ALT",
       "simEventOn": "!4 (>A:TRANSPONDER STATE:1,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",

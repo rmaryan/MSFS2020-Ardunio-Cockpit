@@ -476,7 +476,7 @@
       "knobStep": ""
     },
     {
-      "text": "XPNDR:",
+      "text": "XPDR:",
       "x": "150",
       "y": "220",
       "color": "F7BE",
@@ -697,14 +697,14 @@
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "\nXPNDR: SBY",
+      "switchLabel": "\nXPDR: SBY",
       "simEventOn": "!1 (>A:TRANSPONDER STATE:1,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "\nXPNDR: ALT",
+      "switchLabel": "\nXPDR: ALT",
       "simEventOn": "!4 (>A:TRANSPONDER STATE:1,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
