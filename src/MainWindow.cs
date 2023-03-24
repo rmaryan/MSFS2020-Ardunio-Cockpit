@@ -58,6 +58,8 @@ namespace MSFS2020_Ardunio_Cockpit
         {
             string[] serialPortNames = System.IO.Ports.SerialPort.GetPortNames();
 
+            COMComboBox.Items.Clear();
+
             foreach (string name in serialPortNames)
             {
                 COMComboBox.Items.Add(name);
@@ -200,6 +202,11 @@ namespace MSFS2020_Ardunio_Cockpit
         private void presetNameLabel_DoubleClick(object sender, EventArgs e)
         {
             cockpitController.ShowCurrentPresetJSON();
+        }
+
+        private void COMRefreshButton_Click(object sender, EventArgs e)
+        {
+            GenerateSerialPortsList();
         }
     }
 }

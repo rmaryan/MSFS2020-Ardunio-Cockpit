@@ -36,7 +36,6 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.SerialConnectedLabel = new System.Windows.Forms.Label();
             this.SimConnectedLabel = new System.Windows.Forms.Label();
-            this.presetNameLabel = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.LogTextBox = new System.Windows.Forms.TextBox();
             this.switchesTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -68,8 +67,9 @@
             this.labelSW17 = new System.Windows.Forms.Label();
             this.labelSW18 = new System.Windows.Forms.Label();
             this.labelSW19 = new System.Windows.Forms.Label();
+            this.COMRefreshButton = new System.Windows.Forms.Button();
+            this.presetNameLabel = new System.Windows.Forms.Label();
             this.flowLayoutPanel2.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.switchesTableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox14)).BeginInit();
@@ -94,70 +94,74 @@
             this.flowLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.flowLayoutPanel2.Controls.Add(this.ComLabel);
             this.flowLayoutPanel2.Controls.Add(this.COMComboBox);
+            this.flowLayoutPanel2.Controls.Add(this.COMRefreshButton);
             this.flowLayoutPanel2.Controls.Add(this.ConnectCheckBox);
             this.flowLayoutPanel2.Controls.Add(this.flowLayoutPanel1);
+            this.flowLayoutPanel2.Controls.Add(this.SimConnectedLabel);
+            this.flowLayoutPanel2.Controls.Add(this.SerialConnectedLabel);
             this.flowLayoutPanel2.Controls.Add(this.presetNameLabel);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel2.Margin = new System.Windows.Forms.Padding(5);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Padding = new System.Windows.Forms.Padding(5);
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(896, 47);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(896, 37);
             this.flowLayoutPanel2.TabIndex = 1;
             this.flowLayoutPanel2.WrapContents = false;
             // 
             // ComLabel
             // 
+            this.ComLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ComLabel.AutoSize = true;
-            this.ComLabel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.ComLabel.Location = new System.Drawing.Point(15, 15);
-            this.ComLabel.Margin = new System.Windows.Forms.Padding(10, 10, 0, 10);
+            this.ComLabel.Location = new System.Drawing.Point(15, 12);
+            this.ComLabel.Margin = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this.ComLabel.Name = "ComLabel";
-            this.ComLabel.Size = new System.Drawing.Size(97, 17);
+            this.ComLabel.Size = new System.Drawing.Size(97, 13);
             this.ComLabel.TabIndex = 6;
             this.ComLabel.Text = "Arduino Serial Port:";
             // 
             // COMComboBox
             // 
-            this.COMComboBox.Dock = System.Windows.Forms.DockStyle.Left;
+            this.COMComboBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.COMComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.flowLayoutPanel2.SetFlowBreak(this.COMComboBox, true);
             this.COMComboBox.FormattingEnabled = true;
-            this.COMComboBox.Location = new System.Drawing.Point(122, 10);
-            this.COMComboBox.Margin = new System.Windows.Forms.Padding(10, 5, 10, 20);
+            this.COMComboBox.Location = new System.Drawing.Point(122, 8);
+            this.COMComboBox.Margin = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this.COMComboBox.Name = "COMComboBox";
             this.COMComboBox.Size = new System.Drawing.Size(121, 21);
             this.COMComboBox.TabIndex = 0;
             // 
             // ConnectCheckBox
             // 
+            this.ConnectCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ConnectCheckBox.AutoSize = true;
-            this.ConnectCheckBox.Location = new System.Drawing.Point(263, 15);
-            this.ConnectCheckBox.Margin = new System.Windows.Forms.Padding(10, 10, 5, 10);
+            this.ConnectCheckBox.Location = new System.Drawing.Point(287, 10);
+            this.ConnectCheckBox.Margin = new System.Windows.Forms.Padding(10, 0, 5, 0);
             this.ConnectCheckBox.Name = "ConnectCheckBox";
             this.ConnectCheckBox.Size = new System.Drawing.Size(66, 17);
-            this.ConnectCheckBox.TabIndex = 7;
+            this.ConnectCheckBox.TabIndex = 2;
             this.ConnectCheckBox.Text = "Connect";
             this.ConnectCheckBox.UseVisualStyleBackColor = true;
             this.ConnectCheckBox.CheckedChanged += new System.EventHandler(this.ConnectCheckBox_CheckedChanged);
             // 
             // flowLayoutPanel1
             // 
+            this.flowLayoutPanel1.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.flowLayoutPanel1.AutoSize = true;
-            this.flowLayoutPanel1.Controls.Add(this.SerialConnectedLabel);
-            this.flowLayoutPanel1.Controls.Add(this.SimConnectedLabel);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(334, 5);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(358, 18);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(48, 31);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(0, 0);
             this.flowLayoutPanel1.TabIndex = 8;
             // 
             // SerialConnectedLabel
             // 
+            this.SerialConnectedLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.SerialConnectedLabel.AutoSize = true;
-            this.SerialConnectedLabel.Location = new System.Drawing.Point(3, 0);
-            this.SerialConnectedLabel.Margin = new System.Windows.Forms.Padding(3, 0, 3, 5);
+            this.flowLayoutPanel2.SetFlowBreak(this.SerialConnectedLabel, true);
+            this.SerialConnectedLabel.Location = new System.Drawing.Point(409, 12);
             this.SerialConnectedLabel.Name = "SerialConnectedLabel";
             this.SerialConnectedLabel.Size = new System.Drawing.Size(39, 13);
             this.SerialConnectedLabel.TabIndex = 0;
@@ -165,32 +169,23 @@
             // 
             // SimConnectedLabel
             // 
+            this.SimConnectedLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.SimConnectedLabel.AutoSize = true;
-            this.SimConnectedLabel.Location = new System.Drawing.Point(3, 18);
+            this.flowLayoutPanel2.SetFlowBreak(this.SimConnectedLabel, true);
+            this.SimConnectedLabel.Location = new System.Drawing.Point(361, 12);
             this.SimConnectedLabel.Name = "SimConnectedLabel";
             this.SimConnectedLabel.Size = new System.Drawing.Size(42, 13);
             this.SimConnectedLabel.TabIndex = 1;
             this.SimConnectedLabel.Text = "  MSFS";
-            // 
-            // presetNameLabel
-            // 
-            this.presetNameLabel.AutoSize = true;
-            this.presetNameLabel.Location = new System.Drawing.Point(392, 15);
-            this.presetNameLabel.Margin = new System.Windows.Forms.Padding(10, 10, 5, 10);
-            this.presetNameLabel.Name = "presetNameLabel";
-            this.presetNameLabel.Padding = new System.Windows.Forms.Padding(50, 0, 0, 0);
-            this.presetNameLabel.Size = new System.Drawing.Size(50, 13);
-            this.presetNameLabel.TabIndex = 9;
-            this.presetNameLabel.DoubleClick += new System.EventHandler(this.presetNameLabel_DoubleClick);
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.LogTextBox);
             this.panel1.Controls.Add(this.switchesTableLayoutPanel);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 47);
+            this.panel1.Location = new System.Drawing.Point(0, 37);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(896, 350);
+            this.panel1.Size = new System.Drawing.Size(896, 360);
             this.panel1.TabIndex = 14;
             // 
             // LogTextBox
@@ -204,7 +199,7 @@
             this.LogTextBox.Name = "LogTextBox";
             this.LogTextBox.ReadOnly = true;
             this.LogTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.LogTextBox.Size = new System.Drawing.Size(896, 202);
+            this.LogTextBox.Size = new System.Drawing.Size(896, 212);
             this.LogTextBox.TabIndex = 15;
             // 
             // switchesTableLayoutPanel
@@ -557,6 +552,35 @@
             this.labelSW19.TabIndex = 28;
             this.labelSW19.Text = "SW 19";
             // 
+            // COMRefreshButton
+            // 
+            this.COMRefreshButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.COMRefreshButton.AutoSize = true;
+            this.COMRefreshButton.FlatAppearance.BorderSize = 0;
+            this.COMRefreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.COMRefreshButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(254)));
+            this.COMRefreshButton.ForeColor = System.Drawing.Color.DarkOrchid;
+            this.COMRefreshButton.Location = new System.Drawing.Point(243, 5);
+            this.COMRefreshButton.Margin = new System.Windows.Forms.Padding(0);
+            this.COMRefreshButton.Name = "COMRefreshButton";
+            this.COMRefreshButton.Size = new System.Drawing.Size(34, 27);
+            this.COMRefreshButton.TabIndex = 1;
+            this.COMRefreshButton.Text = " ↺";
+            this.COMRefreshButton.UseVisualStyleBackColor = true;
+            this.COMRefreshButton.Click += new System.EventHandler(this.COMRefreshButton_Click);
+            // 
+            // presetNameLabel
+            // 
+            this.presetNameLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.presetNameLabel.AutoSize = true;
+            this.presetNameLabel.Location = new System.Drawing.Point(461, 12);
+            this.presetNameLabel.Margin = new System.Windows.Forms.Padding(10, 0, 5, 0);
+            this.presetNameLabel.Name = "presetNameLabel";
+            this.presetNameLabel.Padding = new System.Windows.Forms.Padding(50, 0, 0, 0);
+            this.presetNameLabel.Size = new System.Drawing.Size(50, 13);
+            this.presetNameLabel.TabIndex = 9;
+            this.presetNameLabel.DoubleClick += new System.EventHandler(this.presetNameLabel_DoubleClick);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -572,8 +596,6 @@
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel2.PerformLayout();
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.switchesTableLayoutPanel.ResumeLayout(false);
@@ -637,6 +659,7 @@
         private System.Windows.Forms.Label labelSW17;
         private System.Windows.Forms.Label labelSW18;
         private System.Windows.Forms.Label labelSW19;
+        private System.Windows.Forms.Button COMRefreshButton;
         private System.Windows.Forms.Label presetNameLabel;
     }
 }
