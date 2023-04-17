@@ -198,3 +198,7 @@ In all messages, the first letter defines the message type. The ending character
 ### Schematics
 
 ![Electric circuit schematics](extra/schematics/schematics.png )
+
+# Liked some of my work?
+
+<a href="https://www.buymeacoffee.com/maryanR" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
