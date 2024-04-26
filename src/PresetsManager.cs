@@ -211,10 +211,10 @@ namespace MSFS2020_Ardunio_Cockpit
 
     internal class PresetsManager
     {
-        private string[] initialPresetSwitchLabels = { "SW 0/1","SW 2/3","SW 4/5","SW 6/7","SW 8/9","SW 10/11",
+        private readonly string[] initialPresetSwitchLabels = { "SW 0/1","SW 2/3","SW 4/5","SW 6/7","SW 8/9","SW 10/11",
             "ENC 1 / SW 12","ENC 2 / SW 13","ENC 3 / SW 14","ENC 4 / SW 15","SW 16","SW 17","SW 18","SW 19"
         };
-        private string[] presetSwitchLabels = new string[14];
+        private readonly  string[] presetSwitchLabels = new string[14];
 
         public List<CockpitPreset> presets = new List<CockpitPreset>();
         public int pID = -1; // current preset ID
