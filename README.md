@@ -34,6 +34,7 @@ Dashboard layouts are currently hard-coded in the C# code. Later we plan to impl
 Currently available presets:
  * **Default** - a very simple preset that is loaded by default
  * **Beechcraft Bonanza G36**
+ * **Beechcraft Piston Duke**
  * **Cessna 152**
  * **Cessna 152 Neofly Banner Tow version**
  * **Cessna 172 Skyhawk G1000**
@@ -43,6 +44,7 @@ Currently available presets:
  * **FlyByWire A320neo**
  * **Headwind A330-900neo** - actually identical to FBW A320neo
  * **PA34T SENECA V**
+ * **PMDG Boeing 737**
 
 
 To make it easier remembering all the switches designations an active preset actions mapping is also shown on the screen.
