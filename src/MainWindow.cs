@@ -20,6 +20,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -91,6 +92,10 @@ namespace MSFS2020_Ardunio_Cockpit
             switchLabels[13] = labelSW19;
 
             cockpitController = new CockpitController(this);
+
+            // try selecting the last good COM port
+            string lastCOMPort = ConfigurationManager.AppSettings["LAST_COM"] ?? "";
+            COMComboBox.SelectedIndex = COMComboBox.FindString(lastCOMPort);
         }
 
 

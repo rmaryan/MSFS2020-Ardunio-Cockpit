@@ -9,6 +9,8 @@
 
 This project a yet another Arduino-driven cockpit that uses inexpensive hardware components and simple configurable software components.
 
+Compatible with MSFS 2020 and 2024.
+
 The code is heavily based on the original SimConnect sample [SimvarWatcher](https://docs.flightsimulator.com/html/Samples_And_Tutorials/Samples/SimvarWatcher.htm).
 
 ## Windows Sim Connector
@@ -42,6 +44,7 @@ Currently available presets:
  * **Diamond Aircraft DA40NG**
  * **Diamond Aircraft DA62**
  * **FlyByWire A320neo**
+ * **FlyByWire A380**
  * **Headwind A330-900neo** - actually identical to FBW A320neo
  * **PA34T SENECA V**
  * **PMDG Boeing 737**
@@ -72,7 +75,7 @@ The format of the JSON file is the following:
 ```
 {
   "presetName": "PA34T SENECA V", // a free-form text which is shown on the main screen to identify the preset activated
-  "aircraftName": "Seneca V",     // the aircraft name which should exactly correspond to the ATC_MODEL_VAR variable value
+  "aircraftName": "Seneca V",     // the aircraft name which should exactly correspond to the "ATC MODEL" variable value
   "bgColor": "0000",              // screen background color in the RGB
   "screenFieldItems": [           // the screen fields definition section - these are fields which are shown on the screen and can be changed by the knobs
                                   // screenFieldItems can contain any reasonable number of entries

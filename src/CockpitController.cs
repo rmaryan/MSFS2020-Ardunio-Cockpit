@@ -22,6 +22,7 @@ using ArduinoConnector;
 using MSFSConnector;
 using Newtonsoft.Json;
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
@@ -486,6 +487,8 @@ namespace MSFS2020_Ardunio_Cockpit
             }
             try
             {
+                // store the last plausible COM port in settings
+                AddUpdateAppSettings("LAST_COM", serialPort);
                 arduinoControl.Connect(serialPort);
                 mainWindow_ref.SetSerialConnectedLabel(CONNECTED_STATE.STATE_OK);
             }
@@ -676,6 +679,29 @@ namespace MSFS2020_Ardunio_Cockpit
             if (presetsManager.pID > -1)
             {
                 mainWindow_ref.AppendLogMessage(JsonConvert.SerializeObject(presetsManager.presets[presetsManager.pID]));
+            }
+        }
+
+        private void AddUpdateAppSettings(string key, string value)
+        {
+            try
+            {
+                var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                var settings = configFile.AppSettings.Settings;
+                if (settings[key] == null)
+                {
+                    settings.Add(key, value);
+                }
+                else
+                {
+                    settings[key].Value = value;
+                }
+                configFile.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
+            }
+            catch (ConfigurationErrorsException)
+            {
+                Console.WriteLine("Error writing app settings");
             }
         }
     }
