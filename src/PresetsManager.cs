@@ -350,16 +350,25 @@ namespace MSFS2020_Ardunio_Cockpit
             pID = -1;
         }
 
-        public void EmergePresetForAircraft(string atc_model)
+        /*
+         * Returns:
+         *  <0 if preset not found
+         *  0 if Default preset is being applied
+         *  >0 if precise aircraft preset is available
+         */
+        public int EmergePresetForAircraft(string atc_model)
         {
             // find the approriate preset
             pID = -1;
+            bool defaultPreset = true;
+
             for (int i = 0; i < presets.Count; i++)
             {
                 if (presets[i].aircraftName.Equals(atc_model))
                 {
                     // full match, stop the search
                     pID = i;
+                    defaultPreset = false;
                     break;
                 }
                 if (presets[i].aircraftName.Equals("Default"))
@@ -371,7 +380,7 @@ namespace MSFS2020_Ardunio_Cockpit
             if (pID == -1)
             {
                 // preset not found
-                return;
+                return -1;
             }
 
             // wipe the event ID's
@@ -398,6 +407,7 @@ namespace MSFS2020_Ardunio_Cockpit
             {
                 presetSwitchLabels[i] = presets[pID].switchDefItems[i + 6].switchLabel;
             }
+            return defaultPreset ? 0 : 1;
         }
     }
 }

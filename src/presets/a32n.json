@@ -1,6 +1,6 @@
 {
-  "presetName": "FlyByWire A380",
-  "aircraftName": "ATCCOM.AC_MODEL A380.0.text",
+  "presetName": "iniBuilds A320 neo",
+  "aircraftName": "ATCCOM.AC_MODEL_A20N.0.text",
   "bgColor": "0000",
   "screenFieldItems": [
     {
@@ -21,15 +21,15 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_FCU_SPD_MANAGED_DASHES,Boolean)=0",
+      "visibilityCondition": "(L:INI_FCU_SPD_DASHED,Boolean)=0",
       "text": "888",
       "x": "020",
       "y": "030",
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 3,
-      "simVariable": "(L:A32NX_AUTOPILOT_SPEED_SELECTED)",
-      "simEvent": "!(>K:A32NX.FCU_SPD_SET)",
+      "simVariable": "(L:INI_Airspeed_Dial)",
+      "simEvent": "",
       "unitOfMeasure": "knots",
       "simvarType": 2,
       "decimalPlaces": 0,
@@ -39,7 +39,7 @@
       "knobStep": "0001"
     },
     {
-      "visibilityCondition": "(L:A32NX_FCU_SPD_MANAGED_DASHES,Boolean)=1",
+      "visibilityCondition": "(L:INI_FCU_SPD_DASHED,Boolean)=1",
       "text": "---",
       "x": "020",
       "y": "030",
@@ -63,7 +63,7 @@
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 1,
-      "simVariable": "(L:A32NX_FCU_SPD_MANAGED_DOT)",
+      "simVariable": "(L:INI_managed_speed)",
       "simEvent": "",
       "unitOfMeasure": "Bool",
       "simvarType": 3,
@@ -91,15 +91,15 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_FCU_HDG_MANAGED_DASHES,Boolean)=0",
+      "visibilityCondition": "(L:INI_FCU_HDG_DASHED,Boolean)=0",
       "text": "888",
       "x": "020",
       "y": "100",
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 3,
-      "simVariable": "(L:A32NX_AUTOPILOT_HEADING_SELECTED)",
-      "simEvent": "!(>K:A32NX.FCU_HDG_SET)",
+      "simVariable": "(L:INI_HEADING_DIAL)",
+      "simEvent": "",
       "unitOfMeasure": "degrees",
       "simvarType": 2,
       "decimalPlaces": 0,
@@ -109,7 +109,7 @@
       "knobStep": "0001"
     },
     {
-      "visibilityCondition": "(L:A32NX_FCU_HDG_MANAGED_DASHES,Boolean)=1",
+      "visibilityCondition": "(L:INI_FCU_HDG_DASHED,Boolean)=1",
       "text": "---",
       "x": "020",
       "y": "100",
@@ -133,7 +133,7 @@
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 0,
-      "simVariable": "(L:A32NX_FCU_HDG_MANAGED_DOT)",
+      "simVariable": "(L:INI_FCU_HDG_DOT)",
       "simEvent": "",
       "unitOfMeasure": "Bool",
       "simvarType": 3,
@@ -167,7 +167,7 @@
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 5,
-      "simVariable": "AUTOPILOT ALTITUDE LOCK VAR:3",
+      "simVariable": "(L:INI_Altitude_Dial)",
       "simEvent": "",
       "unitOfMeasure": "feet",
       "simvarType": 1,
@@ -184,7 +184,7 @@
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 0,
-      "simVariable": "(L:A32NX_FCU_ALT_MANAGED)",
+      "simVariable": "(L:INI_FCU_ALT_DOT)",
       "simEvent": "",
       "unitOfMeasure": "Bool",
       "simvarType": 3,
@@ -212,15 +212,15 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_FCU_VS_MANAGED,Boolean)=0",
+      "visibilityCondition": "(L:INI_FCU_VS_DASHED,Boolean)=0",
       "text": "    0",
       "x": "170",
       "y": "100",
       "color": "FFE0",
       "fontSize": "4",
       "textWidth": 5,
-      "simVariable": "(L:A32NX_AUTOPILOT_VS_SELECTED)",
-      "simEvent": "!(>K:A32NX.FCU_VS_SET)",
+      "simVariable": "(L:INI_vvi_dial)",
+      "simEvent": "",
       "unitOfMeasure": "feet/minute",
       "simvarType": 1,
       "decimalPlaces": 0,
@@ -230,7 +230,7 @@
       "knobStep": "0100"
     },
     {
-      "visibilityCondition": "(L:A32NX_FCU_VS_MANAGED,Boolean)=1",
+      "visibilityCondition": "(L:INI_FCU_VS_DASHED,Boolean)=1",
       "text": "-----",
       "x": "170",
       "y": "100",
@@ -254,7 +254,7 @@
       "color": "07E0",
       "fontSize": "2",
       "textWidth": 0,
-      "simVariable": "(L:A32NX_AUTOPILOT_1_ACTIVE,bool)",
+      "simVariable": "(L:INI_ap1_on,bool)",
       "simEvent": "",
       "unitOfMeasure": "Bool",
       "simvarType": 3,
@@ -271,7 +271,7 @@
       "color": "07E0",
       "fontSize": "2",
       "textWidth": 0,
-      "simVariable": "(L:A32NX_AUTOTHRUST_STATUS,bool)",
+      "simVariable": "(L:INI_ATHR_LIGHT,bool)",
       "simEvent": "",
       "unitOfMeasure": "Bool",
       "simvarType": 3,
@@ -288,7 +288,7 @@
       "color": "07E0",
       "fontSize": "2",
       "textWidth": 0,
-      "simVariable": "(L:A32NX_FCU_APPR_MODE_ACTIVE,bool)",
+      "simVariable": "(L:INI_MCU_LAND_LIGHT,bool)",
       "simEvent": "",
       "unitOfMeasure": "Bool",
       "simvarType": 3,
@@ -316,7 +316,7 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_SPOILERS_ARMED,Boolean)=1",
+      "visibilityCondition": "(L:INI_SPOILERS_ARMED,Boolean)=1",
       "text": "ARM",
       "x": "105",
       "y": "185",
@@ -334,14 +334,14 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_SPOILERS_ARMED,Boolean)=0",
+      "visibilityCondition": "(L:INI_SPOILERS_ARMED,Boolean)=0",
       "text": "0.0",
       "x": "105",
       "y": "185",
       "color": "FFE0",
       "fontSize": "2",
       "textWidth": 3,
-      "simVariable": "(L:A32NX_SPOILERS_HANDLE_POSITION)",
+      "simVariable": "(L:INI_SPOILERS_HANDLE_POSITION)",
       "simEvent": "",
       "unitOfMeasure": "",
       "simvarType": 1,
@@ -369,7 +369,7 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=0",
+      "visibilityCondition": "(L:INI_AUTOBRAKE_LEVEL,Number)=0",
       "text": "DIS",
       "x": "280",
       "y": "185",
@@ -387,7 +387,7 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=1",
+      "visibilityCondition": "(L:INI_AUTOBRAKE_LEVEL,Number)=1",
       "text": "LO ",
       "x": "280",
       "y": "185",
@@ -405,7 +405,7 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=2",
+      "visibilityCondition": "(L:INI_AUTOBRAKE_LEVEL,Number)=2",
       "text": "MED",
       "x": "280",
       "y": "185",
@@ -423,7 +423,7 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=3",
+      "visibilityCondition": "(L:INI_AUTOBRAKE_LEVEL,Number)=3",
       "text": "MAX",
       "x": "280",
       "y": "185",
@@ -464,7 +464,7 @@
       "color": "FFE0",
       "fontSize": "2",
       "textWidth": 1,
-      "simVariable": "(L:A32NX_FLAPS_HANDLE_INDEX,enum)",
+      "simVariable": "FLAPS HANDLE INDEX",
       "simEvent": "",
       "unitOfMeasure": "number",
       "simvarType": 1,
@@ -495,140 +495,140 @@
   "switchDefItems": [
     {
       "switchLabel": "Strobe\nOn\nAuto\nOff",
-      "simEventOn": "!1 (>A:LIGHT STROBE,enum) 0 (>L:STROBE_0_AUTO,enum) 0 (>L:LIGHTING_STROBE_0,enum)",
+      "simEventOn": "!0 (>L:INI_STROBE_LIGHT_SWITCH,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "!1 (>A:LIGHT STROBE,enum) 1 (>L:STROBE_0_AUTO,enum) 1 (>L:LIGHTING_STROBE_0,enum)",
+      "simEventOff": "!1 (>L:INI_STROBE_LIGHT_SWITCH,enum)",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "!0 (>A:LIGHT STROBE,enum) 0 (>L:STROBE_0_AUTO,enum) 2 (>L:LIGHTING_STROBE_0,enum)",
+      "simEventOn": "!2 (>L:INI_STROBE_LIGHT_SWITCH,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "!1 (>A:LIGHT STROBE,enum) 1 (>L:STROBE_0_AUTO,enum) 1 (>L:LIGHTING_STROBE_0,enum)",
+      "simEventOff": "!1 (>L:INI_STROBE_LIGHT_SWITCH,enum)",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "Beacon\nOn\n\nOff",
-      "simEventOn": "BEACON_LIGHTS_ON",
+      "simEventOn": "!1 (>L:INI_BEACON_LIGHT_SWITCH,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "BEACON_LIGHTS_OFF",
+      "simEventOn": "!0 (>L:INI_BEACON_LIGHT_SWITCH,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "Nav & Logo\n2\n1\nOff",
-      "simEventOn": "!1 (>A:LIGHT NAV,enum)  1 (>A:LIGHT LOGO,enum)",
+      "simEventOn": "!0 (>L:INI_LOGO_LIGHT_SWITCH,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "",
+      "simEventOff": "!1 (>L:INI_LOGO_LIGHT_SWITCH,enum)",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "!0 (>A:LIGHT NAV,enum)  0 (>A:LIGHT LOGO,enum)",
+      "simEventOn": "!2 (>L:INI_LOGO_LIGHT_SWITCH,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "",
+      "simEventOff": "!1 (>L:INI_LOGO_LIGHT_SWITCH,enum)",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "RWY Turn Off\nOn\n\nOff\n",
-      "simEventOn": "!1 (>A:CIRCUIT SWITCH ON:21,enum) 1 (>A:CIRCUIT SWITCH ON:22,enum)",
+      "simEventOn": "!1 (>L:INI_TURNOFF_LIGHT_SWITCH,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "!0 (>A:CIRCUIT SWITCH ON:21,enum) 0 (>A:CIRCUIT SWITCH ON:22,enum)",
+      "simEventOn": "!0 (>L:INI_TURNOFF_LIGHT_SWITCH,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "Land\nOn\nOff\nRetact",
-      "simEventOn": "!0 (>L:LIGHTING_LANDING_2) 0 (>L:LIGHTING_LANDING_3) 0 (>L:LANDING_2_RETRACTED) 0 (>L:LANDING_3_RETRACTED) 1 (>A:CIRCUIT SWITCH ON:18,enum) 1 (>A:CIRCUIT SWITCH ON:19,enum)",
+      "switchLabel": "Land\nOn\n\nOff\n",
+      "simEventOn": "!0 (>L:A320_LANDING_LIGHT_SWITCH_LEFT,enum) 0 (>L:A320_LANDING_LIGHT_SWITCH_RIGHT,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "!1 (>L:LIGHTING_LANDING_2) 1 (>L:LIGHTING_LANDING_3) 0 (>L:LANDING_2_RETRACTED) 0 (>L:LANDING_3_RETRACTED) 0 (>A:CIRCUIT SWITCH ON:18,enum) 0 (>A:CIRCUIT SWITCH ON:19,enum)",
+      "simEventOff": "!1 (>L:A320_LANDING_LIGHT_SWITCH_LEFT,enum) 1 (>L:A320_LANDING_LIGHT_SWITCH_RIGHT,enum)",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "!2 (>L:LIGHTING_LANDING_2) 2 (>L:LIGHTING_LANDING_3) 1 (>L:LANDING_2_RETRACTED) 1 (>L:LANDING_3_RETRACTED) 0 (>A:CIRCUIT SWITCH ON:18,enum) 0 (>A:CIRCUIT SWITCH ON:19,enum)",
+      "simEventOn": "!2 (>L:A320_LANDING_LIGHT_SWITCH_LEFT,enum) 2 (>L:A320_LANDING_LIGHT_SWITCH_RIGHT,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "!1 (>L:LIGHTING_LANDING_2) 1 (>L:LIGHTING_LANDING_3) 0 (>L:LANDING_2_RETRACTED) 0 (>L:LANDING_3_RETRACTED) 0 (>A:CIRCUIT SWITCH ON:18,enum) 0 (>A:CIRCUIT SWITCH ON:19,enum)",
+      "simEventOff": "!1 (>L:A320_LANDING_LIGHT_SWITCH_LEFT,enum) 1 (>L:A320_LANDING_LIGHT_SWITCH_RIGHT,enum)",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "Nose\nT.O.\nTaxi\nOff",
-      "simEventOn": "!1 (>A:CIRCUIT SWITCH ON:17,enum) 1 (>A:CIRCUIT SWITCH ON:20,enum)",
+      "simEventOn": "!0 (>L:INI_TAXI_LIGHT_SWITCH,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "!0 (>A:CIRCUIT SWITCH ON:17,enum) 1 (>A:CIRCUIT SWITCH ON:20,enum)",
+      "simEventOff": "!1 (>L:INI_TAXI_LIGHT_SWITCH,enum)",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "!0 (>A:CIRCUIT SWITCH ON:17,enum) 0 (>A:CIRCUIT SWITCH ON:20,enum)",
+      "simEventOn": "!2 (>L:INI_TAXI_LIGHT_SWITCH,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "!0 (>A:CIRCUIT SWITCH ON:17,enum) 1 (>A:CIRCUIT SWITCH ON:20,enum)",
+      "simEventOff": "!1 (>L:INI_TAXI_LIGHT_SWITCH,enum)",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "SPD",
-      "simEventOn": "AP_AIRSPEED_ON",
+      "simEventOn": "!1 (>L:INI_FCU_SELECTED_SPEED_BUTTON,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "HDG",
-      "simEventOn": "AP_HDG_HOLD_ON",
+      "simEventOn": "!1 (>L:INI_FCU_SELECTED_HEADING_BUTTON,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "ALT",
-      "simEventOn": "AP_ALT_HOLD_ON",
+      "simEventOn": "!1 (>L:INI_FCU_ALTITUDE_PUSH_COMMAND,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "V/S",
-      "simEventOn": "!1 (>K:A32NX.FCU_VS_PUSH)",
+      "simEventOn": "!1 (>L:INI_FCU_PUSH_COMMAND,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "AP_AIRSPEED_OFF",
+      "simEventOn": "!1 (>L:INI_FCU_MANAGED_SPEED_BUTTON,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "AP_HDG_HOLD_OFF",
+      "simEventOn": "!1 (>L:INI_FCU_MANAGED_HEADING_BUTTON,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "AP_ALT_HOLD_OFF",
+      "simEventOn": "!1 (>L:INI_FCU_ALTITUDE_PULL_COMMAND,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "!1 (>K:A32NX.FCU_VS_PULL)",
+      "simEventOn": "!1 (>L:AP9_BUTTON,enum)",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0

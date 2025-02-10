@@ -128,11 +128,16 @@ namespace MSFS2020_Ardunio_Cockpit
             if (simActivity.Variable.Equals(SimControl.ATC_MODEL_VAR))
             {
                 // A new aircraft was selected in the sim. We need to reload the cockpit layout
-                presetsManager.EmergePresetForAircraft(simActivity.Value);
+                int presetFound = presetsManager.EmergePresetForAircraft(simActivity.Value);
 
                 mainWindow_ref.Invoke(new MethodInvoker(delegate
                 {
                     mainWindow_ref.SetPresetName(presetsManager.GetPresetName());
+                    if(presetFound == 0)
+                    {
+                        mainWindow_ref.AppendLogMessage($"No preset found for aircraft: {simActivity.Value}");
+                        mainWindow_ref.AppendLogMessage("Applying Default");                        
+                    }
                 }));
 
                 // feed the preset to Arduino if it is ready
