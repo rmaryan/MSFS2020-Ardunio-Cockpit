@@ -1,6 +1,8 @@
 {
   "presetName": "Beechcraft Bonanza G36",
-  "aircraftName": "BE36",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": [ "BE36" ],
+  "AtcTypeKeywords": [],
   "bgColor": "0000",
   "screenFieldItems": [
     {

@@ -20,8 +20,10 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Ports;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace ArduinoConnector
 {
@@ -36,21 +38,27 @@ namespace ArduinoConnector
 
         public void Connect(string comPort)
         {
-            _readThread = new Thread(Read);
+            _readThread = new Thread(Read)
+            {
+                IsBackground = true,
+                Name = "ArduinoSerialReadThread"
+            };
 
-            _serialPort = new SerialPort();
-
-            _serialPort.PortName = comPort;
-            _serialPort.BaudRate = 2400;
-            _serialPort.Parity = Parity.None;
-            _serialPort.DataBits = 8;
-            _serialPort.StopBits = StopBits.One;
-            _serialPort.Handshake = Handshake.None;
-            _serialPort.DtrEnable = true;
-            _serialPort.RtsEnable = true;
-
-            _serialPort.ReadTimeout = 500;
-            _serialPort.WriteTimeout = 5000;
+            _serialPort = new SerialPort
+            {
+                PortName = comPort,
+                BaudRate = 2400,
+                Parity = Parity.None,
+                DataBits = 8,
+                StopBits = StopBits.One,
+                Handshake = Handshake.None,
+                DtrEnable = true,
+                RtsEnable = true,
+                NewLine = CMD_DELIMITER,
+                // Use blocking read; closing the port will abort the blocked read with an IOException
+                ReadTimeout = 500000,
+                WriteTimeout = 5000
+            };
 
             try
             {
@@ -68,44 +76,107 @@ namespace ArduinoConnector
 
         public void Disconnect()
         {
-            SendMessage('R', "");
-            Thread.Sleep(100);
+            try
+            {
+                // try to notify the device first (best effort)
+                if (_serialPort != null && _serialPort.IsOpen)
+                {
+                    SendMessage('R', "");
+                    Thread.Sleep(100);
+                }
+            }
+            catch { /* ignore send failures */ }
+
+            // request thread to stop and close the port to unblock the reader
             _continue = false;
-            _readThread.Join();
-            _serialPort.Close();
+            try
+            {
+                if (_serialPort != null)
+                {
+                    _serialPort.Close(); // will cause blocking Read/ReadLine to throw and exit the read loop
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error closing serial port: {ex}");
+            }
+
+            // wait for the read thread to finish
+            try
+            {
+                _readThread?.Join(500);
+            }
+            catch (ThreadStateException) { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error joining read thread: {ex}");
+            }
         }
 
         public bool Connected()
         {
-            if (_serialPort == null)
-            {
-                return false;
-            }
-            return _serialPort.IsOpen;
+            return _serialPort != null && _serialPort.IsOpen;
         }
 
         public void SendMessage(char type, string data)
         {
-            Debug.WriteLine("S: " + type + data);
-            _serialPort.Write(type + data + CMD_DELIMITER);
+            try
+            {
+                Debug.WriteLine("S: " + type + data);
+                _serialPort.Write(type + data + CMD_DELIMITER);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"SendMessage failed: {ex}");
+            }
         }
 
         public void Read()
         {
+            // wait for Arduino to reset
+            Thread.Sleep(1000);
+            Debug.WriteLine("Serial Read Thread started");
+            var sb = new System.Text.StringBuilder();
             while (_continue)
             {
                 try
                 {
-                    string message = _serialPort.ReadTo(CMD_DELIMITER);
+                    // blocking read until newline; avoids repeated TimeoutExceptions
+                    string message = _serialPort.ReadLine();
 
-                    OnMessageRecieved(new MessageEventArgs(message[0], message.Remove(0, 1)));
-
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        Debug.WriteLine("R: " + message);
+                        OnMessageRecieved(new MessageEventArgs(message[0], message.Remove(0, 1)));
+                    }
                 }
-                catch (TimeoutException) { }
-                catch (ThreadInterruptedException) { }
+                catch (TimeoutException)
+                {
+                    // unlikely to happen - let's just wait a bit an continue
+                    Thread.Sleep(1000);
+                    continue;
+                }
+                catch (IOException)
+                {
+                    // port closed or IO error -> wait a bit and start again
+                    Thread.Sleep(1000);
+                    continue;
+                }
                 catch (InvalidOperationException)
                 {
-                    // port lost connection
+                    // port not open -> exit
+                    _continue = false;
+                    break;
+                }
+                catch (ThreadInterruptedException)
+                {
+                    _continue = false;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    // unexpected exception - log and break to avoid spinning
+                    Debug.WriteLine($"Unexpected serial read exception: {ex}");
                     _continue = false;
                     break;
                 }

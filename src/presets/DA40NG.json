@@ -1,6 +1,8 @@
 {
-  "presetName": "Diammond DA40NG",
-  "aircraftName": "DA40",
+  "presetName": "Diammond DA40 NG",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": [ "DA40", "DA-40 NG" ],
+  "AtcTypeKeywords": [],
   "bgColor": "0000",
   "screenFieldItems": [
     {

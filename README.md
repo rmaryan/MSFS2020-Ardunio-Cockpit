@@ -31,23 +31,25 @@ As long as "Connect" box is checked, the application will try reconnecting to th
 
 Once the connections are established, Sim Connector checks the aircraft model which is currently loaded in MSFS, and tries to find the most appropriate dashboard layout for it.
 
-Dashboard layouts are currently hard-coded in the C# code. Later we plan to implement dynamic layouts loading from the plain text files.
-
 Currently available presets:
  * **Default** - a very simple preset that is loaded by default
  * **Beechcraft Bonanza G36**
  * **Beechcraft Piston Duke**
  * **Cessna 152**
  * **Cessna 152 Neofly Banner Tow version**
+ * **Cessna 172 Classic**
  * **Cessna 172 Skyhawk G1000**
  * **Cessna C208 B Grand Caravan**
- * **Diamond Aircraft DA40NG**
+ * **Diamond Aircraft DA40NG and TDI**
  * **Diamond Aircraft DA62**
  * **FlyByWire A320neo**
  * **FlyByWire A380**
  * **Headwind A330-900neo** - actually identical to FBW A320neo
+ * **Inibuilds A320/321 for MSFS 2024**
+ * **Inibuilds A330 for MSFS 2024**
+ * **Inibuilds A350**
  * **PA34T SENECA V**
- * **PMDG Boeing 737**
+ * **PMDG Boeing 737** - for MSFS 2020 only
 
 
 To make it easier remembering all the switches designations an active preset actions mapping is also shown on the screen.
@@ -75,7 +77,11 @@ The format of the JSON file is the following:
 ```
 {
   "presetName": "PA34T SENECA V", // a free-form text which is shown on the main screen to identify the preset activated
-  "aircraftName": "Seneca V",     // the aircraft name which should exactly correspond to the "ATC MODEL" variable value
+  // "aircraftName": "Seneca V",  // old versions used this field to identify the aircraft. Now it is obsolete.
+  "fsVersion": "FS2020, FS2024",  // the MSFS versions supported by this preset. Comma-separated values. Possible values: "FS2020", "FS2024" or both.
+  "AtcModelKeywords": [ "Seneca V", "PA34" ], // the list of keywords to match against sim variable "ATC MODEL". If at least one keyword matches the aircraft model name - this preset is considered as suitable.
+                                               // The keywords are case-insensitive. If multiple presets match - user will be presented with a selection dialog.
+  "AtcTypeKeywords": [ "PA34" ], // optional list of keywords to match against sim variable "ATC TYPE". Match is checked only if ATC MODEL keywords did not match.
   "bgColor": "0000",              // screen background color in the RGB
   "screenFieldItems": [           // the screen fields definition section - these are fields which are shown on the screen and can be changed by the knobs
                                   // screenFieldItems can contain any reasonable number of entries

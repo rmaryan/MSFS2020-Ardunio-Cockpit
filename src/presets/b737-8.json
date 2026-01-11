@@ -1,6 +1,8 @@
 {
-  "presetName": "Boeing 737",
-  "aircraftName": "737",
+  "presetName": "PMDG Boeing 737-800",
+  "fsVersion": "FS2020",
+  "AtcModelKeywords": [ "B738" ],
+  "AtcTypeKeywords": [ "" ],
   "bgColor": "0000",
   "screenFieldItems": [
     {
@@ -815,7 +817,7 @@
     },
     {
       "switchLabel": "Land\nOff\n(Extend/Pulse)\nOn",
-      "simEventOn": "!0 (L:switch_111_73X, number) != if{ 11102 (>K:ROTOR_BRAKE) } 0 (L:switch_111_73X, number) != if{ 11102 (>K:ROTOR_BRAKE) } 0 (L:switch_112_73X, number) != if{ 11202 (>K:ROTOR_BRAKE) } 0 (L:switch_112_73X, number) != if{ 11202 (>K:ROTOR_BRAKE) } 0 (L:switch_113_73X, number) != if{ 11302 (>K:ROTOR_BRAKE) } 0 (L:switch_113_73X, number) != if{ 11302 (>K:ROTOR_BRAKE) } 0 (L:switch_114_73X, number) != if{ 11402 (>K:ROTOR_BRAKE) } 0 (L:switch_114_73X, number) != if{ 11402 (>K:ROTOR_BRAKE) }",	  
+      "simEventOn": "!0 (L:switch_111_73X, number) != if{ 11102 (>K:ROTOR_BRAKE) } 0 (L:switch_111_73X, number) != if{ 11102 (>K:ROTOR_BRAKE) } 0 (L:switch_112_73X, number) != if{ 11202 (>K:ROTOR_BRAKE) } 0 (L:switch_112_73X, number) != if{ 11202 (>K:ROTOR_BRAKE) } 0 (L:switch_113_73X, number) != if{ 11302 (>K:ROTOR_BRAKE) } 0 (L:switch_113_73X, number) != if{ 11302 (>K:ROTOR_BRAKE) } 0 (L:switch_114_73X, number) != if{ 11402 (>K:ROTOR_BRAKE) } 0 (L:switch_114_73X, number) != if{ 11402 (>K:ROTOR_BRAKE) }",
       "simEventOnValue": 0,
       "simEventOff": "!(L:switch_111_73X, number) s0 l0 0 == if{ 11101 (>K:ROTOR_BRAKE) } l0 100  == if{ 11102 (>K:ROTOR_BRAKE) } (L:switch_112_73X, number) s0 l0 0 == if{ 11201 (>K:ROTOR_BRAKE) } l0 100  == if{ 11202 (>K:ROTOR_BRAKE) } (L:LandingLightOptions) 1 ==  (L:LandingLightOptions) 3 == || if{ (L:switch_113_73X, number) s0 l0 0 == if{ 11301 (>K:ROTOR_BRAKE) } l0 100  == if{ 11302 (>K:ROTOR_BRAKE) } (L:switch_114_73X, number) s0 l0 0 == if{ 11401 (>K:ROTOR_BRAKE) } l0 100  == if{ 11402 (>K:ROTOR_BRAKE) } }",
       "simEventOffValue": 0

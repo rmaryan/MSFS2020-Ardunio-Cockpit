@@ -22,10 +22,13 @@ using ArduinoConnector;
 using MSFSConnector;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
+using System.Net.Cache;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MSFS2020_Ardunio_Cockpit
@@ -37,6 +40,10 @@ namespace MSFS2020_Ardunio_Cockpit
 
         // provides the presets per selected aircraft model
         private PresetsManager presetsManager;
+
+        // the list of the sim variables to monitor constantly (i.e. to detect current aircraft model)
+        private readonly string[] AC_MODEL_VARS = { "TITLE", "ATC MODEL", "ATC TYPE" };
+        private string[] currentAircraftVars = { "", "", "" };
 
         // handles connection to arduino device
         private ArduinoControl arduinoControl;
@@ -55,9 +62,14 @@ namespace MSFS2020_Ardunio_Cockpit
 
         private readonly MainWindow mainWindow_ref;
 
-        // the connection persistance thread
-        private Thread reconnectionThread;
+        // the connection persistance task
+        private Task reconnectionTask;
+        private CancellationTokenSource reconnectionCts;
         private bool keepReconnecting = true;
+
+        // scheduling guard for delayed AC change processing
+        private readonly object acScheduleLock = new object();
+        private bool acCodeScheduled = false;
 
         public CockpitController(MainWindow mainWindow)
         {
@@ -68,20 +80,31 @@ namespace MSFS2020_Ardunio_Cockpit
 
             presetsManager = new PresetsManager();
 
-            simControl = new SimControl();
+            simControl = new SimControl(AC_MODEL_VARS);
             simControl.DataReceived += SimControlDataReceived;
 
-            reconnectionThread = new Thread(ReConnectionThreadCode);
-            reconnectionThread.IsBackground = true;
-            reconnectionThread.Start();
+            // start persistent reconnection loop as a Task (cooperative cancellation)
+            reconnectionCts = new CancellationTokenSource();
+            reconnectionTask = Task.Run(() => ReConnectionThreadCode(reconnectionCts.Token), reconnectionCts.Token);
         }
 
         public void CloseAll()
         {
             keepReconnecting = false;
-            reconnectionThread.Interrupt();
+            reconnectionCts.Cancel();
             DisconnectAll();
-            reconnectionThread.Join();
+            try
+            {
+                reconnectionTask.Wait();
+            }
+            catch (AggregateException ae)
+            {
+                ae.Handle((x) =>
+                {
+                    if (x is TaskCanceledException) return true;
+                    return false;
+                });
+            }
         }
 
         public void ConnectToggle()
@@ -124,40 +147,31 @@ namespace MSFS2020_Ardunio_Cockpit
         private void SimControlDataReceived(object sender, EventArgs e)
         {
             var simActivity = (SimControl.SimActivityEventArgs)e;
+            string varName = simActivity.Variable;
+            string varValue = simActivity.Value;
 
-            if (simActivity.Variable.Equals(SimControl.ATC_MODEL_VAR))
+            // did any of the aircraft identification variables change?
+            int acVarIndex = Array.IndexOf(AC_MODEL_VARS, varName);
+            if (acVarIndex > -1)
             {
-                // A new aircraft was selected in the sim. We need to reload the cockpit layout
-                int presetFound = presetsManager.EmergePresetForAircraft(simActivity.Value);
+                // store the actual variable value to process later
+                currentAircraftVars[acVarIndex] = varValue;
 
-                mainWindow_ref.Invoke(new MethodInvoker(delegate
-                {
-                    mainWindow_ref.SetPresetName(presetsManager.GetPresetName());
-                    if(presetFound == 0)
-                    {
-                        mainWindow_ref.AppendLogMessage($"No preset found for aircraft: {simActivity.Value}");
-                        mainWindow_ref.AppendLogMessage("Applying Default");                        
-                    }
-                }));
-
-                // feed the preset to Arduino if it is ready
-                if (arduinoControl.Connected() && firmwareIsValid)
-                {
-                    ActivateCockpitPreset();
-                }
+                // schedule the selected block to run 3 seconds later, but only if not already scheduled
+                SchedulePresetActivation(varValue);
             }
             else
             {
                 // regular messages processing
-                Debug.WriteLine($"Received: {simActivity.Variable}={simActivity.Value}");
+                Debug.WriteLine($"Received: {varName}={varValue}");
 
                 // check for the relevant visibility statements first
                 foreach (VisibilityCondition vc in presetsManager.GetVisibilityConditions())
                 {
-                    if (simActivity.Variable.Equals(vc.visibilityVar))
+                    if (varName.Equals(vc.visibilityVar))
                     {
                         ScreenFieldItem item = presetsManager.GetScreenFieldItem(vc.screenItemID);
-                        item.visible = PresetsManager.EvaluateVisibilityFlag(simActivity.Value, vc);
+                        item.visible = PresetsManager.EvaluateVisibilityFlag(varValue, vc);
                         if (item.visible)
                         {
                             // send to Arduino the last known item text (that's why null as a first parameter)
@@ -166,11 +180,11 @@ namespace MSFS2020_Ardunio_Cockpit
                     }
                 }
 
-                int itemID = presetsManager.GetItemIDForSimVar(simActivity.Variable);
+                int itemID = presetsManager.GetItemIDForSimVar(varName);
                 if (itemID >= 0)
                 {
                     ScreenFieldItem item = presetsManager.GetScreenFieldItem(itemID);
-                    PushFieldChangeToArduino(simActivity.Value, itemID, item);
+                    PushFieldChangeToArduino(varValue, itemID, item);
                 }
             }
         }
@@ -373,7 +387,8 @@ namespace MSFS2020_Ardunio_Cockpit
                                         }
                                         if (item.simEventID == int.MaxValue)
                                         {
-                                            simControl.WASMExecute($"{value} {item.simEvent.Substring(1)}");
+                                            // no need to convert to uint for the WASM event
+                                            simControl.WASMExecute($"{message.Data.Substring(1)} {item.simEvent.Substring(1)}");
                                         }
                                         else
                                         {
@@ -434,7 +449,65 @@ namespace MSFS2020_Ardunio_Cockpit
             }
         }
 
-        private void ReConnectionThreadCode()
+        // Schedule preset activation after 3 seconds.
+        // The task will be created only when there is no pending scheduled execution.
+        private void SchedulePresetActivation(string varValue)
+        {
+            lock (acScheduleLock)
+            {
+                if (acCodeScheduled) return;
+                acCodeScheduled = true;
+            }
+
+            // run the delayed work on a background task
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(3000).ConfigureAwait(false);
+
+                    // at this point we expect that all AC identification variables are already updated
+                    int presetFound = presetsManager.EmergePresetForAircraft(currentAircraftVars, simControl.msfsVersion, mainWindow_ref);
+
+                    // update UI on the main thread
+                    mainWindow_ref.Invoke(new MethodInvoker(delegate
+                    {
+                        mainWindow_ref.SetPresetName(presetsManager.GetPresetName());
+                        if (presetFound == 0)
+                        {
+                            mainWindow_ref.AppendLogMessage($"No preset found for aircraft: {currentAircraftVars[0]}");
+                            mainWindow_ref.AppendLogMessage("Applying Default");
+                        }
+                        else
+                        if (presetFound == -1)
+                        {
+                            mainWindow_ref.AppendLogMessage($"No preset found for aircraft: {currentAircraftVars[0]}");
+                            mainWindow_ref.AppendLogMessage("No Default preset found as well. Aborting.");
+                        }
+
+                    }));
+
+                    // feed the preset to Arduino if it is ready
+                    if ((presetFound >= 0) && arduinoControl.Connected() && firmwareIsValid)
+                    {
+                        ActivateCockpitPreset();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                }
+                finally
+                {
+                    lock (acScheduleLock)
+                    {
+                        acCodeScheduled = false;
+                    }
+                }
+            });
+        }
+
+        private void ReConnectionThreadCode(CancellationToken cancellationToken)
         {
             // send ping to Arduino only once
             bool pingSent = false;
@@ -557,7 +630,7 @@ namespace MSFS2020_Ardunio_Cockpit
 
         private void ActivateCockpitPreset()
         {
-            // Unsubscribe from the previous sim variables (if any)
+            // Unsubscribe from the previous sim variables and events (if any)
             simControl.RemoveAllRequests();
 
             // clear old knob mappings
@@ -612,6 +685,7 @@ namespace MSFS2020_Ardunio_Cockpit
                 if (!item.simVariable.Equals(""))
                 {
                     simControl.AddVarRequest(item.simVariable, item.unitOfMeasure);
+                    Console.WriteLine("Registering for var: {0}", item.simVariable);
                     if (!item.simEvent.Equals(""))
                     {
                         if (item.simEvent.StartsWith("!"))

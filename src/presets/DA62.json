@@ -1,6 +1,8 @@
 {
   "presetName": "Diammond DA62",
-  "aircraftName": "DA62",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": [ "DA62" ],
+  "AtcTypeKeywords": [],
   "bgColor": "0000",
   "screenFieldItems": [
     {

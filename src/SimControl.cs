@@ -19,16 +19,19 @@
  */
 
 using Microsoft.FlightSimulator.SimConnect;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using static MSFSConnector.SimControl;
 
 namespace MSFSConnector
 {
+    public enum MSFS_VERSION
+    {
+        MSFS_2020,
+        MSFS_2024,
+    }
     public class SimControl
     {
         /// simconnect connection
@@ -36,25 +39,33 @@ namespace MSFSConnector
         private IntPtr _hWnd = new IntPtr(0);
         private SimConnect _simConnect = null;
 
+        private uint simEventGroupID = 0;
         private readonly List<SimVar> monitoredVars = new List<SimVar>();
         private readonly List<String> usedEvents = new List<String>();
         private readonly List<String> WASMSimVars = new List<String>();
 
-        public const string ATC_MODEL_VAR = "ATC MODEL";
-
-        public string CurrentAircraftType { get; private set; } = "";
+        // List of variables to monitor from the sim first and always
+        // They will be added to the monitoredVars by default
+        private string[] CORE_VARS_LIST = null;
 
         public event EventHandler DataReceived;
+        public event EventHandler LVarNamesReceived;
 
         public bool ConnectedSimConnect { get; private set; } = false;
         public bool ConnectedWASM { get; private set; } = false;
+
+        public MSFS_VERSION msfsVersion { get; private set; } = MSFS_VERSION.MSFS_2024;
 
         private const string WASM_CLIENT_NAME = "ArduFlight";
         private const string WASM_CLIENT_DATA_NAME_SIMVAR = WASM_CLIENT_NAME + ".LVars";
         private const string WASM_CLIENT_DATA_NAME_COMMAND = WASM_CLIENT_NAME + ".Command";
         private const string WASM_CLIENT_DATA_NAME_RESPONSE = WASM_CLIENT_NAME + ".Response";
 
-
+        // Constructor takes the list of variables to monitor from the sim first and always
+        public SimControl(string[] coreVarsList)
+        {
+            CORE_VARS_LIST = coreVarsList;
+        }
 
         public void ReceiveSimConnectMessage()
         {
@@ -96,7 +107,6 @@ namespace MSFSConnector
                 _simConnect.Dispose();
                 _simConnect = null;
                 monitoredVars.Clear();
-                WASMSimVars.Clear();
             }
 
             ConnectedSimConnect = false;
@@ -108,8 +118,14 @@ namespace MSFSConnector
             Debug.WriteLine("SimConnect Connected");
             ConnectedSimConnect = true;
 
-            // Register to receive aircraft type - this is a key to choose the cockpit layout
-            AddVarRequest(ATC_MODEL_VAR, "");
+            // Get MSFS version
+            msfsVersion = (data.dwApplicationBuildMajor>= 2) ? MSFS_VERSION.MSFS_2024 : MSFS_VERSION.MSFS_2020;
+
+            // Register aircraft model variable requests
+            for (int i = 0; i < CORE_VARS_LIST.Length; i++)
+            {
+                AddVarRequest(CORE_VARS_LIST[i], "");
+            }
 
             // Kick-off the WASM module
             WasmModuleClient.AddClient(_simConnect, WASM_CLIENT_NAME);
@@ -141,12 +157,6 @@ namespace MSFSConnector
                     // this is a string
                     Struct1 result = (Struct1)data.dwData[0];
                     value = result.sValue;
-
-                    // Aircraft model variable is always #0
-                    if (data.dwRequestID == 0)
-                    {
-                        CurrentAircraftType = value;
-                    }
                 }
                 else
                 {
@@ -210,7 +220,7 @@ namespace MSFSConnector
                     Debug.WriteLine($"Received WASM MBF RESPONSE: {simData.Data}");
                 }
             } else
-            if(data.dwRequestID == (uint)SIMCONNECT_CLIENT_DATA_ID.CLIENT_RESPONSE)
+            if (data.dwRequestID == (uint)SIMCONNECT_CLIENT_DATA_ID.CLIENT_RESPONSE)
             {
                 // handling the client-specific messages goes here
                 var simData = (WASMResponseString)(data.dwData[0]);
@@ -324,6 +334,7 @@ namespace MSFSConnector
                         // The float string representations comes from Arduino - parse the decimal point as a point
                         if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double dValue))
                         {
+                            Debug.WriteLine($"Setting Var: {monitoredVars[simvarID].name} = {dValue}");
                             _simConnect.SetDataOnSimObject((DEFINITION)simvarID, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dValue);
                         }
                     }
@@ -337,6 +348,11 @@ namespace MSFSConnector
 
             int nextEventID = usedEvents.Count;
             _simConnect.MapClientEventToSimEvent((DEFINITION)nextEventID, eventName);
+            _simConnect.AddClientEventToNotificationGroup((DEFINITION)simEventGroupID, (DEFINITION)nextEventID, false);
+            if (usedEvents.Count == 0)
+            {
+                _simConnect.SetNotificationGroupPriority((DEFINITION)simEventGroupID, SimConnect.SIMCONNECT_GROUP_PRIORITY_STANDARD);
+            }
             usedEvents.Add(eventName);
             return nextEventID;
         }
@@ -362,17 +378,28 @@ namespace MSFSConnector
                 WasmModuleClient.Stop(_simConnect);
             }
 
-            // keep the ATC MODEL listener active
-            if (monitoredVars.Count > 1)
+            // keep aircraft model vars listeners active
+            if (monitoredVars.Count > CORE_VARS_LIST.Length)
             {
-                for (int i = 1; i < monitoredVars.Count; i++)
+                for (int i = CORE_VARS_LIST.Length; i < monitoredVars.Count; i++)
                 {
                     _simConnect.ClearDataDefinition((DEFINITION)i);
                 }
-                monitoredVars.RemoveRange(1, monitoredVars.Count - 1);
+                monitoredVars.RemoveRange(CORE_VARS_LIST.Length, monitoredVars.Count - CORE_VARS_LIST.Length);
             }
             WASMSimVars.Clear();
+
+            // clear all event mappings
+            _simConnect.ClearNotificationGroup((DEFINITION)simEventGroupID);
             usedEvents.Clear();
+        }
+
+        public void RequestLVarNames()
+        {
+            if (ConnectedWASM)
+            {
+                WasmModuleClient.GetLVarList(_simConnect);
+            }
         }
 
         /**

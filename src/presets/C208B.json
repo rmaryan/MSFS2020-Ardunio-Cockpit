@@ -1,6 +1,8 @@
 {
   "presetName": "Cessna C208 B Grand Caravan",
-  "aircraftName": "Caravan",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": [ "Caravan", "C208" ],
+  "AtcTypeKeywords": [],
   "bgColor": "0000",
   "screenFieldItems": [
     {

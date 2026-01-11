@@ -1,6 +1,8 @@
 {
   "presetName": "PA34T SENECA V",
-  "aircraftName": "Seneca V",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": [ "Seneca V" ],
+  "AtcTypeKeywords": [ "PA34" ],
   "bgColor": "0000",
   "screenFieldItems": [
     {

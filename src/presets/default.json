@@ -1,6 +1,8 @@
 {
   "presetName": "Default",
-  "aircraftName": "Default",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": [],
+  "AtcTypeKeywords": [],
   "bgColor": "0000",
   "screenFieldItems": [
     {

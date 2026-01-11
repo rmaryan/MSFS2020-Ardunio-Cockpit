@@ -1,6 +1,8 @@
 {
   "presetName": "Headwind A330-900neo",
-  "aircraftName": "A330",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": [ "A330" ],
+  "AtcTypeKeywords": [],
   "bgColor": "0000",
   "screenFieldItems": [
     {
@@ -168,7 +170,7 @@
       "fontSize": "4",
       "textWidth": 5,
       "simVariable": "AUTOPILOT ALTITUDE LOCK VAR:3",
-      "simEvent": "",
+      "simEvent": "AP_ALT_VAR_SET_ENGLISH",
       "unitOfMeasure": "feet",
       "simvarType": 1,
       "decimalPlaces": 0,

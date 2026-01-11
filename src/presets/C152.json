@@ -1,6 +1,8 @@
 {
   "presetName": "Cessna 152",
-  "aircraftName": "152",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": [ "152" ],
+  "AtcTypeKeywords": [],
   "bgColor": "0000",
   "screenFieldItems": [
     {

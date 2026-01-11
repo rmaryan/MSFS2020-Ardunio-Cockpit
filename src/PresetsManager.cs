@@ -18,17 +18,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using MSFSConnector;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Windows.Forms;
 
 namespace MSFS2020_Ardunio_Cockpit
 {
+    [Flags]
+    internal enum FS_VERSIONS
+    {
+        None = 0,
+        FS2020 = 1,
+        FS2024 = 2
+    };
+
     internal enum SIMVAR_TYPE
     {
         TYPE_STRING,  // the value is shown as string
@@ -164,8 +173,21 @@ namespace MSFS2020_Ardunio_Cockpit
         public const uint SWITCHES_COUNT = 20; // overall switches count on the dashboard
 
         public string presetName = "";   // the preset name to be shown on the screen
-        public string aircraftName = ""; // the aircraft name as specified in the ATC_MODEL_VAR
-        public string bgColor = "";      // dashboard background color
+
+
+        /*
+         *  Preset applicability definitions.
+         *  As it is impossible to precisely identify the aircraft model in MSFS using SimVars only, a more flexible approach is used.
+         *  First, the Flight Simulator version is checked (fsVersion).
+         *  Then- ATC_MODEL and ATC_TYPE sim variables are used to identify the aircraft. We search for the specified keywords in these variables as substrings.
+         */
+        [JsonConverter(typeof(StringEnumConverter))]
+        public FS_VERSIONS fsVersion = FS_VERSIONS.None; // Flight Simulator version for which the preset is intended (can be more than one, i.e. "fsVersion":"FS2020, FS2024")
+        public List<string> AtcModelKeywords = new List<string>(); // keywords to search in the ATC_MODEL_VAR to identify the aircraft for which this preset is intended
+                                               // multiple keywords can be separated by comma. If at least one keyword matches - the preset is accepted.
+        public List<string> AtcTypeKeywords = new List<string>();  // keywords to search in the ATC_TYPE_VAR to identify the aircraft for which this preset is intended
+
+        public string bgColor = "";      // dashboard background color        
         public List<ScreenFieldItem> screenFieldItems = new List<ScreenFieldItem>();
         public SwitchDefItem[] switchDefItems;
 
@@ -356,58 +378,151 @@ namespace MSFS2020_Ardunio_Cockpit
          *  0 if Default preset is being applied
          *  >0 if precise aircraft preset is available
          */
-        public int EmergePresetForAircraft(string atc_model)
+        public int EmergePresetForAircraft(string[] ac_model_vars, MSFS_VERSION msfsVersion, MainWindow mainWindow_ref)
         {
-            // find the approriate preset
+            // find the matching presets
             pID = -1;
-            bool defaultPreset = true;
+            bool defaultPreset = false;
+            var possibleMatches = new List<int>();
+            int defaultIndex = -1;
 
             for (int i = 0; i < presets.Count; i++)
             {
-                if (presets[i].aircraftName.Equals(atc_model))
+                var preset = presets[i];
+
+                // Step 1: check Flight Simulator version
+                if (msfsVersion == MSFS_VERSION.MSFS_2020)
                 {
-                    // full match, stop the search
-                    pID = i;
-                    defaultPreset = false;
-                    break;
+                    if ((preset.fsVersion & FS_VERSIONS.FS2020) == 0)
+                    {
+                        // preset is not intended for MSFS 2020
+                        continue;
+                    }
                 }
-                if (presets[i].aircraftName.Equals("Default"))
+                else if (msfsVersion == MSFS_VERSION.MSFS_2024)
                 {
-                    // default preset - use it but keep searching
-                    pID = i;
+                    if ((preset.fsVersion & FS_VERSIONS.FS2024) == 0)
+                    {
+                        // preset is not intended for MSFS 2024
+                        continue;
+                    }
+                }
+
+                // discover default preset index by presetName == "Default"
+                if (preset.presetName.Equals("Default", StringComparison.OrdinalIgnoreCase))
+                {
+                    defaultIndex = i;
+                }
+
+                // Step 2: check AC MODEL and TYPE keywords
+                bool modelKeywordMatched = false;
+                if (preset.AtcModelKeywords != null && preset.AtcModelKeywords.Count > 0)
+                {
+                    foreach (var kw in preset.AtcModelKeywords)
+                    {
+                        if (!string.IsNullOrEmpty(kw) && ac_model_vars[1].IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            possibleMatches.Add(i);
+                            modelKeywordMatched = true;
+                            break;
+                        }
+                    }
+                }
+                if (!modelKeywordMatched && (preset.AtcTypeKeywords != null) && (preset.AtcTypeKeywords.Count > 0))
+                {
+                    foreach (var kw in preset.AtcTypeKeywords)
+                    {
+                        if (!string.IsNullOrEmpty(kw) && ac_model_vars[2].IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            possibleMatches.Add(i);
+                            break;
+                        }
+                    }
                 }
             }
+
+            if (possibleMatches.Count == 0)
+            {
+                if (defaultIndex != -1)
+                {
+                    pID = defaultIndex;
+                    defaultPreset = true;
+                }
+                else
+                {
+                    // preset not found
+                    return -1;
+                }
+            }
+            else if (possibleMatches.Count == 1)
+            {
+                pID = possibleMatches[0];
+            }
+            else
+            {
+                // multiple exact matches found - always prompt user to pick one
+                var names = new List<string>();
+                foreach (var idx in possibleMatches) names.Add(presets[idx].presetName);
+
+                DialogResult dlgResult = DialogResult.Cancel;
+                int dlgSelectedIndex = -1;
+
+                // Ensure the dialog is created and shown on the UI thread of the owner window.
+                // mainWindow_ref is a Form passed by the caller and provides the UI thread context.
+                mainWindow_ref.Invoke(new MethodInvoker(delegate
+                {
+                    using (var dlg = new SelectPresetDialog(names))
+                    {
+                        dlgResult = dlg.ShowModalOver(mainWindow_ref);
+                        dlgSelectedIndex = dlg.SelectedPresetIndex;
+                    }
+                }));
+
+                if (dlgResult == DialogResult.OK && dlgSelectedIndex >= 0)
+                {
+                    pID = possibleMatches[dlgSelectedIndex];
+                    defaultPreset = false;
+                }
+                else
+                {
+                    // user cancelled selection
+                    pID = -1;
+                }
+            }
+
             if (pID == -1)
             {
-                // preset not found
                 return -1;
             }
+            else
+            {
+                // wipe the event ID's
+                foreach (ScreenFieldItem sfi in presets[pID].screenFieldItems)
+                {
+                    sfi.simEventID = -1;
+                }
+                foreach (SwitchDefItem sdi in presets[pID].switchDefItems)
+                {
+                    sdi.simEventOnID = -1;
+                    sdi.simEventOffID = -1;
+                }
 
-            // wipe the event ID's
-            foreach (ScreenFieldItem sfi in presets[pID].screenFieldItems)
-            {
-                sfi.simEventID = -1;
-            }
-            foreach (SwitchDefItem sdi in presets[pID].switchDefItems)
-            {
-                sdi.simEventOnID = -1;
-                sdi.simEventOffID = -1;
-            }
+                // generate the main window form labels
+                // 3-positions switches
+                for (int i = 0; i < 6; i++)
+                {
+                    presetSwitchLabels[i] = presets[pID].switchDefItems[i * 2].switchLabel + '\n' +
+                        presets[pID].switchDefItems[i * 2 + 1].switchLabel;
+                }
 
-            // generate the main window form labels
-            // 3-positions switches
-            for (int i = 0; i < 6; i++)
-            {
-                presetSwitchLabels[i] = presets[pID].switchDefItems[i * 2].switchLabel + '\n' +
-                    presets[pID].switchDefItems[i * 2 + 1].switchLabel;
-            }
+                // pushbuttons
+                for (int i = 6; i < 14; i++)
+                {
+                    presetSwitchLabels[i] = presets[pID].switchDefItems[i + 6].switchLabel;
+                }
 
-            // pushbuttons
-            for (int i = 6; i < 14; i++)
-            {
-                presetSwitchLabels[i] = presets[pID].switchDefItems[i + 6].switchLabel;
+                return defaultPreset ? 0 : 1;
             }
-            return defaultPreset ? 0 : 1;
         }
     }
 }

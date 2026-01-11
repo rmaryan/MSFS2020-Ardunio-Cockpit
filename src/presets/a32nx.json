@@ -1,6 +1,8 @@
 {
   "presetName": "FlyByWire A320neo",
-  "aircraftName": "A20N",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": [ "A20N" ],
+  "AtcTypeKeywords": [ ],
   "bgColor": "0000",
   "screenFieldItems": [
     {
@@ -168,7 +170,7 @@
       "fontSize": "4",
       "textWidth": 5,
       "simVariable": "AUTOPILOT ALTITUDE LOCK VAR:3",
-      "simEvent": "",
+      "simEvent": "AP_ALT_VAR_SET_ENGLISH",
       "unitOfMeasure": "feet",
       "simvarType": 1,
       "decimalPlaces": 0,
@@ -220,7 +222,7 @@
       "fontSize": "4",
       "textWidth": 5,
       "simVariable": "(L:A32NX_AUTOPILOT_VS_SELECTED)",
-      "simEvent": "!(>K:A32NX.FCU_VS_SET)",
+      "simEvent": "! (>K:A32NX.FCU_VS_SET)",
       "unitOfMeasure": "feet/minute",
       "simvarType": 1,
       "decimalPlaces": 0,

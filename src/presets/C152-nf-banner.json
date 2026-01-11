@@ -1,6 +1,8 @@
 {
   "presetName": "Cessna 152 - Neofly",
-  "aircraftName": "152",
+  "fsVersion": "FS2020",
+  "AtcModelKeywords": [ "152" ],
+  "AtcTypeKeywords": [],
   "bgColor": "0000",
   "screenFieldItems": [
     {

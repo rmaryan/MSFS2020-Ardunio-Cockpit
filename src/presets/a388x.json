@@ -1,6 +1,8 @@
 {
   "presetName": "FlyByWire A380",
-  "aircraftName": "ATCCOM.AC_MODEL A380.0.text",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": ["A380"],
+  "AtcTypeKeywords": [],
   "bgColor": "0000",
   "screenFieldItems": [
     {
@@ -387,7 +389,7 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=1",
+      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=2",
       "text": "LO ",
       "x": "280",
       "y": "185",
@@ -405,8 +407,8 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=2",
-      "text": "MED",
+      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=3",
+      "text": "2  ",
       "x": "280",
       "y": "185",
       "color": "07DF",
@@ -423,8 +425,44 @@
       "knobStep": ""
     },
     {
-      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=3",
-      "text": "MAX",
+      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=4",
+      "text": "3  ",
+      "x": "280",
+      "y": "185",
+      "color": "07DF",
+      "fontSize": "2",
+      "textWidth": 0,
+      "simVariable": "",
+      "simEvent": "",
+      "unitOfMeasure": "",
+      "simvarType": 0,
+      "decimalPlaces": 0,
+      "altText": "",
+      "altColor": "",
+      "knobSpec": "",
+      "knobStep": ""
+    },
+    {
+      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=5",
+      "text": "HI ",
+      "x": "280",
+      "y": "185",
+      "color": "07DF",
+      "fontSize": "2",
+      "textWidth": 0,
+      "simVariable": "",
+      "simEvent": "",
+      "unitOfMeasure": "",
+      "simvarType": 0,
+      "decimalPlaces": 0,
+      "altText": "",
+      "altColor": "",
+      "knobSpec": "",
+      "knobStep": ""
+    },
+    {
+      "visibilityCondition": "(L:A32NX_AUTOBRAKES_ARMED_MODE,Number)=6",
+      "text": "RTO",
       "x": "280",
       "y": "185",
       "color": "07DF",
@@ -550,17 +588,17 @@
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "Land\nOn\nOff\nRetact",
+      "switchLabel": "Land\nOn\n\nOff",
       "simEventOn": "!0 (>L:LIGHTING_LANDING_2) 0 (>L:LIGHTING_LANDING_3) 0 (>L:LANDING_2_RETRACTED) 0 (>L:LANDING_3_RETRACTED) 1 (>A:CIRCUIT SWITCH ON:18,enum) 1 (>A:CIRCUIT SWITCH ON:19,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "!1 (>L:LIGHTING_LANDING_2) 1 (>L:LIGHTING_LANDING_3) 0 (>L:LANDING_2_RETRACTED) 0 (>L:LANDING_3_RETRACTED) 0 (>A:CIRCUIT SWITCH ON:18,enum) 0 (>A:CIRCUIT SWITCH ON:19,enum)",
+      "simEventOff": "",
       "simEventOffValue": 0
     },
     {
       "switchLabel": "",
-      "simEventOn": "!2 (>L:LIGHTING_LANDING_2) 2 (>L:LIGHTING_LANDING_3) 1 (>L:LANDING_2_RETRACTED) 1 (>L:LANDING_3_RETRACTED) 0 (>A:CIRCUIT SWITCH ON:18,enum) 0 (>A:CIRCUIT SWITCH ON:19,enum)",
+      "simEventOn": "!1 (>L:LIGHTING_LANDING_2) 1 (>L:LIGHTING_LANDING_3) 0 (>L:LANDING_2_RETRACTED) 0 (>L:LANDING_3_RETRACTED) 0 (>A:CIRCUIT SWITCH ON:18,enum) 0 (>A:CIRCUIT SWITCH ON:19,enum)",
       "simEventOnValue": 0,
-      "simEventOff": "!1 (>L:LIGHTING_LANDING_2) 1 (>L:LIGHTING_LANDING_3) 0 (>L:LANDING_2_RETRACTED) 0 (>L:LANDING_3_RETRACTED) 0 (>A:CIRCUIT SWITCH ON:18,enum) 0 (>A:CIRCUIT SWITCH ON:19,enum)",
+      "simEventOff": "",
       "simEventOffValue": 0
     },
     {

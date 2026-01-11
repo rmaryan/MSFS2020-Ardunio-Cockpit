@@ -1,6 +1,8 @@
 {
-  "presetName": "iniBuilds A320 neo",
-  "aircraftName": "ATCCOM.AC_MODEL_A20N.0.text",
+  "presetName": "iniBuilds/Asobo A320/321",
+  "fsVersion": "FS2024",
+  "AtcModelKeywords": ["A20N"],
+  "AtcTypeKeywords": [ "" ],
   "bgColor": "0000",
   "screenFieldItems": [
     {

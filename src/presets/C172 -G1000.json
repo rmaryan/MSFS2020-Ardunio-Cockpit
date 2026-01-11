@@ -1,6 +1,8 @@
 {
-  "presetName": "Diammond DA62",
-  "aircraftName": "ATCCOM.AC_MODEL_DA62.0.text",
+  "presetName": "Cessna 172 G1000",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": [ "Skyhawk", "C172" ],
+  "AtcTypeKeywords": [],
   "bgColor": "0000",
   "screenFieldItems": [
     {
@@ -410,7 +412,7 @@
     {
       "text": "AP",
       "x": "010",
-      "y": "166",
+      "y": "190",
       "color": "07E0",
       "fontSize": "2",
       "textWidth": 0,
@@ -420,23 +422,6 @@
       "simvarType": 3,
       "decimalPlaces": 0,
       "altText": "AP",
-      "altColor": "D6BA",
-      "knobSpec": "",
-      "knobStep": ""
-    },
-    {
-      "text": "GEAR: DOWN",
-      "x": "010",
-      "y": "192",
-      "color": "D6BA",
-      "fontSize": "2",
-      "textWidth": 0,
-      "simVariable": "GEAR POSITION",
-      "simEvent": "",
-      "unitOfMeasure": "Bool",
-      "simvarType": 3,
-      "decimalPlaces": 0,
-      "altText": "GEAR: UP  ",
       "altColor": "D6BA",
       "knobSpec": "",
       "knobStep": ""
@@ -585,6 +570,20 @@
   ],
   "switchDefItems": [
     {
+      "switchLabel": "BCN ON\nBCN OFF",
+      "simEventOn": "BEACON_LIGHTS_ON",
+      "simEventOnValue": 0,
+      "simEventOff": "BEACON_LIGHTS_OFF",
+      "simEventOffValue": 0
+    },
+    {
+      "switchLabel": "",
+      "simEventOn": "",
+      "simEventOnValue": 0,
+      "simEventOff": "",
+      "simEventOffValue": 0
+    },
+    {
       "switchLabel": "LDG ON\nLDG OFF",
       "simEventOn": "LANDING_LIGHTS_ON",
       "simEventOnValue": 0,
@@ -613,21 +612,7 @@
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "AP ON\nFD ON\nAP OFF",
-      "simEventOn": "!(>K:AUTOPILOT_ON)",
-      "simEventOnValue": 0,
-      "simEventOff": "!(A:AUTOPILOT FLIGHT DIRECTOR ACTIVE,bool) ! if{ 1 (>K:TOGGLE_FLIGHT_DIRECTOR) } 1 (>K:AUTOPILOT_OFF)",
-      "simEventOffValue": 0
-    },
-    {
-      "switchLabel": "",
-      "simEventOn": "!(A:AUTOPILOT FLIGHT DIRECTOR ACTIVE,bool) if{ 0 (>K:TOGGLE_FLIGHT_DIRECTOR) } 1 (>K:AUTOPILOT_OFF)",
-      "simEventOnValue": 0,
-      "simEventOff": "!(A:AUTOPILOT FLIGHT DIRECTOR ACTIVE,bool) ! if{ 1 (>K:TOGGLE_FLIGHT_DIRECTOR) } 1 (>K:AUTOPILOT_OFF)",
-      "simEventOffValue": 0
-    },
-    {
-      "switchLabel": "POSITION ON\nPOSITION OFF",
+      "switchLabel": "NAV ON\nNAV OFF",
       "simEventOn": "NAV_LIGHTS_ON",
       "simEventOnValue": 0,
       "simEventOff": "NAV_LIGHTS_OFF",
@@ -655,15 +640,15 @@
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "GEAR UP\n",
-      "simEventOn": "GEAR_UP",
+      "switchLabel": "PT. HT. ON\nPT. HT. OFF",
+      "simEventOn": "PITOT_HEAT_ON",
       "simEventOnValue": 0,
-      "simEventOff": "",
+      "simEventOff": "PITOT_HEAT_OFF",
       "simEventOffValue": 0
     },
     {
-      "switchLabel": "\nGEAR DOWN",
-      "simEventOn": "GEAR_DOWN",
+      "switchLabel": "",
+      "simEventOn": "",
       "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0

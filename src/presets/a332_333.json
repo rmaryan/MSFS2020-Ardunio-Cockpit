@@ -1,6 +1,8 @@
 {
   "presetName": "iniBuilds A330-200/300",
-  "aircraftName": "",
+  "fsVersion": "FS2024",
+  "AtcModelKeywords": [],
+  "AtcTypeKeywords": ["Airbus"],
   "bgColor": "0000",
   "screenFieldItems": [
     {

@@ -1,6 +1,8 @@
 {
   "presetName": "Beechcraft Duke",
-  "aircraftName": "Duke",
+  "fsVersion": "FS2020, FS2024",
+  "AtcModelKeywords": [ "Duke", "BE60" ],
+  "AtcTypeKeywords": [],
   "bgColor": "0000",
   "screenFieldItems": [
     {
@@ -395,7 +397,7 @@
     {
       "switchLabel": "ALT\n\nATT HLD",
       "simEventOn": "AP_PITCH_LEVELER",
-	  "simEventOnValue": 0,
+      "simEventOnValue": 0,
       "simEventOff": "",
       "simEventOffValue": 0
     },
