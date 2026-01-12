@@ -40,6 +40,7 @@ Currently available presets:
  * **Cessna 172 Classic**
  * **Cessna 172 Skyhawk G1000**
  * **Cessna C208 B Grand Caravan**
+ * **De Havilland DHC-6 Twin Otter** - Microsoft/Asobo 2024 default
  * **Diamond Aircraft DA40NG and TDI**
  * **Diamond Aircraft DA62**
  * **FlyByWire A320neo**

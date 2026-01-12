@@ -176,6 +176,9 @@
     <None Include="presets\duke.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="presets\DHC-6.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="presets\seneca.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
