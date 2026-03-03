@@ -173,6 +173,9 @@
     <None Include="presets\default.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="presets\BAe-146.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="presets\duke.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

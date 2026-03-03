@@ -49,6 +49,7 @@ Currently available presets:
  * **Inibuilds A320/321 for MSFS 2024**
  * **Inibuilds A330 for MSFS 2024**
  * **Inibuilds A350**
+ * **Just Flight BAe-146 Professional**
  * **PA34T SENECA V**
  * **PMDG Boeing 737** - for MSFS 2020 only
 
