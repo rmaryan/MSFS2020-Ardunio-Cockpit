@@ -25,7 +25,7 @@ bool connectionActive = false;
 #include "messaging.h"
 
 void setup() {
-  Serial.begin(2400);
+  Serial.begin(115200);
 
   tft.begin();
   tft.setRotation(3);
@@ -78,8 +78,10 @@ void loop() {
         // this is the message end character
         // add the terminating zero and send it for processing
         messageBuffer[bufferPos] = 0;
-        processMessage(messageBuffer);
+        processMessage(messageBuffer);        
+        SendMsg("ACK");
         bufferPos = 0;
+        break;
       case 13:
         break;
       default:

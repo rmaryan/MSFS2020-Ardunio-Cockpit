@@ -160,6 +160,8 @@ As the simulation goes on, the Connector keeps feeding the new indicator values 
 
 In all messages, the first letter defines the message type. The ending character is 13 (CR). All messages are sent as plain text and are case-sensitive.
 
+Desktop application sends a message and waits for the "ACK" response from Arduino. Only after receiving the "ACK" message, the next message is sent.
+
 
 #### Messages from PC to Arduino
 | Type | Format | Function |
@@ -181,6 +183,7 @@ In all messages, the first letter defines the message type. The ending character
 | E | Exxxx... | Error message. xxxx... - error text. |
 | K | KNv...  | Knob position change notification. N - knob ID (0-3), v... - value, up to 5 symbols (can be negative). |
 | S | SABCDEFGHIJKLMNOPQRST | Knob position change notification. A-T - switch position '1' - ON, other value - OFF. |
+| A | ACK | An acknowledgement that message was received and processed. |
 
 #### Used Arduino libraries
 

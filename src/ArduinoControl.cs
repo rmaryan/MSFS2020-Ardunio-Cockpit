@@ -33,6 +33,7 @@ namespace ArduinoConnector
         private static SerialPort _serialPort;
         private Thread _readThread;
         private readonly string CMD_DELIMITER = "\n";
+        private AutoResetEvent _ackReceived = new AutoResetEvent(false);
 
         public event EventHandler MessageRecieved;
 
@@ -47,7 +48,7 @@ namespace ArduinoConnector
             _serialPort = new SerialPort
             {
                 PortName = comPort,
-                BaudRate = 2400,
+                BaudRate = 115200,
                 Parity = Parity.None,
                 DataBits = 8,
                 StopBits = StopBits.One,
@@ -122,8 +123,15 @@ namespace ArduinoConnector
         {
             try
             {
+                _ackReceived.Reset(); // prepare to wait for ACK
                 Debug.WriteLine("S: " + type + data);
                 _serialPort.Write(type + data + CMD_DELIMITER);
+
+                // Lock the thread until we get an ACK from the device, to avoid flooding it with messages
+                if (!_ackReceived.WaitOne(2000))
+                {
+                    Debug.WriteLine("Timeout: No ACK received from Arduino");
+                }
             }
             catch (Exception ex)
             {
@@ -144,11 +152,16 @@ namespace ArduinoConnector
                     // blocking read until newline; avoids repeated TimeoutExceptions
                     string message = _serialPort.ReadLine();
 
-                    if (!string.IsNullOrEmpty(message))
+                    if (string.IsNullOrEmpty(message)) continue;
+
+                    if (message == "ACK")
                     {
-                        Debug.WriteLine("R: " + message);
-                        OnMessageRecieved(new MessageEventArgs(message[0], message.Remove(0, 1)));
+                        _ackReceived.Set(); // notify the writer that ACK was received
+                        continue; // no need to raise an event for ACK messages
                     }
+
+                    Debug.WriteLine("R: " + message);
+                    OnMessageRecieved(new MessageEventArgs(message[0], message.Remove(0, 1)));
                 }
                 catch (TimeoutException)
                 {
