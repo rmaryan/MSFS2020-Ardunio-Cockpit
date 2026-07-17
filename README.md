@@ -174,6 +174,7 @@ Desktop application sends a message and waits for the "ACK" response from Arduin
 | T | TNNxxx... | Change field text. Can be sent outside of the configuration mode. <br/> NN - item ID, starts from 1<br/>xxx... Text to be placed in the field (all text till the command end is loaded). In configuration mode, text changes will be shown on the screen after the "S" message, together with all other layout changes. |
 | K | KNFFmmmmmmMMMMMMCDSSSS | Knob behavior definition. N - knob ID (0 - 3),  FF - associated screen item ID (starts from 1, the knob rotation will instantly update the associated field on the screen, if no field associated - put two spaces here '  '), mmmmmm - minimum value (can have a leading minus sign), MMMMMM - maximum value (can have a leading minus sign), C - if 'Y' change the value in circle (when the knob rolls bellow the minimum, the value changes to max and vise versa), D - number of digits after decimal points, SSSS - change step (integer). Example: K102000000000359Y00001  |
 | D | DNVVVVV | Set the knob current value. N - knob ID (0 - 3), VVVVV - value (can have a leading minus sign. Please note - if some screen was associated with that knob - the value on the screen is also updated. No need to send a T-command. |
+| L | LXXXYYYText | Show any text on a secondary screen by the coordinates XXX:YYY |
 | R | R | Reset the screen. Arduino will go to the initial "Waiting..." state. |
 
 #### Messages from Arduino to PC

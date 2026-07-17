@@ -48,8 +48,7 @@ namespace MSFSConnector
         // They will be added to the monitoredVars by default
         private string[] CORE_VARS_LIST = null;
 
-        public event EventHandler DataReceived;
-        public event EventHandler LVarNamesReceived;
+        public event EventHandler DataReceived;        
 
         public bool ConnectedSimConnect { get; private set; } = false;
         public bool ConnectedWASM { get; private set; } = false;
@@ -231,6 +230,8 @@ namespace MSFSConnector
         public void AddVarRequest(string simConnectVariable, string simConnectUnit)
         {
             if (_simConnect == null) return;
+
+            Debug.WriteLine($"Requesting: {simConnectVariable}({simConnectUnit})");
 
             // If the variable name starts with '(' - process it with the WASM
             if (simConnectVariable.StartsWith("("))

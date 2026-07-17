@@ -1,6 +1,6 @@
 {
   "presetName": "PMDG Boeing 737-800",
-  "fsVersion": "FS2020",
+  "fsVersion": "FS2020, FS2024",
   "AtcModelKeywords": [ "B738" ],
   "AtcTypeKeywords": [ "" ],
   "bgColor": "0000",

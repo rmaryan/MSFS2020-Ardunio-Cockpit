@@ -76,6 +76,7 @@ void processMessage(String rawMessage)
       for (int i = 0; i < screenItemsCount; i++) {
         DrawItem(i);
       }
+      clearSecondaryScreen();
       configurationMode = false;
       break;
     case 'I':
@@ -178,6 +179,24 @@ void processMessage(String rawMessage)
 
       break;
 
+    case 'L':
+      // Draw a label on the secondary screen
+      // LXXXYYYTTTTTTT
+      if (rawMessage.length() < 8) {
+        SendMsg("EScreen 2 label message length should be >=8. Got: " + rawMessage);
+        break;
+      }
+      // parse x and y
+      uint8_t s_x = rawMessage.substring(1, 4).toInt();
+      uint8_t s_y = rawMessage.substring(4, 7).toInt();
+
+      if ((s_x >= SCR_2_WIDTH) || (s_y>=SCR_2_HEIGHT)) {
+        SendMsg("EScreen 2: Text coordinates out of screen: " + rawMessage);
+        break;
+      }
+      printOnSecondaryScreen(s_x, s_y, rawMessage.substring(7).c_str());
+      break;
+
     case 'R':
       // reset to the initial state
       if (screenItems != NULL) {
@@ -187,6 +206,7 @@ void processMessage(String rawMessage)
       screenItemsCount = 0;
       connectionActive = false;
       initStartScreen();
+      clearSecondaryScreen();
       break;
 
     default:

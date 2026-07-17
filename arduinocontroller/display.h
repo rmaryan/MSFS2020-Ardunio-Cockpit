@@ -21,6 +21,9 @@
 #include <Adafruit_GFX.h>
 #include <MCUFRIEND_kbv.h>
 
+// secondary screen definitions
+#include <U8g2lib.h>
+
 /*
    Screen definitions
 */
@@ -30,6 +33,13 @@ MCUFRIEND_kbv tft;
 #define START_SCREEN_FG   0xFFE0
 
 #define MAX_TEXT_SIZE     20
+
+// secondary screen pins
+#define SOFT_SDA A14
+#define SOFT_SCL A15
+#define SCR_2_WIDTH 128
+#define SCR_2_HEIGHT 64
+U8G2_SH1106_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, SOFT_SCL, SOFT_SDA, U8X8_PIN_NONE);
 
 // the screen configuration array
 struct ScreenItemDefinition {
@@ -106,4 +116,20 @@ void initStartScreen() {
   tft.setCursor(25, 100);
   tft.setTextColor(START_SCREEN_FG);
   tft.print("Waiting for sim");
+}
+
+void initSecondaryScreen() {
+  u8g2.begin();
+  delay(250);
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_6x10_tr);
+}
+
+void printOnSecondaryScreen(uint8_t x, uint8_t y, const char *str) {
+  u8g2.drawStr(x, y, str);
+  u8g2.sendBuffer();
+}
+
+void clearSecondaryScreen() {
+  u8g2.clear();
 }

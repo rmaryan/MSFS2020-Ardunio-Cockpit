@@ -27,10 +27,12 @@ bool connectionActive = false;
 void setup() {
   Serial.begin(115200);
 
+  // primary screen
   tft.begin();
   tft.setRotation(3);
 
   initStartScreen();
+  initSecondaryScreen();
 
   while (!Serial) {
     ; // wait for serial port to connect. Needed for Native USB only

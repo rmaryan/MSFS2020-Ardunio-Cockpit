@@ -26,10 +26,13 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Net.Cache;
+using System.Reflection.Emit;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MSFS2020_Ardunio_Cockpit
 {
@@ -730,7 +733,94 @@ namespace MSFS2020_Ardunio_Cockpit
                 }
             }
 
-            mainWindow_ref.SetSwitchLabels(presetsManager.GetPresetSwitchLabels());
+            string[] switchLabelText = presetsManager.GetPresetSwitchLabels();
+
+            // LXXXYYYText show text on a secondary screen by the coordinates XXX:YYY
+            string[] secondaryScreenCells = Enumerable.Repeat(string.Empty, 21).ToArray();
+
+            // populate secondary screen cells from switch labels according to layout rules in comments
+            int srcCount = switchLabelText.Length;
+            for (int s = 0; s < srcCount; s++)
+            {
+                string label = (switchLabelText[s] ?? string.Empty).Trim();
+                var lines = label.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+
+                // first 6 cells (indexes 0..5): first line of switchLabelText[0..5], truncate to 6 chars
+                if (s >= 0 && s <= 5)
+                {
+                    if (s < secondaryScreenCells.Length)
+                    {
+                        string ln = lines.Length > 0 ? lines[0] : string.Empty;
+                        secondaryScreenCells[s] = ln.Length <= 6 ? ln : ln.Substring(0, 6);
+                    }
+                    continue;
+                }
+
+                // keep secondaryScreenCells[6..8] unchanged
+
+                // source 6..9 -> targets: first line -> indexes 9..12 (truncate 5), second line -> indexes 14..17 (truncate 5)
+                if (s >= 6 && s <= 9)
+                {
+                    int tFirst = 9 + (s - 6);
+                    if (tFirst < secondaryScreenCells.Length)
+                    {
+                        string ln = lines.Length > 0 ? lines[0] : string.Empty;
+                        secondaryScreenCells[tFirst] = ln.Length <= 5 ? ln : ln.Substring(0, 5);
+                    }
+
+                    int tSecond = 13 + (s - 6);
+                    if (tSecond < secondaryScreenCells.Length)
+                    {
+                        string ln2 = lines.Length > 1 ? lines[1] : string.Empty;
+                        secondaryScreenCells[tSecond] = ln2.Length <= 5 ? ln2 : ln2.Substring(0, 5);
+                    }
+                    continue;
+                }
+
+                // source 10..13 -> targets 18..21 (first line truncated to 5) - ensure bounds
+                if (s >= 10 && s <= 13)
+                {
+                    int t = 17 + (s - 10);
+                    if (t < secondaryScreenCells.Length)
+                    {
+                        string ln = lines.Length > 0 ? lines[0] : string.Empty;
+                        secondaryScreenCells[t] = ln.Length <= 5 ? ln : ln.Substring(0, 5);
+                    }
+                    continue;
+                }
+            }
+
+            Debug.WriteLine("Build Fields: " + string.Join(" | ", secondaryScreenCells.Select((s, i) => $"[{i}]='{s}'")));
+
+            // send all populated cells to Arduino using a single loop; keep existing layout rules
+            for (int i = 0; i < secondaryScreenCells.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(secondaryScreenCells[i])) continue;
+
+                string text = "";
+                int x = 0;
+                int y = 0;
+
+                if (i < 9)
+                {
+                    // top area: 3 columns, 9 cells, max 6 chars
+                    text = secondaryScreenCells[i].Length <= 6 ? secondaryScreenCells[i] : secondaryScreenCells[i].Substring(0, 6);
+                    x = (i % 3) * 42;
+                    y = (i / 3) * 10 + 10;
+                    
+                }
+                else
+                {
+                    // bottom area: remaining cells, 4 columns, max 5 chars
+                    text = secondaryScreenCells[i].Length <= 5 ? secondaryScreenCells[i] : secondaryScreenCells[i].Substring(0, 5);
+                    x = ((i - 1) % 4) * 32;
+                    y = (( (i - 9) / 4) * 10 + 40);                    
+                }
+                arduinoControl.SendMessage('L', $"{x:D3}{y:D3}{text}");
+            }
+
+            // update the switch labels on the UI
+            mainWindow_ref.SetSwitchLabels(switchLabelText);
         }
 
         private void BindArduinoKnob(int itemIDX, string itemIDString)
