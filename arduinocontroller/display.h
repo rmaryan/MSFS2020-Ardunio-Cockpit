@@ -56,9 +56,15 @@ uint16_t bgColor = 0x0000;
 
 // Sets the screen field text, cutting it if needed
 void SetFieldText(uint8_t itemID, const char* srcString) {
+  if (screenItems == NULL) {
+   return;
+  }
+
   // if the source string is too long, the rightmost part will be trimmed
-  strncpy(screenItems[itemID - 1].text, srcString, screenItems[itemID - 1].textWidth);
-  screenItems[itemID - 1].text[screenItems[itemID - 1].textWidth] = 0;
+  uint8_t width = screenItems[itemID - 1].textWidth;
+  if (width >= MAX_TEXT_SIZE) width = MAX_TEXT_SIZE - 1;
+  strncpy(screenItems[itemID - 1].text, srcString, width);
+  screenItems[itemID - 1].text[width] = 0;
 }
 
 // Populates the screen item with properly formatted text (aligned and padded if needed)
@@ -66,9 +72,15 @@ void SetFieldText(uint8_t itemID, const char* srcString) {
 void SetScreenDecimalField(uint8_t itemID, double value, uint8_t decimalPlaces) {
   char buffer[MAX_TEXT_SIZE + 1] = "";
 
-  // snprintf does not work with floats???!!!
+  if (screenItems == NULL) {
+   return;
+  }
 
-  dtostrf(value, screenItems[itemID - 1].textWidth, decimalPlaces, buffer);
+  uint8_t width = screenItems[itemID - 1].textWidth;
+  if (width >= MAX_TEXT_SIZE) width = MAX_TEXT_SIZE - 1;
+
+  // snprintf does not work with floats???!!!
+  dtostrf(value, width, decimalPlaces, buffer);
 
   // for zero-padded fields need to play a bit
   if(screenItems[itemID - 1].paddingChar == '0') {
@@ -80,7 +92,7 @@ void SetScreenDecimalField(uint8_t itemID, double value, uint8_t decimalPlaces) 
       pos = 1;
     }
 
-    for(uint8_t i = pos; i<screenItems[itemID - 1].textWidth; i++) {
+    for(uint8_t i = pos; i < width; i++) {
       if((buffer[i] == ' ') || (buffer[i] == '-')) {
         buffer[i] = '0';
       } else {
@@ -92,6 +104,9 @@ void SetScreenDecimalField(uint8_t itemID, double value, uint8_t decimalPlaces) 
 }
 
 void DrawItem(uint8_t i) {
+  if (screenItems == NULL) {
+   return;
+  }
   if (i < screenItemsCount) {
     if (screenItems[i].text[0] == 4) {
       // this is a special character for a nice circle

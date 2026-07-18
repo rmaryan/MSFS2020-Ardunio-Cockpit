@@ -36,6 +36,8 @@ void processMessage(String rawMessage)
   uint8_t knobID = 0;
   String kValueString;
   double kValue;
+  uint8_t s_x = 0;
+  uint8_t s_y = 0;
 
   switch (rawMessage[0]) {
     case 'P':
@@ -81,6 +83,10 @@ void processMessage(String rawMessage)
       break;
     case 'I':
       // Accept screen item
+      if (screenItems == NULL) {
+        SendMsg("EError: Screen items not initialized.");
+        break;
+      }
       if (rawMessage.length() != 17) {
         SendMsg("EItem definition length is incorrect. Got: " + rawMessage);
         break;
@@ -104,6 +110,10 @@ void processMessage(String rawMessage)
 
     case 'T':
       // Change text
+      if (screenItems == NULL) {
+        SendMsg("EError: Screen items not initialized.");
+        break;
+      }
       if (rawMessage.length() < 3) {
         SendMsg("EText change message length should be >=3. Got: " + rawMessage);
         break;
@@ -187,8 +197,8 @@ void processMessage(String rawMessage)
         break;
       }
       // parse x and y
-      uint8_t s_x = rawMessage.substring(1, 4).toInt();
-      uint8_t s_y = rawMessage.substring(4, 7).toInt();
+      s_x = rawMessage.substring(1, 4).toInt();
+      s_y = rawMessage.substring(4, 7).toInt();
 
       if ((s_x >= SCR_2_WIDTH) || (s_y>=SCR_2_HEIGHT)) {
         SendMsg("EScreen 2: Text coordinates out of screen: " + rawMessage);

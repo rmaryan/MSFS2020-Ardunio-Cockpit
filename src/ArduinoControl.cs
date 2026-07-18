@@ -29,16 +29,20 @@ namespace ArduinoConnector
 {
     class ArduinoControl
     {
-        private bool _continue;
-        private static SerialPort _serialPort;
+        private volatile bool _continue;
+        private SerialPort _serialPort;
         private Thread _readThread;
         private readonly string CMD_DELIMITER = "\n";
         private AutoResetEvent _ackReceived = new AutoResetEvent(false);
+        private readonly object _sendLock = new object();
 
         public event EventHandler MessageRecieved;
 
         public void Connect(string comPort)
         {
+            if (Connected())
+                throw new InvalidOperationException("Already connected. Call Disconnect() first.");
+
             _readThread = new Thread(Read)
             {
                 IsBackground = true,
@@ -123,14 +127,17 @@ namespace ArduinoConnector
         {
             try
             {
-                _ackReceived.Reset(); // prepare to wait for ACK
-                Debug.WriteLine("S: " + type + data);
-                _serialPort.Write(type + data + CMD_DELIMITER);
-
-                // Lock the thread until we get an ACK from the device, to avoid flooding it with messages
-                if (!_ackReceived.WaitOne(2000))
+                lock (_sendLock)
                 {
-                    Debug.WriteLine("Timeout: No ACK received from Arduino");
+                    _ackReceived.Reset(); // prepare to wait for ACK
+                    Debug.WriteLine("S: " + type + data);
+                    _serialPort.Write(type + data + CMD_DELIMITER);
+
+                    // Lock the thread until we get an ACK from the device, to avoid flooding it with messages
+                    if (!_ackReceived.WaitOne(2000))
+                    {
+                        Debug.WriteLine("Timeout: No ACK received from Arduino");
+                    }
                 }
             }
             catch (Exception ex)
@@ -172,6 +179,7 @@ namespace ArduinoConnector
                 catch (IOException)
                 {
                     // port closed or IO error -> wait a bit and start again
+                    if (!_continue) break;
                     Thread.Sleep(1000);
                     continue;
                 }
@@ -210,8 +218,8 @@ namespace ArduinoConnector
                 this.Data = data;
             }
 
-            public char MessageType { get; set; }
-            public string Data { get; set; }
+            public char MessageType { get; }
+            public string Data { get; }
 
         }
     }
